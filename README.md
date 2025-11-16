@@ -1,2 +1,3 @@
 # isthisteamtwoteam-server
-2팀 서버
+
+2팀 클라이언트
