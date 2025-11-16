@@ -64,3 +64,44 @@ Thumbs.db
 .gradle/
 gradle-app.setting
 !gradle-wrapper.jar
+
+
+# 기존 Spring 관련 내용 유지 +
+
+### Node.js ###
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+### Build ###
+dist/
+build/
+
+### Environment ###
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+### OS ###
+.DS_Store
+Thumbs.db
+
+### IDE ###
+.vscode/
+.idea/
+*.iml
+
+### Logs ###
+*.log
+logs/
+
+### Coverage ###
+coverage/
+.nyc_output/
+
+### Misc ###
+.cache/
