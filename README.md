@@ -1,2 +1,2 @@
-# is-this-team-two-team-server
-서버
+# isthisteamtwoteam-server
+2팀 서버
