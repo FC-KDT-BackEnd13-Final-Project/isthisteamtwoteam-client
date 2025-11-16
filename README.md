@@ -1,3 +1,3 @@
-# isthisteamtwoteam-server
+# isthisteamtwoteam-client
 
 2팀 클라이언트
