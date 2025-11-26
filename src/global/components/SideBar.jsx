@@ -37,6 +37,30 @@ export default function SideBar() {
               <span>회원</span>
             </div>
             <div className="flex items-center gap-3 px-5 py-2.5 text-slate-500 hover:text-slate-900 hover:bg-slate-50 font-medium text-sm cursor-pointer">
+              <Icon name="users" />
+              <span>회원</span>
+            </div>
+            <div className="flex items-center gap-3 px-5 py-2.5 text-slate-500 hover:text-slate-900 hover:bg-slate-50 font-medium text-sm cursor-pointer">
+              <Icon name="users" />
+              <span>회원</span>
+            </div>
+            <div className="flex items-center gap-3 px-5 py-2.5 text-slate-500 hover:text-slate-900 hover:bg-slate-50 font-medium text-sm cursor-pointer">
+              <Icon name="users" />
+              <span>회원</span>
+            </div>
+            <div className="flex items-center gap-3 px-5 py-2.5 text-slate-500 hover:text-slate-900 hover:bg-slate-50 font-medium text-sm cursor-pointer">
+              <Icon name="users" />
+              <span>회원</span>
+            </div>
+            <div className="flex items-center gap-3 px-5 py-2.5 text-slate-500 hover:text-slate-900 hover:bg-slate-50 font-medium text-sm cursor-pointer">
+              <Icon name="users" />
+              <span>회원</span>
+            </div>
+            <div className="flex items-center gap-3 px-5 py-2.5 text-slate-500 hover:text-slate-900 hover:bg-slate-50 font-medium text-sm cursor-pointer">
+              <Icon name="users" />
+              <span>회원</span>
+            </div>
+            <div className="flex items-center gap-3 px-5 py-2.5 text-slate-500 hover:text-slate-900 hover:bg-slate-50 font-medium text-sm cursor-pointer">
               <Icon name="folder-open" />
               <span>삭제한 프로젝트 관리</span>
             </div>
