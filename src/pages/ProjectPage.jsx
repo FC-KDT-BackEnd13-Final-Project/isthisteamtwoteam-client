@@ -119,7 +119,7 @@ export default function ProjectPage() {
                     : "bg-amber-100 text-amber-600"
                 }`}
               >
-                {post.isCompleted ? "완료" : "미완료"}
+                {post.isCompleted ? "완료" : "대기"}
               </div>
             </div>
           ))}
