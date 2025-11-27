@@ -53,32 +53,6 @@ export default function SideBar() {
                 <span>{item.label}</span>
               </div>
             ))}
-
-            {/* <div className="flex items-center gap-3 px-5 py-2.5 bg-blue-50 text-blue-600 font-medium text-sm relative cursor-pointer">
-              <span className="absolute left-0 top-0 h-full w-[3px] bg-blue-600" />
-              <Icon name="layout-dashboard" />
-              <span>대시보드</span>
-            </div>
-            <div className="flex items-center gap-3 px-5 py-2.5 text-slate-500 hover:text-slate-900 hover:bg-slate-50 font-medium text-sm cursor-pointer">
-              <Icon name="bell" />
-              <span>알림</span>
-            </div>
-            <div className="flex items-center gap-3 px-5 py-2.5 text-slate-500 hover:text-slate-900 hover:bg-slate-50 font-medium text-sm cursor-pointer">
-              <Icon name="clock" />
-              <span>승인 대기</span>
-            </div>
-            <div className="flex items-center gap-3 px-5 py-2.5 text-slate-500 hover:text-slate-900 hover:bg-slate-50 font-medium text-sm cursor-pointer">
-              <Icon name="check-square" />
-              <span>체크리스트</span>
-            </div>
-            <div className="flex items-center gap-3 px-5 py-2.5 text-slate-500 hover:text-slate-900 hover:bg-slate-50 font-medium text-sm cursor-pointer">
-              <Icon name="users" />
-              <span>회원 관리</span>
-            </div>
-            <div className="flex items-center gap-3 px-5 py-2.5 text-slate-500 hover:text-slate-900 hover:bg-slate-50 font-medium text-sm cursor-pointer">
-              <Icon name="folder-open" />
-              <span>삭제한 프로젝트 관리</span>
-            </div> */}
           </div>
         </div>
 
