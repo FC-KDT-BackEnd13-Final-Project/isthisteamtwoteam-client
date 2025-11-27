@@ -49,8 +49,10 @@ export default function ProjectPage() {
           </button>
         ))}
       </div>
-      <div className="flex-1 p-4 space-y-6">
-        <div className="bg-white border border-slate-200 rounded-xl p-5">
+
+      <div className="flex-1 p-4 space-y-3 flex gap-6">
+        {/* 프로젝트 단계 카드 */}
+        <div className="flex-1 bg-white border border-slate-200 rounded-xl p-5 space-y-4">
           <h3 className="text-sm font-semibold text-slate-900 mb-4">
             프로젝트 단계
           </h3>
@@ -69,6 +71,22 @@ export default function ProjectPage() {
                 {cat.label}
               </button>
             ))}
+          </div>
+          <div className="px-4 py-2.5  border border-slate-200 rounded-lg">
+            게시판
+          </div>
+        </div>
+        {/* 메모 */}
+        <div className="flex flex-col">
+          <div className="bg-amber-50 border border-amber-200 rounded-xl overflow-hidden">
+            <div className="p-5">
+              <textarea
+                className="min-w-[300px] bg-transparent resize-none min-h-[300px] text-sm text-slate-600 leading-relaxed outline-none"
+                // value={memo}
+                // onChange={(event) => setMemo(event.target.value)}
+                placeholder="메모를 작성하세요..."
+              />
+            </div>
           </div>
         </div>
       </div>
