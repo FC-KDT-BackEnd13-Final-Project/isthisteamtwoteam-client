@@ -1,24 +1,21 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Icon from "../global/components/Icon";
 
 export default function ProjectPage() {
   const [activeMainTab, setActiveMainTab] = useState("checklist");
   const [activeCategory, setActiveCategory] = useState("all");
 
-  const categories = useMemo(
-    () => [
-      { id: "all", label: "전체" },
-      { id: "requirements", label: "요구사항 정의" },
-      { id: "design", label: "화면설계" },
-      { id: "designPub", label: "디자인/퍼블리싱" },
-      { id: "feedback", label: "피드백" },
-      { id: "development", label: "개발" },
-      { id: "inspection", label: "검수" },
-      { id: "maintenance", label: "유지보수" },
-      { id: "files", label: "업로드된 파일 목록" },
-    ],
-    []
-  );
+  const categories = [
+    { id: "all", label: "전체" },
+    { id: "requirements", label: "요구사항 정의" },
+    { id: "design", label: "화면설계" },
+    { id: "designPub", label: "디자인/퍼블리싱" },
+    { id: "feedback", label: "피드백" },
+    { id: "development", label: "개발" },
+    { id: "inspection", label: "검수" },
+    { id: "maintenance", label: "유지보수" },
+    { id: "files", label: "업로드된 파일 목록" },
+  ];
 
   const tabs = [
     { id: "pending", label: "승인 대기", badge: 5, icon: "clock" },
@@ -37,8 +34,8 @@ export default function ProjectPage() {
             type="button"
             className={`flex items-center gap-2 px-5 py-3 text-sm font-medium border-b-2 transition-colors ${
               activeMainTab === tab.id
-                ? "text-blue-600 border-blue-600"
-                : "text-slate-500 border-transparent hover:text-slate-900"
+                ? "text-blue-600 border-blue-600 bg-blue-50"
+                : "text-slate-500 border-transparent hover:text-slate-900 hover:bg-slate-50"
             }`}
             onClick={() => setActiveMainTab(tab.id)}
           >
@@ -52,7 +49,6 @@ export default function ProjectPage() {
           </button>
         ))}
       </div>
-
       <div className="flex-1 p-4 space-y-6">
         <div className="bg-white border border-slate-200 rounded-xl p-5">
           <h3 className="text-sm font-semibold text-slate-900 mb-4">
