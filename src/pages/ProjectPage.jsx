@@ -35,7 +35,7 @@ export default function ProjectPage() {
           <button
             key={tab.id}
             type="button"
-            className={`flex items-center gap-2 px-5 py-4 text-sm font-medium border-b-2 transition-colors ${
+            className={`flex items-center gap-2 px-5 py-3 text-sm font-medium border-b-2 transition-colors ${
               activeMainTab === tab.id
                 ? "text-blue-600 border-blue-600"
                 : "text-slate-500 border-transparent hover:text-slate-900"
@@ -53,7 +53,7 @@ export default function ProjectPage() {
         ))}
       </div>
 
-      <div className="flex-1 p-6 space-y-6">
+      <div className="flex-1 p-4 space-y-6">
         <div className="bg-white border border-slate-200 rounded-xl p-5">
           <h3 className="text-sm font-semibold text-slate-900 mb-4">
             프로젝트 단계
