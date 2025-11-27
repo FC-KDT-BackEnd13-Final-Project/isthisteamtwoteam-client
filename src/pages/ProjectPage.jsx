@@ -1,5 +1,7 @@
 import { useState } from "react";
 import Icon from "../global/components/Icon";
+import Memo from "../components/Memo";
+import CheckList from "../components/CheckList";
 
 export default function ProjectPage() {
   const [activeMainTab, setActiveMainTab] = useState("checklist");
@@ -76,18 +78,11 @@ export default function ProjectPage() {
             게시판
           </div>
         </div>
-        {/* 메모 */}
-        <div className="flex flex-col">
-          <div className="bg-amber-50 border border-amber-200 rounded-xl overflow-hidden">
-            <div className="p-5">
-              <textarea
-                className="min-w-[300px] bg-transparent resize-none min-h-[300px] text-sm text-slate-600 leading-relaxed outline-none"
-                // value={memo}
-                // onChange={(event) => setMemo(event.target.value)}
-                placeholder="메모를 작성하세요..."
-              />
-            </div>
-          </div>
+        <div className="flex flex-col h-full ">
+          {/* 메모 */}
+          <Memo />
+          {/* 체크 리스트 */}
+          <CheckList />
         </div>
       </div>
     </>
