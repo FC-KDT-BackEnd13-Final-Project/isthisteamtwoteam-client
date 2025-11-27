@@ -1,64 +1,81 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Icon from "../global/components/Icon";
+import Memo from "../components/Memo";
+import CheckList from "../components/CheckList";
 
 export default function ProjectPage() {
-  const [activeMainTab, setActiveMainTab] = useState("checklist");
   const [activeCategory, setActiveCategory] = useState("all");
 
-  const categories = useMemo(
-    () => [
-      { id: "all", label: "전체" },
-      { id: "requirements", label: "요구사항 정의" },
-      { id: "design", label: "화면설계" },
-      { id: "designPub", label: "디자인/퍼블리싱" },
-      { id: "feedback", label: "피드백" },
-      { id: "development", label: "개발" },
-      { id: "inspection", label: "검수" },
-      { id: "maintenance", label: "유지보수" },
-      { id: "files", label: "업로드된 파일 목록" },
-    ],
-    []
-  );
-
-  const tabs = [
-    { id: "pending", label: "승인 대기", badge: 5, icon: "clock" },
-    { id: "checklist", label: "체크리스트", icon: "check-square" },
-    { id: "history", label: "히스토리", icon: "history" },
-    { id: "members", label: "회원관리", icon: "users" },
-    { id: "alert", label: "알림", icon: "bell" },
+  const categories = [
+    { id: "all", label: "전체" },
+    { id: "requirements", label: "요구사항 정의" },
+    { id: "design", label: "화면설계" },
+    { id: "designPub", label: "디자인/퍼블리싱" },
+    { id: "feedback", label: "피드백" },
+    { id: "development", label: "개발" },
+    { id: "inspection", label: "검수" },
+    { id: "maintenance", label: "유지보수" },
+    { id: "files", label: "업로드된 파일 목록" },
   ];
+
+  const posts = [
+    {
+      id: 1,
+      category: "requirements",
+      title: "제목1",
+      author: "진용1",
+      isCompleted: true,
+      ip: "123.456.789",
+    },
+    {
+      id: 2,
+      category: "design",
+      title: "제목2",
+      author: "진용2",
+      isCompleted: true,
+      ip: "123.456.789",
+    },
+    {
+      id: 3,
+      category: "requirements",
+      title: "제목3",
+      author: "진용3",
+      isCompleted: false,
+      ip: "123.456.789",
+    },
+    {
+      id: 4,
+      category: "design",
+      title: "제목4",
+      author: "진용4",
+      isCompleted: false,
+      ip: "123.456.789",
+    },
+    {
+      id: 5,
+      category: "designPub",
+      title: "제목5",
+      author: "진용5",
+      isCompleted: true,
+      ip: "123.456.789",
+    },
+  ];
+
+  const filteredPosts =
+    activeCategory === "all"
+      ? posts
+      : posts.filter((post) => post.category === activeCategory);
 
   return (
     <>
-      <div className="bg-white border-b border-slate-200 px-6 flex gap-2 justify-end">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            className={`flex items-center gap-2 px-5 py-4 text-sm font-medium border-b-2 transition-colors ${
-              activeMainTab === tab.id
-                ? "text-blue-600 border-blue-600"
-                : "text-slate-500 border-transparent hover:text-slate-900"
-            }`}
-            onClick={() => setActiveMainTab(tab.id)}
-          >
-            <Icon name={tab.icon} size={16} />
-            {tab.label}
-            {tab.badge ? (
-              <span className="ml-1 inline-block px-2 py-[2px] text-[10px] font-semibold rounded-full bg-rose-500 text-white">
-                {tab.badge}
-              </span>
-            ) : null}
-          </button>
-        ))}
-      </div>
-
-      <div className="flex-1 p-6 space-y-6">
-        <div className="bg-white border border-slate-200 rounded-xl p-5">
+      <div className="flex-1 p-4 space-y-3 flex gap-6">
+        {/* 프로젝트 단계 카드 */}
+        <div className="flex-1 bg-white border border-slate-200 rounded-xl p-5 space-y-4">
           <h3 className="text-sm font-semibold text-slate-900 mb-4">
             프로젝트 단계
           </h3>
-          <div className="flex flex-wrap gap-2">
+
+          <div className="flex justify-center flex-wrap gap-2">
             {categories.map((cat) => (
               <button
                 key={cat.id}
@@ -74,6 +91,45 @@ export default function ProjectPage() {
               </button>
             ))}
           </div>
+
+          {filteredPosts.map((post) => (
+            <div className="flex px-4 py-3 gap-4 border border-slate-200 rounded-lg items-center hover:bg-slate-50 hover:border-blue-200 transition cursor-pointer">
+              {/* 제목 */}
+              <div className="flex-1 font-medium text-slate-900">
+                {post.title}
+              </div>
+
+              {/* 작성자 */}
+              <div className="flex items-center gap-2">
+                <span className="px-2 py-1 rounded text-xs bg-blue-100 text-blue-600">
+                  {post.author}
+                </span>
+              </div>
+
+              {/* IP - 태그 스타일 */}
+              <div className="px-2 py-1 bg-slate-100 rounded text-xs text-slate-500">
+                {post.ip}
+              </div>
+
+              {/* 완료 여부 - 뱃지 스타일 */}
+              <div
+                className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+                  post.isCompleted
+                    ? "bg-green-100 text-green-600"
+                    : "bg-amber-100 text-amber-600"
+                }`}
+              >
+                {post.isCompleted ? "완료" : "미완료"}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex flex-col h-full ">
+          {/* 메모 */}
+          <Memo />
+          {/* 체크 리스트 */}
+          <CheckList />
         </div>
       </div>
     </>
