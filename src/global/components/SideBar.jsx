@@ -20,7 +20,7 @@ export default function SideBar() {
 
   return (
     <aside className="w-[260px] bg-white border-r border-slate-200 fixed inset-y-0 overflow-y-auto flex flex-col">
-      <div className="px-5 py-4 border-t border-slate-200">
+      <div className="px-5 py-4 border-b border-slate-200">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white">
             <Icon name="user" />
