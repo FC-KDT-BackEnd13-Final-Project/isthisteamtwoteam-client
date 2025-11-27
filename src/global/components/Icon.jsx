@@ -19,6 +19,7 @@ import {
   Download,
   Eye,
   Calendar,
+  Lock,
 } from "lucide-react";
 
 const ICON_MAP = {
@@ -42,6 +43,7 @@ const ICON_MAP = {
   download: Download,
   eye: Eye,
   calendar: Calendar,
+  lock: Lock,
 };
 
 export default function Icon({ name, size = 20, className = "" }) {
