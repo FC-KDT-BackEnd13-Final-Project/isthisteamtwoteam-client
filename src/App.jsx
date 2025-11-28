@@ -19,10 +19,6 @@ function App() {
 
       <Route path="/change-password" element={<ChangePasswordPage />} />
 
-      <Route path="/notification" element={<NotificationPage />} />
-
-      <Route path="/register" element={<RegisterPage />} />
-
       {/* Layout 있는 라우트 */}
       <Route
         path="/*"
@@ -31,6 +27,10 @@ function App() {
             <Routes>
               <Route path="/" element={<ProjectPage />} />
               <Route path="/user-management" element={<UserManagementPage />} />
+
+              <Route path="/notification" element={<NotificationPage />} />
+
+              <Route path="/register" element={<RegisterPage />} />
             </Routes>
           </Layout>
         }
