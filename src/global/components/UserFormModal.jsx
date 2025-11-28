@@ -3,15 +3,46 @@ import CompanyMakeForm from "./CompanyMakeForm";
 import ClientMakeForm from "./ClientMakeForm";
 import DeveloperMakeForm from "./developerMakeForm";
 
-export default function RegisterModal({ onClose, activeTab }) {
-  const [formData, setFormData] = useState({
-    companyName: "",
-    companyAddress: "",
-    ceoName: "",
-    managerName: "",
-    phoneNumber: "",
-    businessNumber: "",
-  });
+export default function UserFormModal({
+  mode = "create",
+  initialData = null,
+  activeTab,
+  onClose,
+  onSubmit,
+}) {
+  // 탭별 초기 formData 생성
+  const getInitialFormData = () => {
+    if (initialData) return initialData;
+
+    const base = { id: "", type: activeTab };
+
+    switch (activeTab) {
+      case "developer":
+        return { ...base, name: "", position: "", email: "", phone: "" };
+      case "client":
+        return {
+          ...base,
+          name: "",
+          companyName: "",
+          email: "",
+          phone: "",
+        };
+      case "company":
+        return {
+          ...base,
+          companyName: "",
+          companyAddress: "",
+          companyHead: "",
+          companyManager: "",
+          phone: "",
+          businessNumber: "",
+        };
+      default:
+        return base;
+    }
+  };
+
+  const [formData, setFormData] = useState(getInitialFormData);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -20,11 +51,9 @@ export default function RegisterModal({ onClose, activeTab }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("회원 등록:", formData);
-    // API 호출 후
-    onClose(); // 모달 닫기
+    onSubmit(formData);
+    onClose();
   };
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* 배경 어둡게 */}
@@ -42,6 +71,7 @@ export default function RegisterModal({ onClose, activeTab }) {
         {/* 탭별 폼 렌더링 */}
         {activeTab === "developer" && (
           <DeveloperMakeForm
+            mode={mode}
             handleSubmit={handleSubmit}
             formData={formData}
             handleChange={handleChange}
@@ -50,6 +80,7 @@ export default function RegisterModal({ onClose, activeTab }) {
 
         {activeTab === "client" && (
           <ClientMakeForm
+            mode={mode}
             handleSubmit={handleSubmit}
             formData={formData}
             handleChange={handleChange}
@@ -58,6 +89,7 @@ export default function RegisterModal({ onClose, activeTab }) {
 
         {activeTab === "company" && (
           <CompanyMakeForm
+            mode={mode}
             handleSubmit={handleSubmit}
             formData={formData}
             handleChange={handleChange}

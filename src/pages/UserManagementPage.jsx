@@ -1,15 +1,37 @@
 import { useState, useMemo } from "react";
-import RegisterModal from "../global/components/RegisterModal";
 import { tabs as tabsConfig, tableConfig } from "../constants/tableConfig";
 import { mockUsers } from "../data/mockUsers";
 import { Icons } from "../global/components/Icons";
+import UserFormModal from "../global/components/UserFormModal";
 
 export default function UserManagementPage() {
   const [activeTab, setActiveTab] = useState("developer");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedIds, setSelectedIds] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [newMemberModal, setNewMemberModal] = useState(false);
+  const [modalState, setModalState] = useState({
+    isOpen: false,
+    mode: "create", // 'create' or 'edit'
+    userData: null, // 수정 시 기존 데이터
+  });
+
+  // 새 회원 등록
+  const handleCreateUser = () => {
+    setModalState({
+      isOpen: true,
+      mode: "create",
+      userData: null,
+    });
+  };
+
+  const handleEditUser = (userId) => {
+    const user = mockUsers.find((u) => u.id === userId);
+    setModalState({
+      isOpen: true,
+      mode: "edit",
+      userData: user,
+    });
+  };
 
   const itemsPerPage = 10;
 
@@ -61,11 +83,6 @@ export default function UserManagementPage() {
     } else {
       setSelectedIds((prev) => prev.filter((i) => i !== id));
     }
-  };
-
-  // 수정
-  const handleEdit = (id) => {
-    console.log("수정:", id);
   };
 
   // 삭제
@@ -136,10 +153,7 @@ export default function UserManagementPage() {
               <div className="flex gap-2">
                 <button
                   className="flex items-center gap-2 px-6 py-3 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 transition"
-                  onClick={() => {
-                    // 모달열기
-                    setNewMemberModal(true);
-                  }}
+                  onClick={handleCreateUser}
                 >
                   {Icons.plus}
                   New Member
@@ -207,7 +221,7 @@ export default function UserManagementPage() {
                       <td className="px-5 py-[18px]">
                         <div className="flex items-center gap-3">
                           <button
-                            onClick={() => handleEdit(user.id)}
+                            onClick={() => handleEditUser(user.id)}
                             className="w-8 h-8 flex items-center justify-center rounded-md text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition"
                           >
                             {Icons.edit}
@@ -275,10 +289,22 @@ export default function UserManagementPage() {
             </div>
           </div>
         </div>
-        {newMemberModal && (
-          <RegisterModal
-            onClose={() => setNewMemberModal(false)}
-            activeTab={activeTab} // 현재 선택된 탭 전달
+        {modalState.isOpen && (
+          <UserFormModal
+            key={`${activeTab}-${modalState.userData?.id || "new"}`}
+            mode={modalState.mode}
+            initialData={modalState.userData}
+            activeTab={activeTab}
+            onClose={() =>
+              setModalState({ isOpen: false, mode: "create", userData: null })
+            }
+            onSubmit={(data) => {
+              if (modalState.mode === "create") {
+                console.log("새 회원 등록: ", data);
+              } else {
+                console.log("회원 수정: ", data);
+              }
+            }}
           />
         )}
       </div>
