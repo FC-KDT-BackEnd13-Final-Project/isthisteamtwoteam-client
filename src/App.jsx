@@ -8,6 +8,7 @@ import NotificationPage from "./pages/NotificationPage";
 import ChangePasswordPage from "./pages/ChangePasswordPage";
 import UserManagementPage from "./pages/UserManagementPage";
 import RegisterPage from "./pages/RegisterPage";
+import DashBoard from "./pages/DashBoard";
 
 function App() {
   return (
@@ -19,9 +20,7 @@ function App() {
 
       <Route path="/change-password" element={<ChangePasswordPage />} />
 
-      <Route path="/notification" element={<NotificationPage />} />
-
-      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/dashboard" element={<DashBoard />} />
 
       {/* Layout 있는 라우트 */}
       <Route
@@ -31,6 +30,10 @@ function App() {
             <Routes>
               <Route path="/" element={<ProjectPage />} />
               <Route path="/user-management" element={<UserManagementPage />} />
+
+              <Route path="/notification" element={<NotificationPage />} />
+
+              <Route path="/register" element={<RegisterPage />} />
             </Routes>
           </Layout>
         }

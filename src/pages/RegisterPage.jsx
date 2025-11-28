@@ -30,9 +30,9 @@ export default function CreateCompanyPage() {
 
   return (
     <div className="bg-gray-100 min-h-screen font-sans">
-      <div className="max-w-[1400px] mx-auto p-5">
+      <div className="max-w-[1300px] p-10">
         {/* Header */}
-        <div className="py-8 mb-8">
+        <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-900 mb-3">회원관리</h1>
           <div className="flex items-center gap-2 text-sm text-gray-500">
             <a href="#" className="hover:text-gray-600">
@@ -48,7 +48,7 @@ export default function CreateCompanyPage() {
         </div>
 
         {/* Main Content */}
-        <div className="max-w-[800px] bg-white rounded-xl overflow-hidden">
+        <div className="max-w-[1300px] bg-white rounded-xl overflow-hidden">
           {/* Tabs */}
           <div className="flex bg-gray-50 px-8 border-b border-gray-200">
             {tabs.map((tab) => (
@@ -137,7 +137,7 @@ export default function CreateCompanyPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    회사 전화번호
+                    담당자 전화번호
                   </label>
                   <input
                     type="text"
