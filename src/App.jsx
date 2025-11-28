@@ -7,7 +7,6 @@ import FindPasswordPage from "./pages/FindPasswordPage";
 import NotificationPage from "./pages/NotificationPage";
 import ChangePasswordPage from "./pages/ChangePasswordPage";
 import UserManagementPage from "./pages/UserManagementPage";
-import RegisterPage from "./pages/RegisterPage";
 import DashBoard from "./pages/DashBoard";
 import SidebarLayout from "./global/components/SidebarLayout";
 import RequestPendingPage from "./pages/RequestPendingPage";
@@ -35,7 +34,6 @@ function App() {
         <Route path="request-pending" element={<RequestPendingPage />} />
         <Route path="checklist" element={<CheckListPage />} />
         <Route path="user-management" element={<UserManagementPage />} />
-        <Route path="register" element={<RegisterPage />} />
         <Route path="remove-projects" element={<RemoveProjectPage />} />
         <Route path="settings" element={<SettingPage />} />
       </Route>

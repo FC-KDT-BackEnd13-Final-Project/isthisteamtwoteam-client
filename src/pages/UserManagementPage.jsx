@@ -1,6 +1,5 @@
 import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
-import RegisterModal from "./RegisterModal";
+import RegisterModal from "../global/components/RegisterModal";
 
 // 아이콘 컴포넌트
 const Icons = {
@@ -76,66 +75,6 @@ const Icons = {
   ),
 };
 
-// Mock 데이터
-const mockUsers = [
-  {
-    id: "12451",
-    name: "Leslie Alexander",
-    email: "leslie@example.com",
-    phone: "+62 819 1314 1435",
-    type: "developer",
-  },
-  {
-    id: "12452",
-    name: "Guy Hawkins",
-    email: "guy@example.com",
-    phone: "+62 819 1314 1435",
-    type: "developer",
-  },
-  {
-    id: "12453",
-    name: "Kristin Watson",
-    email: "kristin@example.com",
-    phone: "+62 819 1314 1435",
-    type: "developer",
-  },
-  {
-    id: "12454",
-    name: "Jane Cooper",
-    email: "jane@example.com",
-    phone: "+62 819 1314 1435",
-    type: "client",
-  },
-  {
-    id: "12455",
-    name: "Robert Fox",
-    email: "robert@example.com",
-    phone: "+62 819 1314 1435",
-    type: "client",
-  },
-  {
-    id: "12456",
-    name: "Jenny Wilson",
-    email: "jenny@example.com",
-    phone: "+62 819 1314 1435",
-    type: "company",
-  },
-  {
-    id: "12457",
-    name: "Wade Warren",
-    email: "wade@example.com",
-    phone: "+62 819 1314 1435",
-    type: "company",
-  },
-  {
-    id: "12458",
-    name: "Esther Howard",
-    email: "esther@example.com",
-    phone: "+62 819 1314 1435",
-    type: "developer",
-  },
-];
-
 export default function UserManagementPage() {
   const [activeTab, setActiveTab] = useState("developer");
   const [searchQuery, setSearchQuery] = useState("");
@@ -144,6 +83,123 @@ export default function UserManagementPage() {
   const [newMemberModal, setNewMemberModal] = useState(false);
 
   const itemsPerPage = 10;
+
+  // Mock 데이터
+  const mockUsers = [
+    // ===== 개발자 (Developer) =====
+    {
+      id: "12451",
+      name: "Leslie Alexander",
+      position: "프론트엔드 개발자",
+      email: "leslie@example.com",
+      phone: "+62 819 1314 1435",
+      type: "developer",
+    },
+    {
+      id: "12452",
+      name: "Guy Hawkins",
+      position: "백엔드 개발자",
+      email: "guy@example.com",
+      phone: "+62 819 1314 1436",
+      type: "developer",
+    },
+    {
+      id: "12453",
+      name: "Kristin Watson",
+      position: "PM",
+      email: "kristin@example.com",
+      phone: "+62 819 1314 1437",
+      type: "developer",
+    },
+    {
+      id: "12458",
+      name: "Esther Howard",
+      position: "디자이너",
+      email: "esther@example.com",
+      phone: "+62 819 1314 1438",
+      type: "developer",
+    },
+
+    // ===== 고객사 회원 (Client) =====
+    {
+      id: "12454",
+      name: "Jane Cooper",
+      companyName: "삼성전자",
+      email: "jane@example.com",
+      phone: "+62 819 1314 1439",
+      type: "client",
+    },
+    {
+      id: "12455",
+      name: "Robert Fox",
+      companyName: "LG전자",
+      email: "robert@example.com",
+      phone: "+62 819 1314 1440",
+      type: "client",
+    },
+
+    // ===== 회사 (Company) =====
+    {
+      id: "12456",
+      companyName: "네이버",
+      companyAddress: "경기도 성남시 분당구 정자일로 95",
+      companyHead: "최수연",
+      companyManager: "Jenny Wilson",
+      phone: "+62 819 1314 1441",
+      businessNumber: "123-1230-123",
+      type: "company",
+    },
+    {
+      id: "12457",
+      companyName: "카카오",
+      companyAddress: "제주특별자치도 제주시 첨단로 242",
+      companyHead: "홍은택",
+      companyManager: "Wade Warren",
+      phone: "+62 819 1314 1442",
+      businessNumber: "123-1230-123",
+      type: "company",
+    },
+    {
+      id: "12459",
+      companyName: "토스",
+      companyAddress: "서울특별시 강남구 테헤란로 131",
+      companyHead: "이승건",
+      companyManager: "김철수",
+      phone: "+62 819 1314 1443",
+      businessNumber: "123-1230-123",
+      type: "company",
+    },
+  ];
+
+  // 테이블 컬럼 설정
+  const tableConfig = {
+    developer: [
+      { key: "id", label: "ID" },
+      { key: "name", label: "이름" },
+      { key: "position", label: "직책" },
+      { key: "email", label: "이메일" },
+      { key: "phone", label: "전화번호" },
+    ],
+    client: [
+      { key: "id", label: "ID" },
+      { key: "name", label: "이름" },
+      { key: "companyName", label: "회사명" },
+      { key: "email", label: "이메일" },
+      { key: "phone", label: "전화번호" },
+    ],
+    company: [
+      { key: "id", label: "ID" },
+      { key: "companyName", label: "회사명" },
+      { key: "companyAddress", label: "주소" },
+      { key: "companyHead", label: "대표" },
+      { key: "companyManager", label: "담당자" },
+      { key: "phone", label: "담당자 전화번호" },
+      { key: "businessNumber", label: "사업자등록증" },
+    ],
+  };
+
+  // 테이블 렌더링
+  const columns = tableConfig[activeTab];
 
   // 탭 목록
   const tabs = [
@@ -306,21 +362,15 @@ export default function UserManagementPage() {
                         onChange={(e) => handleSelectAll(e.target.checked)}
                       />
                     </th>
-                    <th className="px-5 py-4 text-left text-sm font-semibold text-gray-500">
-                      ID ⌃
-                    </th>
-                    <th className="px-5 py-4 text-left text-sm font-semibold text-gray-500">
-                      Name ⌃
-                    </th>
-                    <th className="px-5 py-4 text-left text-sm font-semibold text-gray-500">
-                      Email ⌃
-                    </th>
-                    <th className="px-5 py-4 text-left text-sm font-semibold text-gray-500">
-                      Phone ⌃
-                    </th>
-                    <th className="px-5 py-4 text-left text-sm font-semibold text-gray-500">
-                      Action
-                    </th>
+                    {columns.map((col) => (
+                      <th
+                        key={col.key}
+                        className="px-5 py-4 text-left text-sm font-semibold text-gray-500"
+                      >
+                        {col.label} ^
+                      </th>
+                    ))}
+                    <th className="px-5 py-4 text-left text-sm font-semibold text-gray-500"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -339,18 +389,20 @@ export default function UserManagementPage() {
                           }
                         />
                       </td>
-                      <td className="px-5 py-[18px] text-sm text-blue-500">
-                        {user.id}
-                      </td>
-                      <td className="px-5 py-[18px] text-sm font-medium text-gray-900">
-                        {user.name}
-                      </td>
-                      <td className="px-5 py-[18px] text-sm text-gray-700">
-                        {user.email}
-                      </td>
-                      <td className="px-5 py-[18px] text-sm text-gray-500">
-                        {user.phone}
-                      </td>
+                      {columns.map((col) => (
+                        <td
+                          key={col.key}
+                          className={`px-5 py-[18px] text-sm ${
+                            col.key === "id"
+                              ? "text-blue-500"
+                              : col.key === "name" || col.key === "companyName"
+                              ? "font-medium text-gray-900"
+                              : "text-gray-700"
+                          }`}
+                        >
+                          {user[col.key]}
+                        </td>
+                      ))}
                       <td className="px-5 py-[18px]">
                         <div className="flex items-center gap-3">
                           <button
@@ -424,7 +476,6 @@ export default function UserManagementPage() {
         </div>
         {newMemberModal && (
           <RegisterModal
-            isOpen={newMemberModal}
             onClose={() => setNewMemberModal(false)}
             activeTab={activeTab} // 현재 선택된 탭 전달
           />
