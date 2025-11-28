@@ -8,6 +8,7 @@ import NotificationPage from "./pages/NotificationPage";
 import ChangePasswordPage from "./pages/ChangePasswordPage";
 import UserManagementPage from "./pages/UserManagementPage";
 import RegisterPage from "./pages/RegisterPage";
+import DashBoard from "./pages/DashBoard";
 
 function App() {
   return (
@@ -18,6 +19,8 @@ function App() {
       <Route path="/find-password" element={<FindPasswordPage />} />
 
       <Route path="/change-password" element={<ChangePasswordPage />} />
+
+      <Route path="/dashboard" element={<DashBoard />} />
 
       {/* Layout 있는 라우트 */}
       <Route
