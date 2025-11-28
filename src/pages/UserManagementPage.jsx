@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import RegisterModal from "./RegisterModal";
 
 // 아이콘 컴포넌트
 const Icons = {
@@ -140,8 +141,7 @@ export default function UserManagementPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedIds, setSelectedIds] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-
-  const navigate = useNavigate();
+  const [newMemberModal, setNewMemberModal] = useState(false);
 
   const itemsPerPage = 10;
 
@@ -280,7 +280,8 @@ export default function UserManagementPage() {
                 <button
                   className="flex items-center gap-2 px-6 py-3 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 transition"
                   onClick={() => {
-                    navigate("/register");
+                    // 모달열기
+                    setNewMemberModal(true);
                   }}
                 >
                   {Icons.plus}
@@ -421,6 +422,13 @@ export default function UserManagementPage() {
             </div>
           </div>
         </div>
+        {newMemberModal && (
+          <RegisterModal
+            isOpen={newMemberModal}
+            onClose={() => setNewMemberModal(false)}
+            activeTab={activeTab} // 현재 선택된 탭 전달
+          />
+        )}
       </div>
     </div>
   );
