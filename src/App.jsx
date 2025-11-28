@@ -10,6 +10,10 @@ import UserManagementPage from "./pages/UserManagementPage";
 import RegisterPage from "./pages/RegisterPage";
 import DashBoard from "./pages/DashBoard";
 import SidebarLayout from "./global/components/SidebarLayout";
+import RequestPendingPage from "./pages/RequestPendingPage";
+import CheckListPage from "./pages/ChecklistPage";
+import RemoveProjectPage from "./pages/RemoveProjectPage";
+import SettingPage from "./pages/SettingPage";
 
 function App() {
   return (
@@ -18,21 +22,22 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/find-password" element={<FindPasswordPage />} />
       <Route path="/change-password" element={<ChangePasswordPage />} />
-      <Route path="/dashboard" element={<DashBoard />} />
 
       {/* Sidebar + Header 레이아웃 */}
-      <Route path="/" element={<SidebarHeaderLayout />}>
-        <Route index element={<ProjectPage />} /> {/* / */}
-        <Route path="notification" element={<NotificationPage />} />{" "}
-        {/* /notification */}
+      <Route path="/project" element={<SidebarHeaderLayout />}>
+        <Route index element={<ProjectPage />} />
       </Route>
 
       {/* Sidebar만 있는 레이아웃 */}
-      <Route path="/project" element={<SidebarLayout />}>
-        <Route path="user-management" element={<UserManagementPage />} />{" "}
-        {/* /project/user-management */}
-        <Route path="register" element={<RegisterPage />} />{" "}
-        {/* /project/register */}
+      <Route path="/" element={<SidebarLayout />}>
+        <Route index element={<DashBoard />} />
+        <Route path="notification" element={<NotificationPage />} />
+        <Route path="request-pending" element={<RequestPendingPage />} />
+        <Route path="checklist" element={<CheckListPage />} />
+        <Route path="user-management" element={<UserManagementPage />} />
+        <Route path="register" element={<RegisterPage />} />
+        <Route path="remove-projects" element={<RemoveProjectPage />} />
+        <Route path="settings" element={<SettingPage />} />
       </Route>
     </Routes>
   );

@@ -29,7 +29,7 @@ export default function Login() {
 
       if (username === "test" && password === "1234") {
         // 성공시 홈으로 이동
-        navigate("/dashboard");
+        navigate("/");
       } else {
         throw new Error("아이디 또는 비밀번호가 올바르지 않습니다.");
       }

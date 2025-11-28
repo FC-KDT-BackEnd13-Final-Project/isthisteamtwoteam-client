@@ -1,22 +1,53 @@
 import { useState } from "react";
 import Icon from "./Icon";
+import { useNavigate } from "react-router-dom";
 
 export default function SideBar() {
+  let navigate = useNavigate();
+
   const [activeMenu, setActiveMenu] = useState("대시보드");
 
   const menuItems = [
-    { icon: "layout-dashboard", label: "대시보드" },
-    { icon: "bell", label: "알림" },
-    { icon: "clock", label: "승인 대기" },
-    { icon: "check-square", label: "체크리스트" },
-    { icon: "users", label: "회원 관리" },
-    { icon: "folder-open", label: "삭제한 프로젝트 관리" },
+    {
+      icon: "layout-dashboard",
+      label: "대시보드",
+      path: "/",
+    },
+    {
+      icon: "bell",
+      label: "알림",
+      path: "/notification",
+    },
+    {
+      icon: "clock",
+      label: "승인 대기",
+      path: "/request-pending",
+    },
+    {
+      icon: "check-square",
+      label: "체크리스트",
+      path: "/checklist",
+    },
+    {
+      icon: "users",
+      label: "회원 관리",
+      path: "/user-management",
+    },
+    {
+      icon: "folder-open",
+      label: "삭제한 프로젝트 관리",
+      path: "/remove-projects",
+    },
   ];
 
   const settingItems = [
-    { icon: "settings", label: "설정" },
-    { icon: "log-out", label: "로그아웃" },
+    { icon: "settings", label: "설정", path: "/settings" },
+    { icon: "log-out", label: "로그아웃", path: "/login" },
   ];
+
+  const handleClick = (path) => {
+    navigate(path);
+  };
 
   return (
     <aside className="w-[260px] bg-white border-r border-slate-200 fixed inset-y-0 overflow-y-auto flex flex-col">
@@ -43,7 +74,10 @@ export default function SideBar() {
             {menuItems.map((item) => (
               <div
                 key={item.label}
-                onClick={() => setActiveMenu(item.label)}
+                onClick={() => {
+                  setActiveMenu(item.label);
+                  handleClick(item.path);
+                }}
                 className={`flex items-center gap-3 px-5 py-3 font-medium text-sm relative
                   ${
                     activeMenu === item.label
@@ -69,7 +103,10 @@ export default function SideBar() {
             {settingItems.map((item) => (
               <div
                 key={item.label}
-                onClick={() => setActiveMenu(item.label)}
+                onClick={() => {
+                  setActiveMenu(item.label);
+                  handleClick(item.path);
+                }}
                 className={`flex items-center gap-3 px-5 py-3 font-medium text-sm relative
                   ${
                     activeMenu === item.label

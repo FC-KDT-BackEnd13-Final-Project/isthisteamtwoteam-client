@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 
 // 아이콘 컴포넌트
 const Icons = {
@@ -139,6 +140,9 @@ export default function UserManagementPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedIds, setSelectedIds] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+
+  const navigate = useNavigate();
+
   const itemsPerPage = 10;
 
   // 탭 목록
@@ -273,7 +277,12 @@ export default function UserManagementPage() {
                 </div>
               </div>
               <div className="flex gap-2">
-                <button className="flex items-center gap-2 px-6 py-3 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 transition">
+                <button
+                  className="flex items-center gap-2 px-6 py-3 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 transition"
+                  onClick={() => {
+                    navigate("/register");
+                  }}
+                >
                   {Icons.plus}
                   New Member
                 </button>

@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import SideBar from "./SideBar";
 
-export default function Layout() {
+export default function SidebarLayout() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex font-sans">
       <SideBar />
