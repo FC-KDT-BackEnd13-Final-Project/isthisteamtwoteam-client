@@ -1,15 +1,12 @@
 import { useState } from "react";
 import Icon from "../global/components/Icon";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // 로그인 로직
-    console.log("로그인 시도:", { username, password });
-  };
+  let navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-center font-sans">
@@ -21,7 +18,12 @@ export default function Login() {
           Login
         </h1>
 
-        <form onSubmit={handleSubmit}>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            navigate("/");
+          }}
+        >
           <div className="mb-5">
             <div className="relative flex items-center">
               <Icon
