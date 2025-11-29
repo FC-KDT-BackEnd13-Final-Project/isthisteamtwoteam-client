@@ -16,7 +16,7 @@ export default function UserManagementPage() {
     userData: null, // 수정 시 기존 데이터
   });
 
-  // 새 회원 등록
+  // 새 회원 등록 모달
   const handleCreateUser = () => {
     setModalState({
       isOpen: true,
@@ -25,7 +25,7 @@ export default function UserManagementPage() {
     });
   };
 
-  // 회원 정보 수정
+  // 회원 정보 수정 모달
   const handleEditUser = (userId) => {
     const user = users.find((u) => u.id === userId);
     setModalState({
@@ -57,12 +57,14 @@ export default function UserManagementPage() {
     let filtered = users.filter((u) => u.type === activeTab);
 
     if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
+      const query = searchQuery;
       filtered = filtered.filter(
         (u) =>
-          u.id.toLowerCase().includes(query) ||
-          u.name.toLowerCase().includes(query) ||
-          u.email.toLowerCase().includes(query)
+          u.id?.includes(query) ||
+          u.name?.includes(query) ||
+          u.email?.includes(query) ||
+          u.companyName?.includes(query) ||
+          u.ceoName?.includes(query)
       );
     }
 
@@ -305,8 +307,12 @@ export default function UserManagementPage() {
             onSubmit={(data) => {
               if (modalState.mode === "create") {
                 console.log("새 회원 등록: ", data);
+                setUsers([...users, data]);
               } else {
-                console.log("회원 수정: ", data);
+                let userIndex = users.findIndex((u) => u.id === data.id);
+                let tempUsers = [...users];
+                tempUsers[userIndex] = data;
+                setUsers(tempUsers);
               }
             }}
           />

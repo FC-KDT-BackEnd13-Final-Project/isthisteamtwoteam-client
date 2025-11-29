@@ -4,7 +4,7 @@ export const mockUsers = [
   {
     id: "12451",
     name: "Leslie Alexander",
-    position: "pm",
+    position: "PM",
     email: "leslie@example.com",
     phone: "+62 819 1314 1435",
     type: "developer",
@@ -12,7 +12,7 @@ export const mockUsers = [
   {
     id: "12452",
     name: "Guy Hawkins",
-    position: "designer",
+    position: "디자이너",
     email: "guy@example.com",
     phone: "+62 819 1314 1436",
     type: "developer",
@@ -20,7 +20,7 @@ export const mockUsers = [
   {
     id: "12453",
     name: "Kristin Watson",
-    position: "frontend",
+    position: "프론트엔드",
     email: "kristin@example.com",
     phone: "+62 819 1314 1437",
     type: "developer",

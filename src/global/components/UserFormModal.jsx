@@ -15,7 +15,7 @@ export default function UserFormModal({
     console.log(initialData);
     if (initialData) return initialData;
 
-    const base = { id: "", type: activeTab };
+    const base = { id: "1", type: activeTab };
 
     switch (activeTab) {
       case "developer":
@@ -35,7 +35,7 @@ export default function UserFormModal({
           companyAddress: "",
           ceoName: "",
           managerName: "",
-          phoneNumber: "",
+          phone: "",
           businessNumber: "",
         };
       default:
