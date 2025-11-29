@@ -1,181 +1,75 @@
 import { useState, useMemo } from "react";
-
-// 아이콘 컴포넌트
-const Icons = {
-  search: (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      className="w-[18px] h-[18px]"
-    >
-      <circle cx="11" cy="11" r="8" />
-      <path d="m21 21-4.35-4.35" />
-    </svg>
-  ),
-  plus: (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      className="w-4 h-4"
-    >
-      <line x1="12" y1="5" x2="12" y2="19" />
-      <line x1="5" y1="12" x2="19" y2="12" />
-    </svg>
-  ),
-  edit: (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      className="w-[18px] h-[18px]"
-    >
-      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-    </svg>
-  ),
-  trash: (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      className="w-[18px] h-[18px]"
-    >
-      <polyline points="3 6 5 6 21 6" />
-      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-    </svg>
-  ),
-  chevronLeft: (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      className="w-4 h-4"
-    >
-      <polyline points="15 18 9 12 15 6" />
-    </svg>
-  ),
-  chevronRight: (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      className="w-4 h-4"
-    >
-      <polyline points="9 18 15 12 9 6" />
-    </svg>
-  ),
-};
-
-// Mock 데이터
-const mockUsers = [
-  {
-    id: "12451",
-    name: "Leslie Alexander",
-    email: "leslie@example.com",
-    phone: "+62 819 1314 1435",
-    type: "developer",
-  },
-  {
-    id: "12452",
-    name: "Guy Hawkins",
-    email: "guy@example.com",
-    phone: "+62 819 1314 1435",
-    type: "developer",
-  },
-  {
-    id: "12453",
-    name: "Kristin Watson",
-    email: "kristin@example.com",
-    phone: "+62 819 1314 1435",
-    type: "developer",
-  },
-  {
-    id: "12454",
-    name: "Jane Cooper",
-    email: "jane@example.com",
-    phone: "+62 819 1314 1435",
-    type: "client",
-  },
-  {
-    id: "12455",
-    name: "Robert Fox",
-    email: "robert@example.com",
-    phone: "+62 819 1314 1435",
-    type: "client",
-  },
-  {
-    id: "12456",
-    name: "Jenny Wilson",
-    email: "jenny@example.com",
-    phone: "+62 819 1314 1435",
-    type: "company",
-  },
-  {
-    id: "12457",
-    name: "Wade Warren",
-    email: "wade@example.com",
-    phone: "+62 819 1314 1435",
-    type: "company",
-  },
-  {
-    id: "12458",
-    name: "Esther Howard",
-    email: "esther@example.com",
-    phone: "+62 819 1314 1435",
-    type: "developer",
-  },
-];
+import { tabs as tabsConfig, tableConfig } from "../constants/tableConfig";
+import { mockUsers } from "../data/mockUsers";
+import { Icons } from "../global/components/Icons";
+import UserFormModal from "../global/components/UserFormModal";
 
 export default function UserManagementPage() {
   const [activeTab, setActiveTab] = useState("developer");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedIds, setSelectedIds] = useState([]);
+  const [users, setUsers] = useState(mockUsers);
   const [currentPage, setCurrentPage] = useState(1);
+  const [modalState, setModalState] = useState({
+    isOpen: false,
+    mode: "create", // 'create' or 'edit'
+    userData: null, // 수정 시 기존 데이터
+  });
+
+  // 새 회원 등록 모달
+  const handleCreateUser = () => {
+    setModalState({
+      isOpen: true,
+      mode: "create",
+      userData: null,
+    });
+  };
+
+  // 회원 정보 수정 모달
+  const handleEditUser = (userId) => {
+    const user = users.find((u) => u.id === userId);
+    setModalState({
+      isOpen: true,
+      mode: "edit",
+      userData: user,
+    });
+  };
+
+  // 삭제
+  const handleDelete = (userId) => {
+    console.log("삭제");
+    setUsers(users.filter((user) => user.id !== userId));
+    setSelectedIds((prev) => prev.filter((id) => id !== userId));
+  };
+
   const itemsPerPage = 10;
 
-  // 탭 목록
-  const tabs = [
-    {
-      id: "developer",
-      label: "개발사",
-      count: mockUsers.filter((u) => u.type === "developer").length,
-    },
-    {
-      id: "client",
-      label: "고객사",
-      count: mockUsers.filter((u) => u.type === "client").length,
-    },
-    {
-      id: "company",
-      label: "회사",
-      count: mockUsers.filter((u) => u.type === "company").length,
-    },
-  ];
+  // 테이블 렌더링
+  const columns = tableConfig[activeTab];
+
+  const tabs = tabsConfig.map((tab) => ({
+    ...tab,
+    count: users.filter((user) => user.type === tab.id).length,
+  }));
 
   // 필터링된 사용자
   const filteredUsers = useMemo(() => {
-    let filtered = mockUsers.filter((u) => u.type === activeTab);
+    let filtered = users.filter((u) => u.type === activeTab);
 
     if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
+      const query = searchQuery;
       filtered = filtered.filter(
         (u) =>
-          u.id.toLowerCase().includes(query) ||
-          u.name.toLowerCase().includes(query) ||
-          u.email.toLowerCase().includes(query)
+          u.id?.includes(query) ||
+          u.name?.includes(query) ||
+          u.email?.includes(query) ||
+          u.companyName?.includes(query) ||
+          u.ceoName?.includes(query)
       );
     }
 
     return filtered;
-  }, [activeTab, searchQuery]);
+  }, [activeTab, searchQuery, users]);
 
   // 페이지네이션
   const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
@@ -200,16 +94,6 @@ export default function UserManagementPage() {
     } else {
       setSelectedIds((prev) => prev.filter((i) => i !== id));
     }
-  };
-
-  // 수정
-  const handleEdit = (id) => {
-    console.log("수정:", id);
-  };
-
-  // 삭제
-  const handleDelete = (id) => {
-    console.log("삭제:", id);
   };
 
   return (
@@ -273,7 +157,10 @@ export default function UserManagementPage() {
                 </div>
               </div>
               <div className="flex gap-2">
-                <button className="flex items-center gap-2 px-6 py-3 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 transition">
+                <button
+                  className="flex items-center gap-2 px-6 py-3 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 transition"
+                  onClick={handleCreateUser}
+                >
                   {Icons.plus}
                   New Member
                 </button>
@@ -296,21 +183,15 @@ export default function UserManagementPage() {
                         onChange={(e) => handleSelectAll(e.target.checked)}
                       />
                     </th>
-                    <th className="px-5 py-4 text-left text-sm font-semibold text-gray-500">
-                      ID ⌃
-                    </th>
-                    <th className="px-5 py-4 text-left text-sm font-semibold text-gray-500">
-                      Name ⌃
-                    </th>
-                    <th className="px-5 py-4 text-left text-sm font-semibold text-gray-500">
-                      Email ⌃
-                    </th>
-                    <th className="px-5 py-4 text-left text-sm font-semibold text-gray-500">
-                      Phone ⌃
-                    </th>
-                    <th className="px-5 py-4 text-left text-sm font-semibold text-gray-500">
-                      Action
-                    </th>
+                    {columns.map((col) => (
+                      <th
+                        key={col.key}
+                        className="px-5 py-4 text-left text-sm font-semibold text-gray-500"
+                      >
+                        {col.label} ^
+                      </th>
+                    ))}
+                    <th className="px-5 py-4 text-left text-sm font-semibold text-gray-500"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -329,22 +210,24 @@ export default function UserManagementPage() {
                           }
                         />
                       </td>
-                      <td className="px-5 py-[18px] text-sm text-blue-500">
-                        {user.id}
-                      </td>
-                      <td className="px-5 py-[18px] text-sm font-medium text-gray-900">
-                        {user.name}
-                      </td>
-                      <td className="px-5 py-[18px] text-sm text-gray-700">
-                        {user.email}
-                      </td>
-                      <td className="px-5 py-[18px] text-sm text-gray-500">
-                        {user.phone}
-                      </td>
+                      {columns.map((col) => (
+                        <td
+                          key={col.key}
+                          className={`px-5 py-[18px] text-sm ${
+                            col.key === "id"
+                              ? "text-blue-500"
+                              : col.key === "name" || col.key === "companyName"
+                              ? "font-medium text-gray-900"
+                              : "text-gray-700"
+                          }`}
+                        >
+                          {user[col.key]}
+                        </td>
+                      ))}
                       <td className="px-5 py-[18px]">
                         <div className="flex items-center gap-3">
                           <button
-                            onClick={() => handleEdit(user.id)}
+                            onClick={() => handleEditUser(user.id)}
                             className="w-8 h-8 flex items-center justify-center rounded-md text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition"
                           >
                             {Icons.edit}
@@ -412,6 +295,28 @@ export default function UserManagementPage() {
             </div>
           </div>
         </div>
+        {modalState.isOpen && (
+          <UserFormModal
+            key={`${activeTab}-${modalState.userData?.id || "new"}`}
+            mode={modalState.mode}
+            initialData={modalState.userData}
+            activeTab={activeTab}
+            onClose={() =>
+              setModalState({ isOpen: false, mode: "create", userData: null })
+            }
+            onSubmit={(data) => {
+              if (modalState.mode === "create") {
+                console.log("새 회원 등록: ", data);
+                setUsers([...users, data]);
+              } else {
+                let userIndex = users.findIndex((u) => u.id === data.id);
+                let tempUsers = [...users];
+                tempUsers[userIndex] = data;
+                setUsers(tempUsers);
+              }
+            }}
+          />
+        )}
       </div>
     </div>
   );
