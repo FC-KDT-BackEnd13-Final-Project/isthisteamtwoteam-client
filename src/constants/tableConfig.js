@@ -18,9 +18,9 @@ export const tableConfig = {
     { key: "id", label: "ID" },
     { key: "companyName", label: "회사명" },
     { key: "companyAddress", label: "주소" },
-    { key: "companyHead", label: "대표" },
-    { key: "companyManager", label: "담당자" },
-    { key: "phone", label: "담당자 전화번호" },
+    { key: "ceoName", label: "대표" },
+    { key: "managerName", label: "담당자" },
+    { key: "phoneNumber", label: "담당자 전화번호" },
     { key: "businessNumber", label: "사업자등록증" },
   ],
 };

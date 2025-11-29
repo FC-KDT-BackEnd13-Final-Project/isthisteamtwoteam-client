@@ -8,6 +8,7 @@ export default function UserManagementPage() {
   const [activeTab, setActiveTab] = useState("developer");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedIds, setSelectedIds] = useState([]);
+  const [users, setUsers] = useState(mockUsers);
   const [currentPage, setCurrentPage] = useState(1);
   const [modalState, setModalState] = useState({
     isOpen: false,
@@ -24,13 +25,21 @@ export default function UserManagementPage() {
     });
   };
 
+  // 회원 정보 수정
   const handleEditUser = (userId) => {
-    const user = mockUsers.find((u) => u.id === userId);
+    const user = users.find((u) => u.id === userId);
     setModalState({
       isOpen: true,
       mode: "edit",
       userData: user,
     });
+  };
+
+  // 삭제
+  const handleDelete = (userId) => {
+    console.log("삭제");
+    setUsers(users.filter((user) => user.id !== userId));
+    setSelectedIds((prev) => prev.filter((id) => id !== userId));
   };
 
   const itemsPerPage = 10;
@@ -40,12 +49,12 @@ export default function UserManagementPage() {
 
   const tabs = tabsConfig.map((tab) => ({
     ...tab,
-    count: mockUsers.filter((user) => user.type === tab.id).length,
+    count: users.filter((user) => user.type === tab.id).length,
   }));
 
   // 필터링된 사용자
   const filteredUsers = useMemo(() => {
-    let filtered = mockUsers.filter((u) => u.type === activeTab);
+    let filtered = users.filter((u) => u.type === activeTab);
 
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
@@ -58,7 +67,7 @@ export default function UserManagementPage() {
     }
 
     return filtered;
-  }, [activeTab, searchQuery]);
+  }, [activeTab, searchQuery, users]);
 
   // 페이지네이션
   const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
@@ -83,11 +92,6 @@ export default function UserManagementPage() {
     } else {
       setSelectedIds((prev) => prev.filter((i) => i !== id));
     }
-  };
-
-  // 삭제
-  const handleDelete = (id) => {
-    console.log("삭제:", id);
   };
 
   return (

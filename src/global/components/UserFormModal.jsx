@@ -12,6 +12,7 @@ export default function UserFormModal({
 }) {
   // 탭별 초기 formData 생성
   const getInitialFormData = () => {
+    console.log(initialData);
     if (initialData) return initialData;
 
     const base = { id: "", type: activeTab };
@@ -32,9 +33,9 @@ export default function UserFormModal({
           ...base,
           companyName: "",
           companyAddress: "",
-          companyHead: "",
-          companyManager: "",
-          phone: "",
+          ceoName: "",
+          managerName: "",
+          phoneNumber: "",
           businessNumber: "",
         };
       default:
