@@ -1,4 +1,5 @@
 export default function CompanyMakeForm({
+  mode,
   handleSubmit,
   formData,
   handleChange,
@@ -98,12 +99,21 @@ export default function CompanyMakeForm({
             />
           </div>
 
-          <button
-            type="submit"
-            className="w-[200px] py-3.5 mt-5 bg-blue-500 text-white text-[15px] font-semibold rounded-lg hover:bg-blue-600 transition"
-          >
-            생성
-          </button>
+          {mode === "create" ? (
+            <button
+              type="submit"
+              className="w-[200px] py-3.5 mt-5 bg-blue-500 text-white text-[15px] font-semibold rounded-lg hover:bg-blue-600 transition"
+            >
+              생성
+            </button>
+          ) : (
+            <button
+              type="submit"
+              className="w-[200px] py-3.5 mt-5 bg-blue-500 text-white text-[15px] font-semibold rounded-lg hover:bg-blue-600 transition"
+            >
+              수정
+            </button>
+          )}
         </form>
       </div>
     </>
