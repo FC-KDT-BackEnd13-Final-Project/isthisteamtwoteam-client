@@ -10,9 +10,8 @@ import UserManagementPage from "./pages/UserManagementPage";
 import DashBoard from "./pages/DashBoard";
 import SidebarLayout from "./global/components/SidebarLayout";
 import RequestPendingPage from "./pages/RequestPendingPage";
-import CheckListPage from "./pages/ChecklistPage";
 import RemoveProjectPage from "./pages/RemoveProjectPage";
-import SettingPage from "./pages/SettingPage";
+import CheckListPage from "./pages/CheckListPage";
 
 function App() {
   return (
@@ -20,7 +19,6 @@ function App() {
       {/* Layout 없는 라우트 */}
       <Route path="/login" element={<Login />} />
       <Route path="/find-password" element={<FindPasswordPage />} />
-      <Route path="/change-password" element={<ChangePasswordPage />} />
 
       {/* Sidebar + Header 레이아웃 */}
       <Route path="/project" element={<SidebarHeaderLayout />}>
@@ -35,7 +33,7 @@ function App() {
         <Route path="checklist" element={<CheckListPage />} />
         <Route path="user-management" element={<UserManagementPage />} />
         <Route path="remove-projects" element={<RemoveProjectPage />} />
-        <Route path="settings" element={<SettingPage />} />
+        <Route path="change-password" element={<ChangePasswordPage />} />
       </Route>
     </Routes>
   );
