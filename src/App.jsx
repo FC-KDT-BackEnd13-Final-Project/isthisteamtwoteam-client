@@ -12,6 +12,7 @@ import SidebarLayout from "./global/components/SidebarLayout";
 import RequestPendingPage from "./pages/RequestPendingPage";
 import RemoveProjectPage from "./pages/RemoveProjectPage";
 import CheckListPage from "./pages/CheckListPage";
+import BoardPage from "./pages/BoardPage";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
       {/* Sidebar + Header 레이아웃 */}
       <Route path="/project" element={<SidebarHeaderLayout />}>
         <Route path=":projectId" element={<ProjectPage />} />
+        <Route path="board" element={<BoardPage />} />
       </Route>
 
       {/* Sidebar만 있는 레이아웃 */}
