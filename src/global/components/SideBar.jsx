@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Icon from "./Icon";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function SideBar() {
   let navigate = useNavigate();
+  let location = useLocation();
 
   const [activeMenu, setActiveMenu] = useState("대시보드");
 
@@ -48,6 +49,19 @@ export default function SideBar() {
   const handleClick = (path) => {
     navigate(path);
   };
+
+  // URL 경로가 변경될 때마다 활성 메뉴 업데이트
+  useEffect(() => {
+    const currentPath = location.pathname;
+
+    // 모든 메뉴 아이템을 확인하여 현재 경로와 일치하는 메뉴 찾기
+    const allItems = [...menuItems, ...settingItems];
+    const currentItem = allItems.find((item) => item.path === currentPath);
+
+    if (currentItem) {
+      setActiveMenu(currentItem.label);
+    }
+  }, [location.pathname]);
 
   return (
     <aside className="w-[260px] bg-white border-r border-slate-200 fixed inset-y-0 overflow-y-auto flex flex-col">
