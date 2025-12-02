@@ -1,171 +1,19 @@
 import { useState, useMemo } from "react";
 
-// 아이콘 컴포넌트
-const Icons = {
-  bell: (
-    <svg
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      className="w-8 h-8"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-      />
-    </svg>
-  ),
-  search: (
-    <svg
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      className="w-4 h-4"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-      />
-    </svg>
-  ),
-  close: (
-    <svg
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      className="w-4 h-4"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-        d="M6 18L18 6M6 6l12 12"
-      />
-    </svg>
-  ),
-  check: (
-    <svg
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      className="w-4 h-4"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-        d="M5 13l4 4L19 7"
-      />
-    </svg>
-  ),
-  info: (
-    <svg
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      className="w-5 h-5"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-      />
-    </svg>
-  ),
-  success: (
-    <svg
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      className="w-5 h-5"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-      />
-    </svg>
-  ),
-  warning: (
-    <svg
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      className="w-5 h-5"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-      />
-    </svg>
-  ),
-  error: (
-    <svg
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      className="w-5 h-5"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-      />
-    </svg>
-  ),
-  empty: (
-    <svg
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      className="w-12 h-12"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-        d="M20 13.5v-8A2.5 2.5 0 0017.5 3h-11A2.5 2.5 0 004 5.5v8a2.5 2.5 0 002.5 2.5h11a2.5 2.5 0 002.5-2.5z"
-      />
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-        d="M4 8h16M8 21h8"
-      />
-    </svg>
-  ),
-};
+// 컴포넌트 가져오기
+import {
+  BellIcon,
+  SearchIcon,
+  CloseIcon,
+  CheckIcon,
+  EmptyIcon,
+} from "../components/notification/Icons";
+import NotificationItem from "../components/notification/NotificationItem";
 
-// 타입별 스타일
-const typeStyles = {
-  info: {
-    icon: "text-blue-600",
-    badge: "bg-blue-100 text-blue-800 border-blue-300",
-  },
-  success: {
-    icon: "text-green-600",
-    badge: "bg-green-100 text-green-800 border-green-300",
-  },
-  warning: {
-    icon: "text-yellow-600",
-    badge: "bg-yellow-100 text-yellow-800 border-yellow-300",
-  },
-  error: {
-    icon: "text-red-600",
-    badge: "bg-red-100 text-red-800 border-red-300",
-  },
-};
+// 날짜 포맷 함수 가져오기
+import { formatDate, formatFullDate } from "../utils/dateUtils";
 
-// Mock 데이터
+// Mock 데이터 - 실제로는 서버에서 가져올 데이터입니다
 const mockNotifications = [
   {
     id: "1",
@@ -223,26 +71,15 @@ const mockNotifications = [
   },
 ];
 
-// 날짜 포맷 함수
-function formatDate(date) {
-  const now = new Date();
-  const diff = now.getTime() - date.getTime();
-  const hours = Math.floor(diff / (1000 * 60 * 60));
-  const days = Math.floor(hours / 24);
-
-  if (days > 0) return `${days}일 전`;
-  if (hours > 0) return `${hours}시간 전`;
-  return "방금 전";
-}
-
-function formatFullDate(date) {
-  return date.toLocaleDateString("ko-KR", {
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
+/**
+ * 알림 페이지 메인 컴포넌트
+ *
+ * 이 페이지는 다음 기능을 제공합니다:
+ * 1. 알림 목록 표시
+ * 2. 탭으로 필터링 (전체, 읽지 않음, 읽음)
+ * 3. 검색 기능
+ * 4. 읽음 처리
+ */
 
 export default function NotificationPage() {
   const [notifications, setNotifications] = useState(mockNotifications);
@@ -310,16 +147,20 @@ export default function NotificationPage() {
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-4xl mx-auto p-6">
-        {/* Header */}
+        {/* ========== 헤더 ========== */}
         <div className="flex items-center justify-between mb-6">
+          {/* 왼쪽: 제목 영역 */}
           <div className="flex items-center gap-3">
-            <div className="text-gray-900">{Icons.bell}</div>
+            <div className="text-gray-900">
+              <BellIcon />
+            </div>
             <div>
               <h1 className="text-2xl font-medium">알림</h1>
               <p className="text-sm text-gray-500">최신 활동을 확인하세요</p>
             </div>
           </div>
 
+          {/* 오른쪽: 읽지 않은 알림 개수 및 모두 읽음 버튼 */}
           <div className="flex items-center gap-3">
             {counts.unread > 0 && (
               <>
@@ -330,7 +171,7 @@ export default function NotificationPage() {
                   onClick={handleMarkAllAsRead}
                   className="flex items-center gap-2 px-4 py-2 text-sm font-medium border border-gray-200 rounded-lg hover:bg-gray-100 transition"
                 >
-                  {Icons.check}
+                  <CheckIcon />
                   모두 읽음으로 표시
                 </button>
               </>
@@ -338,11 +179,14 @@ export default function NotificationPage() {
           </div>
         </div>
 
-        {/* Search */}
+        {/* ========== 검색창 ========== */}
         <div className="relative mb-6">
+          {/* 검색 아이콘 */}
           <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-            {Icons.search}
+            <SearchIcon />
           </div>
+
+          {/* 검색 입력창 */}
           <input
             type="text"
             value={searchQuery}
@@ -350,24 +194,26 @@ export default function NotificationPage() {
             placeholder="알림 검색..."
             className="w-full py-2 pl-10 pr-10 text-sm border border-gray-200 rounded-lg outline-none focus:border-gray-900 transition"
           />
+
+          {/* 검색어 지우기 버튼 (검색어가 있을 때만 표시) */}
           {searchQuery && (
             <button
               onClick={clearSearch}
               className="absolute right-1 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100"
             >
-              {Icons.close}
+              <CloseIcon />
             </button>
           )}
         </div>
 
-        {/* Search Results Info */}
+        {/* ========== 검색 결과 정보 ========== */}
         {searchQuery && (
           <p className="mb-4 text-sm text-gray-500">
             "{searchQuery}"에 대한 결과 {filteredNotifications.length}개
           </p>
         )}
 
-        {/* Tabs */}
+        {/* ========== 탭 메뉴 (전체, 읽지 않음, 읽음) ========== */}
         <div className="mb-6">
           <div className="inline-flex p-1 bg-gray-100 rounded-lg">
             {tabs.map((tab) => (
@@ -386,76 +232,33 @@ export default function NotificationPage() {
           </div>
         </div>
 
-        {/* Notifications List */}
+        {/* ========== 알림 목록 ========== */}
         <div className="flex flex-col gap-4">
+          {/* 알림이 있을 때 */}
           {filteredNotifications.length > 0 ? (
             filteredNotifications.map((notification) => (
-              <div
+              <NotificationItem
                 key={notification.id}
-                onClick={() => handleMarkAsRead(notification.id)}
-                className={`p-4 border rounded-lg cursor-pointer transition hover:shadow-md ${
-                  !notification.isRead
-                    ? "bg-blue-50 border-blue-200"
-                    : "bg-white border-gray-200"
-                }`}
-              >
-                <div className="flex items-start gap-3">
-                  {/* Icon */}
-                  <div
-                    className={`flex-shrink-0 mt-0.5 ${
-                      typeStyles[notification.type].icon
-                    }`}
-                  >
-                    {Icons[notification.type]}
-                  </div>
-
-                  {/* Body */}
-                  <div className="flex-1 min-w-0">
-                    {/* Header */}
-                    <div className="flex items-start justify-between gap-2 mb-1">
-                      <div className="flex items-center gap-2 flex-1">
-                        <h4
-                          className={`text-sm truncate ${
-                            !notification.isRead ? "font-medium" : ""
-                          }`}
-                        >
-                          {notification.title}
-                        </h4>
-                        <span
-                          className={`px-2 py-0.5 text-xs font-medium rounded border ${
-                            typeStyles[notification.type].badge
-                          }`}
-                        >
-                          {notification.type}
-                        </span>
-                      </div>
-                      {!notification.isRead && (
-                        <div className="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0 mt-2" />
-                      )}
-                    </div>
-
-                    {/* Message */}
-                    <p className="text-sm text-gray-500 leading-relaxed mb-3">
-                      {notification.message}
-                    </p>
-
-                    {/* Footer */}
-                    <div className="flex items-center justify-between text-xs text-gray-400">
-                      <span>{formatDate(notification.date)}</span>
-                      <span>{formatFullDate(notification.date)}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                notification={notification}
+                onRead={handleMarkAsRead}
+                formatDate={formatDate}
+                formatFullDate={formatFullDate}
+              />
             ))
           ) : (
+            /* 알림이 없을 때 */
             <div className="text-center py-12">
+              {/* 빈 상태 아이콘 */}
               <div className="text-gray-400 flex justify-center mb-4">
-                {Icons.empty}
+                <EmptyIcon />
               </div>
+
+              {/* 제목 */}
               <h3 className="text-lg font-medium mb-2">
                 {searchQuery ? "알림을 찾을 수 없음" : "알림 없음"}
               </h3>
+
+              {/* 설명 메시지 */}
               <p className="text-gray-500 mb-4">
                 {searchQuery
                   ? `"${searchQuery}"와(과) 일치하는 알림이 없습니다. 검색어를 조정해 보세요.`
@@ -465,6 +268,8 @@ export default function NotificationPage() {
                   ? "읽은 알림이 없습니다."
                   : "아직 알림이 없습니다."}
               </p>
+
+              {/* 검색어 지우기 버튼 (검색 중일 때만 표시) */}
               {searchQuery && (
                 <button
                   onClick={clearSearch}
