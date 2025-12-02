@@ -87,7 +87,7 @@ const ChevronDownIcon = () => (
 // 데이터
 const pendingApprovals = [
   {
-    id: "DOC-001",
+    id: 1,
     title: "요구사항 정의서 최종본",
     project: "전자상거래 플랫폼",
     client: "㈜신세계",
@@ -95,7 +95,7 @@ const pendingApprovals = [
     time: "오전 10:30",
   },
   {
-    id: "DOC-002",
+    id: 2,
     title: "화면설계 시안 2차",
     project: "AI 챗봇 개발",
     client: "㈜LG",
@@ -103,7 +103,7 @@ const pendingApprovals = [
     time: "오후 3:15",
   },
   {
-    id: "DOC-003",
+    id: 3,
     title: "개발 중간 보고서",
     project: "고객관리 시스템",
     client: "㈜쿠팡",
@@ -111,7 +111,7 @@ const pendingApprovals = [
     time: "오전 11:20",
   },
   {
-    id: "DOC-004",
+    id: 4,
     title: "데이터베이스 설계서",
     project: "클라우드 마이그레이션",
     client: "㈜삼성전자",
@@ -119,7 +119,7 @@ const pendingApprovals = [
     time: "오후 4:50",
   },
   {
-    id: "DOC-005",
+    id: 5,
     title: "UI/UX 최종 시안",
     project: "모바일 앱 리뉴얼",
     client: "㈜카카오",
@@ -127,7 +127,7 @@ const pendingApprovals = [
     time: "오전 9:00",
   },
   {
-    id: "DOC-006",
+    id: 6,
     title: "보안 점검 체크리스트",
     project: "보안 시스템 업그레이드",
     client: "㈜KT",
@@ -135,7 +135,7 @@ const pendingApprovals = [
     time: "오후 2:30",
   },
   {
-    id: "DOC-007",
+    id: 7,
     title: "테스트 결과 보고서",
     project: "ERP 시스템 도입",
     client: "㈜현대자동차",
@@ -143,7 +143,7 @@ const pendingApprovals = [
     time: "오전 10:00",
   },
   {
-    id: "DOC-008",
+    id: 8,
     title: "API 연동 명세서",
     project: "데이터 분석 시스템",
     client: "㈜네이버",
@@ -154,7 +154,7 @@ const pendingApprovals = [
 
 const rejectedDocuments = [
   {
-    id: "DOC-015",
+    id: 9,
     title: "디자인 시안 1차",
     project: "모바일 앱 리뉴얼",
     client: "㈜카카오",
@@ -163,7 +163,7 @@ const rejectedDocuments = [
     reason: "색상 변경 요청",
   },
   {
-    id: "DOC-016",
+    id: 10,
     title: "API 명세서",
     project: "데이터 분석 시스템",
     client: "㈜네이버",
@@ -172,7 +172,7 @@ const rejectedDocuments = [
     reason: "기능 추가 필요",
   },
   {
-    id: "DOC-017",
+    id: 11,
     title: "화면 설계서 초안",
     project: "전자상거래 플랫폼",
     client: "㈜신세계",
@@ -183,27 +183,57 @@ const rejectedDocuments = [
 ];
 
 const progressProjects = [
-  { name: "전자상거래 플랫폼 구축", client: "㈜신세계", status: "개발" },
-  { name: "AI 챗봇 개발", client: "㈜LG", status: "검수" },
-  { name: "고객관리 시스템 구축", client: "㈜쿠팡", status: "화면 설계" },
-  { name: "데이터 분석 시스템", client: "㈜네이버", status: "개발" },
-  { name: "물류 관리 시스템", client: "㈜CJ대한통운", status: "요구사항 정의" },
-  { name: "스마트팩토리 솔루션", client: "㈜LG화학", status: "개발" },
-  { name: "VR 교육 콘텐츠", client: "㈜NHN", status: "디자인" },
-  { name: "자산관리 시스템", client: "㈜KB국민은행", status: "개발" },
-  { name: "클라우드 연동 서비스", client: "㈜SKT", status: "개발" },
-  { name: "신규 ERP 모듈 개발", client: "㈜아모레", status: "화면 설계" },
-  { name: "추가 프로젝트 1", client: "㈜A고객", status: "개발" },
-  { name: "추가 프로젝트 2", client: "㈜B고객", status: "화면 설계" },
+  { id: 1, name: "전자상거래 플랫폼 구축", client: "㈜신세계", status: "개발" },
+  { id: 2, name: "AI 챗봇 개발", client: "㈜LG", status: "검수" },
+  {
+    id: 3,
+    name: "고객관리 시스템 구축",
+    client: "㈜쿠팡",
+    status: "화면 설계",
+  },
+  { id: 4, name: "데이터 분석 시스템", client: "㈜네이버", status: "개발" },
+  {
+    id: 5,
+    name: "물류 관리 시스템",
+    client: "㈜CJ대한통운",
+    status: "요구사항 정의",
+  },
+  { id: 6, name: "스마트팩토리 솔루션", client: "㈜LG화학", status: "개발" },
+  { id: 7, name: "VR 교육 콘텐츠", client: "㈜NHN", status: "디자인" },
+  { id: 8, name: "자산관리 시스템", client: "㈜KB국민은행", status: "개발" },
+  { id: 9, name: "클라우드 연동 서비스", client: "㈜SKT", status: "개발" },
+  {
+    id: 10,
+    name: "신규 ERP 모듈 개발",
+    client: "㈜아모레",
+    status: "화면 설계",
+  },
+  { id: 11, name: "추가 프로젝트 1", client: "㈜A고객", status: "개발" },
+  { id: 12, name: "추가 프로젝트 2", client: "㈜B고객", status: "화면 설계" },
 ];
 
 const maintenanceProjects = [
-  { name: "모바일 앱 리뉴얼", client: "㈜카카오", status: "유지보수" },
-  { name: "클라우드 마이그레이션", client: "㈜삼성전자", status: "유지보수" },
-  { name: "ERP 시스템 도입", client: "㈜현대자동차", status: "유지보수" },
-  { name: "보안 시스템 업그레이드", client: "㈜KT", status: "유지보수" },
-  { name: "인사관리 시스템", client: "㈜포스코", status: "유지보수" },
-  { name: "백오피스 시스템", client: "㈜롯데", status: "유지보수" },
+  { id: 13, name: "모바일 앱 리뉴얼", client: "㈜카카오", status: "유지보수" },
+  {
+    id: 14,
+    name: "클라우드 마이그레이션",
+    client: "㈜삼성전자",
+    status: "유지보수",
+  },
+  {
+    id: 15,
+    name: "ERP 시스템 도입",
+    client: "㈜현대자동차",
+    status: "유지보수",
+  },
+  {
+    id: 16,
+    name: "보안 시스템 업그레이드",
+    client: "㈜KT",
+    status: "유지보수",
+  },
+  { id: 17, name: "인사관리 시스템", client: "㈜포스코", status: "유지보수" },
+  { id: 18, name: "백오피스 시스템", client: "㈜롯데", status: "유지보수" },
 ];
 
 const allProjectsData = [
@@ -327,10 +357,74 @@ const StatCard = ({
   );
 };
 
-// ProjectItem 컴포넌트
-const ProjectItem = ({ logo, name, subtitle, status, statusClass }) => {
+// DocumentItem 컴포넌트
+const DocumentItem = ({
+  id,
+  title,
+  project,
+  client,
+  date,
+  time,
+  reason,
+  status,
+  statusClass,
+  onView,
+}) => {
   return (
-    <div className="flex items-center gap-3 p-3 border border-[#b0b0b0] rounded-[10px] transition-all duration-200 cursor-pointer hover:bg-[#f8f9fa] hover:border-[#a0a0a0]">
+    <div
+      className="flex flex-col gap-2 p-3 border border-[#b0b0b0] rounded-[10px] transition-all duration-200 hover:bg-[#f8f9fa] hover:border-[#a0a0a0]"
+      onClick={(e) => {
+        e.stopPropagation();
+        onView(id);
+      }}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex-1 min-w-0">
+          <div className="text-[13px] font-semibold text-[#1a1a1a] whitespace-nowrap overflow-hidden text-ellipsis">
+            {title}
+          </div>
+          <div className="text-[11px] text-[#999] mt-[2px]">
+            {project} · {client}
+          </div>
+        </div>
+        <span
+          className={`px-2.5 py-1 rounded-[5px] text-[11px] font-medium whitespace-nowrap ${statusClass}`}
+        >
+          {status}
+        </span>
+      </div>
+      <div className="flex items-center justify-between text-[11px] text-[#666]">
+        <span>
+          {date} · {time}
+        </span>
+        {reason && (
+          <span className="text-[#ff3b30] font-medium whitespace-nowrap">
+            사유: {reason}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// ProjectItem 컴포넌트
+const ProjectItem = ({
+  id,
+  logo,
+  name,
+  subtitle,
+  status,
+  statusClass,
+  onView,
+}) => {
+  return (
+    <div
+      className="flex items-center gap-3 p-3 border border-[#b0b0b0] rounded-[10px] transition-all duration-200 cursor-pointer hover:bg-[#f8f9fa] hover:border-[#a0a0a0]"
+      onClick={(e) => {
+        e.stopPropagation();
+        onView(id);
+      }}
+    >
       <div className="w-[38px] h-[38px] rounded-lg bg-[#f0f0f0] flex items-center justify-center text-[14px] font-semibold text-[#666] shrink-0">
         {logo}
       </div>
@@ -418,7 +512,7 @@ const ProjectCard = ({ project, onView }) => {
 
 // 메인 Dashboard 컴포넌트
 export default function Dashboard() {
-  const [activeFilter, setActiveFilter] = useState("progress");
+  const [activeFilter, setActiveFilter] = useState("pending");
   const [listTitle, setListTitle] = useState("진행중 리스트");
   const navigate = useNavigate();
 
@@ -431,42 +525,46 @@ export default function Dashboard() {
     navigate(`/project/${projectId}`);
   };
 
+  const handleViewBoard = (boardId) => {
+    navigate(`/board/${boardId}`);
+  };
+
   const getFilteredData = () => {
     switch (activeFilter) {
       case "pending":
         return {
+          type: "board",
           data: pendingApprovals,
           statusClass: "bg-[#fff3e6] text-[#ff9500]",
           statusText: "승인대기",
-          isDocument: true,
         };
       case "rejected":
         return {
+          type: "board",
           data: rejectedDocuments,
           statusClass: "bg-[#ffe6e6] text-[#ff3b30]",
           statusText: "반려",
-          isDocument: true,
         };
       case "progress":
         return {
+          type: "project",
           data: progressProjects,
           statusClass: "bg-[#e8f4ff] text-[#007bff]",
           statusText: "진행중",
-          isDocument: false,
         };
       case "maintenance":
         return {
+          type: "project",
           data: maintenanceProjects,
           statusClass: "bg-[#e6f7f1] text-[#00c48c]",
           statusText: "유지보수",
-          isDocument: false,
         };
       default:
-        return { data: [], statusClass: "", statusText: "", isDocument: false };
+        return { data: [], statusClass: "", statusText: "", type: "" };
     }
   };
 
-  const { data, statusClass, statusText, isDocument } = getFilteredData();
+  const { type, data, statusClass, statusText } = getFilteredData();
 
   return (
     <div className="min-h-screen bg-[#f5f5f5] py-5 px-4 font-[-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,'Helvetica_Neue',Arial,sans-serif]">
@@ -522,7 +620,7 @@ export default function Dashboard() {
           />
         </div>
 
-        {/* 필터된 리스트 카드 */}
+        {/* 필터된 리스트 카드 - 승인 대기, 반려, 진행중,*/}
         <div className="bg-white rounded-[12px] p-[18px] shadow-[0_1px_3px_rgba(0,0,0,0.08)] mb-5">
           <div className="flex justify-between items-center pb-[14px] border-b border-[#e0e0e0] mb-[14px]">
             <h2 className="text-[16px] font-semibold text-[#1a1a1a]">
@@ -535,24 +633,34 @@ export default function Dashboard() {
                 <p>항목이 없습니다</p>
               </div>
             ) : (
-              data.map((item, index) => (
-                <ProjectItem
-                  key={index}
-                  logo={
-                    isDocument
-                      ? item.project.substring(0, 2)
-                      : item.name.substring(0, 2)
-                  }
-                  name={isDocument ? item.title : item.name}
-                  subtitle={
-                    isDocument
-                      ? `${item.project} · ${item.client}`
-                      : item.client
-                  }
-                  status={isDocument ? statusText : item.status}
-                  statusClass={statusClass}
-                />
-              ))
+              data.map((item) =>
+                type === "board" ? (
+                  <DocumentItem
+                    key={item.id}
+                    id={item.id}
+                    title={item.title}
+                    project={item.project}
+                    client={item.client}
+                    date={item.date}
+                    time={item.time}
+                    reason={item.reason}
+                    status={statusText}
+                    statusClass={statusClass}
+                    onView={handleViewBoard}
+                  />
+                ) : (
+                  <ProjectItem
+                    key={item.id}
+                    id={item.id}
+                    logo={item.name.substring(0, 2)}
+                    name={item.name}
+                    subtitle={item.client}
+                    status={item.status}
+                    statusClass={statusClass}
+                    onView={handleViewProject}
+                  />
+                )
+              )
             )}
           </div>
         </div>
