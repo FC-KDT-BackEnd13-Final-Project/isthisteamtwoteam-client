@@ -1,10 +1,68 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import Icon from "../global/components/Icon";
 import Memo from "../components/Memo";
 import CheckList from "../components/CheckList";
 
+// Mock 데이터 import - 프로젝트 데이터 가져오기
+import { getProjectById } from "../data/mockProjects";
+import { allBoards } from "../data/mockBoards";
+
+/**
+ * ProjectPage 메인 컴포넌트
+ * 프로젝트 상세 정보와 해당 프로젝트의 게시글 목록을 표시합니다.
+ * URL 파라미터에서 projectId를 가져와 해당 프로젝트의 데이터를 조회합니다.
+ */
 export default function ProjectPage() {
+  // ============================================
+  // React Router hooks - URL에서 projectId 가져오기
+  // ============================================
+
+  // URL 파라미터에서 projectId를 추출 (예: /project/1 -> projectId = 1)
+  const { projectId } = useParams();
+
+  // ============================================
+  // State 관리
+  // ============================================
+
+  // 현재 프로젝트 데이터 (ID로 조회한 결과)
+  const [projectData, setProjectData] = useState(null);
+
+  // 현재 프로젝트의 게시글 목록
+  const [projectBoards, setProjectBoards] = useState([]);
+
+  // 현재 선택된 카테고리 (게시글 필터링용)
   const [activeCategory, setActiveCategory] = useState("all");
+
+  // ============================================
+  // 데이터 로딩 - projectId로 프로젝트 및 게시글 조회
+  // ============================================
+
+  useEffect(() => {
+    // projectId가 있으면 해당 프로젝트 데이터를 조회
+    if (projectId) {
+      const project = getProjectById(projectId);
+
+      if (project) {
+        // 프로젝트 데이터가 있으면 state에 저장
+        setProjectData(project);
+
+        // 해당 프로젝트의 게시글만 필터링
+        // allBoards에서 projectId가 일치하는 게시글만 가져옴
+        const boards = allBoards.filter(
+          (board) => board.projectId === parseInt(projectId, 10)
+        );
+        setProjectBoards(boards);
+      } else {
+        // 프로젝트를 찾을 수 없는 경우
+        console.error(`프로젝트 ID ${projectId}를 찾을 수 없습니다.`);
+      }
+    }
+  }, [projectId]); // projectId가 변경될 때마다 실행
+
+  // ============================================
+  // 카테고리 정의
+  // ============================================
 
   const categories = [
     { id: "all", label: "전체" },
@@ -18,63 +76,56 @@ export default function ProjectPage() {
     { id: "files", label: "업로드된 파일 목록" },
   ];
 
-  const posts = [
-    {
-      id: 1,
-      category: "requirements",
-      title: "제목1",
-      author: "진용1",
-      isCompleted: true,
-      ip: "123.456.789",
-    },
-    {
-      id: 2,
-      category: "design",
-      title: "제목2",
-      author: "진용2",
-      isCompleted: true,
-      ip: "123.456.789",
-    },
-    {
-      id: 3,
-      category: "requirements",
-      title: "제목3",
-      author: "진용3",
-      isCompleted: false,
-      ip: "123.456.789",
-    },
-    {
-      id: 4,
-      category: "design",
-      title: "제목4",
-      author: "진용4",
-      isCompleted: false,
-      ip: "123.456.789",
-    },
-    {
-      id: 5,
-      category: "designPub",
-      title: "제목5",
-      author: "진용5",
-      isCompleted: true,
-      ip: "123.456.789",
-    },
-  ];
+  // ============================================
+  // 게시글 필터링 - 선택된 카테고리에 따라 필터링
+  // ============================================
 
   const filteredPosts =
     activeCategory === "all"
-      ? posts
-      : posts.filter((post) => post.category === activeCategory);
+      ? projectBoards // 전체 카테고리면 모든 게시글 표시
+      : projectBoards.filter((post) => post.category === activeCategory); // 선택된 카테고리의 게시글만 표시
+
+  // ============================================
+  // 로딩 처리
+  // ============================================
+
+  // 프로젝트 데이터가 아직 로드되지 않은 경우
+  if (!projectData) {
+    return (
+      <div className="flex-1 p-4 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-[16px] text-[#999]">프로젝트를 불러오는 중...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // ============================================
+  // 렌더링
+  // ============================================
 
   return (
     <>
       <div className="flex-1 p-4 space-y-3 flex gap-6">
         {/* 프로젝트 단계 카드 */}
         <div className="flex-1 bg-white border border-slate-200 rounded-xl p-5 space-y-4">
+          {/* 프로젝트 정보 헤더 */}
+          <div className="mb-4 pb-4 border-b border-slate-200">
+            <h3 className="text-lg font-bold text-slate-900 mb-2">
+              {projectData.name}
+            </h3>
+            <div className="flex gap-4 text-sm text-slate-600">
+              <span>고객사: {projectData.client}</span>
+              <span>단계: {projectData.stage}</span>
+              {projectData.progress && <span>진행률: {projectData.progress}%</span>}
+            </div>
+          </div>
+
           <h3 className="text-sm font-semibold text-slate-900 mb-4">
-            프로젝트 단계
+            프로젝트 게시글 ({filteredPosts.length})
           </h3>
 
+          {/* 카테고리 필터 버튼 */}
           <div className="flex justify-center flex-wrap gap-2">
             {categories.map((cat) => (
               <button
@@ -92,37 +143,53 @@ export default function ProjectPage() {
             ))}
           </div>
 
-          {filteredPosts.map((post) => (
-            <div className="flex px-4 py-3 gap-4 border border-slate-200 rounded-lg items-center hover:bg-slate-50 hover:border-blue-200 transition cursor-pointer">
-              {/* 제목 */}
-              <div className="flex-1 font-medium text-slate-900">
-                {post.title}
-              </div>
-
-              {/* 작성자 */}
-              <div className="flex items-center gap-2">
-                <span className="px-2 py-1 rounded text-xs bg-blue-100 text-blue-600">
-                  {post.author}
-                </span>
-              </div>
-
-              {/* IP - 태그 스타일 */}
-              <div className="px-2 py-1 bg-slate-100 rounded text-xs text-slate-500">
-                {post.ip}
-              </div>
-
-              {/* 완료 여부 - 뱃지 스타일 */}
-              <div
-                className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                  post.isCompleted
-                    ? "bg-green-100 text-green-600"
-                    : "bg-amber-100 text-amber-600"
-                }`}
-              >
-                {post.isCompleted ? "완료" : "대기"}
-              </div>
+          {/* 게시글 목록 - 실제 데이터 표시 */}
+          {filteredPosts.length === 0 ? (
+            <div className="text-center py-10 text-slate-500">
+              <p>해당 카테고리의 게시글이 없습니다.</p>
             </div>
-          ))}
+          ) : (
+            filteredPosts.map((post) => (
+              <div
+                key={post.id}
+                className="flex px-4 py-3 gap-4 border border-slate-200 rounded-lg items-center hover:bg-slate-50 hover:border-blue-200 transition cursor-pointer"
+              >
+                {/* 제목 */}
+                <div className="flex-1 font-medium text-slate-900">
+                  {post.title}
+                </div>
+
+                {/* 작성자 */}
+                <div className="flex items-center gap-2">
+                  <span className="px-2 py-1 rounded text-xs bg-blue-100 text-blue-600">
+                    {post.author}
+                  </span>
+                </div>
+
+                {/* 날짜 */}
+                <div className="px-2 py-1 bg-slate-100 rounded text-xs text-slate-500">
+                  {post.date}
+                </div>
+
+                {/* 승인 상태 - 뱃지 스타일 */}
+                <div
+                  className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+                    post.approvalStatus === "approved"
+                      ? "bg-green-100 text-green-600"
+                      : post.approvalStatus === "rejected"
+                      ? "bg-red-100 text-red-600"
+                      : "bg-amber-100 text-amber-600"
+                  }`}
+                >
+                  {post.approvalStatus === "approved"
+                    ? "승인완료"
+                    : post.approvalStatus === "rejected"
+                    ? "반려"
+                    : "승인대기"}
+                </div>
+              </div>
+            ))
+          )}
         </div>
 
         <div className="flex flex-col h-full ">

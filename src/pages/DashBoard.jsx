@@ -1,7 +1,21 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-// 아이콘 컴포넌트들
+// Mock 데이터 import - 별도 파일로 분리하여 관리
+import {
+  pendingApprovals,
+  rejectedDocuments,
+} from "../data/mockBoards";
+import {
+  progressProjects,
+  maintenanceProjects,
+  allProjectsData,
+} from "../data/mockProjects";
+
+// ============================================
+// 아이콘 컴포넌트 섹션
+// ============================================
+
 const ClockIcon = () => (
   <svg
     width="24"
@@ -84,226 +98,23 @@ const ChevronDownIcon = () => (
   </svg>
 );
 
-// 데이터
-const pendingApprovals = [
-  {
-    id: 1,
-    title: "요구사항 정의서 최종본",
-    project: "전자상거래 플랫폼",
-    client: "㈜신세계",
-    date: "2024-11-28",
-    time: "오전 10:30",
-  },
-  {
-    id: 2,
-    title: "화면설계 시안 2차",
-    project: "AI 챗봇 개발",
-    client: "㈜LG",
-    date: "2024-11-27",
-    time: "오후 3:15",
-  },
-  {
-    id: 3,
-    title: "개발 중간 보고서",
-    project: "고객관리 시스템",
-    client: "㈜쿠팡",
-    date: "2024-11-27",
-    time: "오전 11:20",
-  },
-  {
-    id: 4,
-    title: "데이터베이스 설계서",
-    project: "클라우드 마이그레이션",
-    client: "㈜삼성전자",
-    date: "2024-11-26",
-    time: "오후 4:50",
-  },
-  {
-    id: 5,
-    title: "UI/UX 최종 시안",
-    project: "모바일 앱 리뉴얼",
-    client: "㈜카카오",
-    date: "2024-11-26",
-    time: "오전 9:00",
-  },
-  {
-    id: 6,
-    title: "보안 점검 체크리스트",
-    project: "보안 시스템 업그레이드",
-    client: "㈜KT",
-    date: "2024-11-25",
-    time: "오후 2:30",
-  },
-  {
-    id: 7,
-    title: "테스트 결과 보고서",
-    project: "ERP 시스템 도입",
-    client: "㈜현대자동차",
-    date: "2024-11-25",
-    time: "오전 10:00",
-  },
-  {
-    id: 8,
-    title: "API 연동 명세서",
-    project: "데이터 분석 시스템",
-    client: "㈜네이버",
-    date: "2024-11-24",
-    time: "오후 5:20",
-  },
-];
+// ============================================
+// 컴포넌트 정의 섹션
+// ============================================
 
-const rejectedDocuments = [
-  {
-    id: 9,
-    title: "디자인 시안 1차",
-    project: "모바일 앱 리뉴얼",
-    client: "㈜카카오",
-    date: "2024-11-20",
-    time: "오후 2:00",
-    reason: "색상 변경 요청",
-  },
-  {
-    id: 10,
-    title: "API 명세서",
-    project: "데이터 분석 시스템",
-    client: "㈜네이버",
-    date: "2024-11-19",
-    time: "오전 11:30",
-    reason: "기능 추가 필요",
-  },
-  {
-    id: 11,
-    title: "화면 설계서 초안",
-    project: "전자상거래 플랫폼",
-    client: "㈜신세계",
-    date: "2024-11-18",
-    time: "오후 4:15",
-    reason: "레이아웃 수정 필요",
-  },
-];
-
-const progressProjects = [
-  { id: 1, name: "전자상거래 플랫폼 구축", client: "㈜신세계", status: "개발" },
-  { id: 2, name: "AI 챗봇 개발", client: "㈜LG", status: "검수" },
-  {
-    id: 3,
-    name: "고객관리 시스템 구축",
-    client: "㈜쿠팡",
-    status: "화면 설계",
-  },
-  { id: 4, name: "데이터 분석 시스템", client: "㈜네이버", status: "개발" },
-  {
-    id: 5,
-    name: "물류 관리 시스템",
-    client: "㈜CJ대한통운",
-    status: "요구사항 정의",
-  },
-  { id: 6, name: "스마트팩토리 솔루션", client: "㈜LG화학", status: "개발" },
-  { id: 7, name: "VR 교육 콘텐츠", client: "㈜NHN", status: "디자인" },
-  { id: 8, name: "자산관리 시스템", client: "㈜KB국민은행", status: "개발" },
-  { id: 9, name: "클라우드 연동 서비스", client: "㈜SKT", status: "개발" },
-  {
-    id: 10,
-    name: "신규 ERP 모듈 개발",
-    client: "㈜아모레",
-    status: "화면 설계",
-  },
-  { id: 11, name: "추가 프로젝트 1", client: "㈜A고객", status: "개발" },
-  { id: 12, name: "추가 프로젝트 2", client: "㈜B고객", status: "화면 설계" },
-];
-
-const maintenanceProjects = [
-  { id: 13, name: "모바일 앱 리뉴얼", client: "㈜카카오", status: "유지보수" },
-  {
-    id: 14,
-    name: "클라우드 마이그레이션",
-    client: "㈜삼성전자",
-    status: "유지보수",
-  },
-  {
-    id: 15,
-    name: "ERP 시스템 도입",
-    client: "㈜현대자동차",
-    status: "유지보수",
-  },
-  {
-    id: 16,
-    name: "보안 시스템 업그레이드",
-    client: "㈜KT",
-    status: "유지보수",
-  },
-  { id: 17, name: "인사관리 시스템", client: "㈜포스코", status: "유지보수" },
-  { id: 18, name: "백오피스 시스템", client: "㈜롯데", status: "유지보수" },
-];
-
-const allProjectsData = [
-  {
-    id: 1,
-    name: "전자상거래 플랫폼 구축",
-    client: "㈜신세계",
-    startDate: "2024/01/15",
-    updateDate: "2024/11/20",
-    stage: "개발",
-  },
-  {
-    id: 2,
-    name: "모바일 앱 리뉴얼",
-    client: "㈜카카오",
-    startDate: "2024/02/01",
-    updateDate: "2024/11/18",
-    stage: "유지보수",
-  },
-  {
-    id: 3,
-    name: "AI 챗봇 개발",
-    client: "㈜LG",
-    startDate: "2024/03/10",
-    updateDate: "2024/11/22",
-    stage: "검수",
-  },
-  {
-    id: 4,
-    name: "클라우드 마이그레이션",
-    client: "㈜삼성전자",
-    startDate: "2024/01/05",
-    updateDate: "2024/11/15",
-    stage: "유지보수",
-  },
-  {
-    id: 5,
-    name: "고객관리 시스템 구축",
-    client: "㈜쿠팡",
-    startDate: "2024/04/01",
-    updateDate: "2024/11/25",
-    stage: "화면 설계",
-  },
-  {
-    id: 6,
-    name: "데이터 분석 시스템",
-    client: "㈜네이버",
-    startDate: "2024/05/10",
-    updateDate: "2024/11/20",
-    stage: "개발",
-  },
-  {
-    id: 7,
-    name: "ERP 시스템 도입",
-    client: "㈜현대자동차",
-    startDate: "2024/02/20",
-    updateDate: "2024/11/10",
-    stage: "유지보수",
-  },
-  {
-    id: 8,
-    name: "보안 시스템 업그레이드",
-    client: "㈜KT",
-    startDate: "2024/06/15",
-    updateDate: "2024/11/08",
-    stage: "요구사항 정의",
-  },
-];
-
-// StatCard 컴포넌트
+/**
+ * StatCard 컴포넌트
+ * 대시보드 상단에 통계 정보를 카드 형태로 표시합니다.
+ *
+ * @param {object} icon - 표시할 아이콘 컴포넌트
+ * @param {string} iconColorClass - 아이콘 배경 색상 클래스
+ * @param {string} label - 카드 라벨 (예: "승인 대기")
+ * @param {string} value - 통계 수치
+ * @param {string} change - 변화량 텍스트
+ * @param {string} changeType - 변화 타입 ("up" 또는 "down")
+ * @param {boolean} isActive - 현재 선택된 카드인지 여부
+ * @param {function} onClick - 카드 클릭 핸들러
+ */
 const StatCard = ({
   icon,
   iconColorClass,
@@ -318,7 +129,7 @@ const StatCard = ({
     <div
       onClick={onClick}
       className={`
-        bg-white rounded-[12px] p-4 shadow-[0_1px_3px_rgba(0,0,0,0.08)] 
+        bg-white rounded-[12px] p-4 shadow-[0_1px_3px_rgba(0,0,0,0.08)]
         transition-all duration-200 cursor-pointer border
         ${
           isActive
@@ -327,6 +138,7 @@ const StatCard = ({
         }
       `}
     >
+      {/* 아이콘 영역 */}
       <div className="flex justify-between items-start mb-3">
         <div
           className={`w-9 h-9 rounded-[10px] flex items-center justify-center ${iconColorClass}`}
@@ -334,6 +146,8 @@ const StatCard = ({
           {icon}
         </div>
       </div>
+
+      {/* 통계 정보 영역 */}
       <div>
         <div className="text-[12px] text-[#999] mb-1.5">{label}</div>
         <div className="text-[24px] font-bold text-[#1a1a1a] leading-none mb-2">
@@ -357,7 +171,22 @@ const StatCard = ({
   );
 };
 
-// DocumentItem 컴포넌트
+/**
+ * DocumentItem 컴포넌트
+ * 게시글(문서) 항목을 표시합니다.
+ * 승인 대기 및 반려 문서 목록에서 사용됩니다.
+ *
+ * @param {number} id - 게시글 ID
+ * @param {string} title - 게시글 제목
+ * @param {string} project - 프로젝트 이름
+ * @param {string} client - 고객사 이름
+ * @param {string} date - 작성 날짜
+ * @param {string} time - 작성 시간
+ * @param {string} reason - 반려 사유 (선택사항)
+ * @param {string} status - 상태 텍스트
+ * @param {string} statusClass - 상태 배지 스타일 클래스
+ * @param {function} onView - 상세보기 클릭 핸들러
+ */
 const DocumentItem = ({
   id,
   title,
@@ -372,13 +201,14 @@ const DocumentItem = ({
 }) => {
   return (
     <div
-      className="flex flex-col gap-2 p-3 border border-[#b0b0b0] rounded-[10px] transition-all duration-200 hover:bg-[#f8f9fa] hover:border-[#a0a0a0]"
+      className="flex flex-col gap-2 p-3 border border-[#b0b0b0] rounded-[10px] transition-all duration-200 hover:bg-[#f8f9fa] hover:border-[#a0a0a0] cursor-pointer"
       onClick={(e) => {
-        e.stopPropagation();
-        onView(id);
+        e.stopPropagation(); // 이벤트 버블링 방지
+        onView(id); // 게시글 ID를 전달하여 상세 페이지로 이동
       }}
     >
       <div className="flex items-start justify-between gap-3">
+        {/* 제목 및 프로젝트 정보 */}
         <div className="flex-1 min-w-0">
           <div className="text-[13px] font-semibold text-[#1a1a1a] whitespace-nowrap overflow-hidden text-ellipsis">
             {title}
@@ -387,12 +217,16 @@ const DocumentItem = ({
             {project} · {client}
           </div>
         </div>
+
+        {/* 상태 배지 */}
         <span
           className={`px-2.5 py-1 rounded-[5px] text-[11px] font-medium whitespace-nowrap ${statusClass}`}
         >
           {status}
         </span>
       </div>
+
+      {/* 날짜 및 반려 사유 */}
       <div className="flex items-center justify-between text-[11px] text-[#666]">
         <span>
           {date} · {time}
@@ -407,7 +241,19 @@ const DocumentItem = ({
   );
 };
 
-// ProjectItem 컴포넌트
+/**
+ * ProjectItem 컴포넌트
+ * 프로젝트 항목을 간단한 리스트 형태로 표시합니다.
+ * 진행중/유지보수 프로젝트 목록에서 사용됩니다.
+ *
+ * @param {number} id - 프로젝트 ID
+ * @param {string} logo - 프로젝트 로고 (이니셜)
+ * @param {string} name - 프로젝트 이름
+ * @param {string} subtitle - 부제목 (일반적으로 고객사)
+ * @param {string} status - 프로젝트 상태
+ * @param {string} statusClass - 상태 배지 스타일 클래스
+ * @param {function} onView - 상세보기 클릭 핸들러
+ */
 const ProjectItem = ({
   id,
   logo,
@@ -421,19 +267,24 @@ const ProjectItem = ({
     <div
       className="flex items-center gap-3 p-3 border border-[#b0b0b0] rounded-[10px] transition-all duration-200 cursor-pointer hover:bg-[#f8f9fa] hover:border-[#a0a0a0]"
       onClick={(e) => {
-        e.stopPropagation();
-        onView(id);
+        e.stopPropagation(); // 이벤트 버블링 방지
+        onView(id); // 프로젝트 ID를 전달하여 상세 페이지로 이동
       }}
     >
+      {/* 프로젝트 로고 (이니셜) */}
       <div className="w-[38px] h-[38px] rounded-lg bg-[#f0f0f0] flex items-center justify-center text-[14px] font-semibold text-[#666] shrink-0">
         {logo}
       </div>
+
+      {/* 프로젝트 정보 */}
       <div className="flex-1 min-w-0">
         <div className="text-[13px] font-semibold text-[#1a1a1a] mb-[3px] whitespace-nowrap overflow-hidden text-ellipsis">
           {name}
         </div>
         <div className="text-[11px] text-[#999]">{subtitle}</div>
       </div>
+
+      {/* 상태 배지 */}
       <span
         className={`px-2.5 py-1 rounded-[5px] text-[11px] font-medium whitespace-nowrap ${statusClass}`}
       >
@@ -443,16 +294,24 @@ const ProjectItem = ({
   );
 };
 
-// ProjectCard 컴포넌트
+/**
+ * ProjectCard 컴포넌트
+ * 프로젝트를 카드 형태로 상세하게 표시합니다.
+ * "모든 프로젝트 리스트" 섹션에서 사용됩니다.
+ *
+ * @param {object} project - 프로젝트 데이터 객체
+ * @param {function} onView - 상세보기 클릭 핸들러
+ */
 const ProjectCard = ({ project, onView }) => {
   return (
     <div
       onClick={() => onView(project.id)}
       className="group bg-white border border-[#e0e0e0] rounded-[12px] p-[18px] transition-all duration-200 cursor-pointer relative hover:border-[#007bff] hover:shadow-[0_2px_8px_rgba(0,123,255,0.1)]"
     >
+      {/* 설정 버튼 (호버 시 표시) */}
       <button
         onClick={(e) => {
-          e.stopPropagation();
+          e.stopPropagation(); // 카드 클릭 이벤트와 분리
           onView(project.id);
         }}
         className="absolute top-[18px] right-[18px] px-3 py-1.5 bg-[#007bff] text-white border-none rounded-[6px] text-[12px] font-semibold cursor-pointer opacity-0 transition-opacity duration-200 group-hover:opacity-100 hover:bg-[#0056b3]"
@@ -460,21 +319,32 @@ const ProjectCard = ({ project, onView }) => {
         설정
       </button>
 
+      {/* 프로젝트 헤더 정보 */}
       <div className="flex items-start gap-[14px] mb-4 pb-[14px] border-b border-[#f0f0f0]">
+        {/* 프로젝트 로고 (이니셜) */}
         <div className="w-12 h-12 rounded-[10px] bg-[#f8f9fa] flex items-center justify-center text-[16px] font-bold text-[#007bff] shrink-0 border-2 border-[#e8f4ff]">
           {project.name.substring(0, 2)}
         </div>
+
         <div className="flex-1 min-w-0">
+          {/* 프로젝트 ID 배지 */}
           <span className="inline-block text-[11px] text-[#007bff] bg-[#e8f4ff] px-2 py-[3px] rounded font-semibold mb-1.5">
             PRJ-00{project.id}
           </span>
+
+          {/* 프로젝트 이름 */}
           <div className="text-[15px] font-semibold text-[#1a1a1a] mb-1 whitespace-nowrap overflow-hidden text-ellipsis">
             {project.name}
           </div>
-          <div className="text-[11px] text-[#999]">No. {project.number}</div>
+
+          {/* 프로젝트 번호 (있는 경우) */}
+          {project.number && (
+            <div className="text-[11px] text-[#999]">No. {project.number}</div>
+          )}
         </div>
       </div>
 
+      {/* 고객사 정보 */}
       <div className="grid gap-2.5 mb-[14px]">
         <div className="flex items-center gap-2 text-[13px]">
           <div className="w-1.5 h-1.5 bg-[#999] rounded-full shrink-0"></div>
@@ -485,7 +355,9 @@ const ProjectCard = ({ project, onView }) => {
         </div>
       </div>
 
+      {/* 프로젝트 일정 및 단계 정보 */}
       <div className="flex justify-between items-center pt-[14px] border-t border-[#f0f0f0]">
+        {/* 날짜 정보 */}
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-1.5 text-[11px] text-[#666]">
             <div className="w-1 h-1 bg-[#999] rounded-full"></div>
@@ -502,6 +374,8 @@ const ProjectCard = ({ project, onView }) => {
             </strong>
           </div>
         </div>
+
+        {/* 진행 단계 배지 */}
         <div className="px-3 py-1.5 rounded-[6px] text-[12px] font-semibold bg-white text-[#007bff] border-[1.5px] border-[#007bff]">
           {project.stage}
         </div>
@@ -510,28 +384,80 @@ const ProjectCard = ({ project, onView }) => {
   );
 };
 
+// ============================================
 // 메인 Dashboard 컴포넌트
+// ============================================
+
+/**
+ * Dashboard 메인 컴포넌트
+ * 프로젝트 및 게시글 통계, 목록을 표시합니다.
+ */
 export default function Dashboard() {
+  // ============================================
+  // State 관리
+  // ============================================
+
+  // 현재 선택된 필터 타입 (pending, rejected, progress, maintenance)
   const [activeFilter, setActiveFilter] = useState("pending");
+
+  // 필터된 리스트의 제목
   const [listTitle, setListTitle] = useState("진행중 리스트");
+
+  // React Router의 navigate 함수 (페이지 이동용)
   const navigate = useNavigate();
 
+  // ============================================
+  // 이벤트 핸들러 함수들
+  // ============================================
+
+  /**
+   * StatCard 클릭 핸들러
+   * 필터 타입을 변경하고 리스트 제목을 업데이트합니다.
+   *
+   * @param {string} filterType - 필터 타입 (pending, rejected, progress, maintenance)
+   * @param {string} title - 표시할 리스트 제목
+   */
   const handleStatCardClick = (filterType, title) => {
     setActiveFilter(filterType);
     setListTitle(`${title} 리스트`);
   };
 
+  /**
+   * 프로젝트 상세보기 핸들러
+   * 프로젝트 ID를 받아 해당 프로젝트의 상세 페이지로 이동합니다.
+   *
+   * @param {number} projectId - 프로젝트 ID
+   */
   const handleViewProject = (projectId) => {
+    // /project/:projectId 경로로 이동
     navigate(`/project/${projectId}`);
   };
 
+  /**
+   * 게시글 상세보기 핸들러
+   * 게시글 ID를 받아 해당 게시글의 상세 페이지로 이동합니다.
+   *
+   * @param {number} boardId - 게시글 ID
+   */
   const handleViewBoard = (boardId) => {
-    navigate(`/board/${boardId}`);
+    // /project/board 경로로 이동하면서 state로 boardId 전달
+    // 또는 쿼리 파라미터로 전달: /project/board?id=${boardId}
+    navigate(`/project/board`, { state: { boardId } });
   };
 
+  /**
+   * 현재 선택된 필터에 따라 표시할 데이터를 반환합니다.
+   *
+   * @returns {object} 필터링된 데이터와 스타일 정보
+   *   - type: 데이터 타입 ("board" 또는 "project")
+   *   - data: 표시할 데이터 배열
+   *   - statusClass: 상태 배지의 Tailwind CSS 클래스
+   *   - statusText: 상태 텍스트
+   */
   const getFilteredData = () => {
     switch (activeFilter) {
       case "pending":
+        // 승인 대기 중인 게시글 목록
         return {
           type: "board",
           data: pendingApprovals,
@@ -539,6 +465,7 @@ export default function Dashboard() {
           statusText: "승인대기",
         };
       case "rejected":
+        // 반려된 게시글 목록
         return {
           type: "board",
           data: rejectedDocuments,
@@ -546,6 +473,7 @@ export default function Dashboard() {
           statusText: "반려",
         };
       case "progress":
+        // 진행 중인 프로젝트 목록
         return {
           type: "project",
           data: progressProjects,
@@ -553,6 +481,7 @@ export default function Dashboard() {
           statusText: "진행중",
         };
       case "maintenance":
+        // 유지보수 단계의 프로젝트 목록
         return {
           type: "project",
           data: maintenanceProjects,
@@ -564,20 +493,26 @@ export default function Dashboard() {
     }
   };
 
+  // 현재 필터에 맞는 데이터 가져오기
   const { type, data, statusClass, statusText } = getFilteredData();
+
+  // ============================================
+  // 렌더링
+  // ============================================
 
   return (
     <div className="min-h-screen bg-[#f5f5f5] py-5 px-4 font-[-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,'Helvetica_Neue',Arial,sans-serif]">
       <div className="max-w-[1400px] mx-auto">
-        {/* 헤더 */}
+        {/* ========== 헤더 ========== */}
         <div>
           <h1 className="text-[22px] font-semibold text-[#1a1a1a] mb-1.5">
             대시보드
           </h1>
         </div>
 
-        {/* 통계 카드 그리드 */}
+        {/* ========== 통계 카드 그리드 ========== */}
         <div className="grid grid-cols-4 gap-4 mb-5 max-[1200px]:grid-cols-2 max-[768px]:grid-cols-1">
+          {/* 승인 대기 카드 */}
           <StatCard
             icon={<ClockIcon />}
             iconColorClass="bg-[#fff3e6] text-[#ff9500]"
@@ -588,6 +523,8 @@ export default function Dashboard() {
             isActive={activeFilter === "pending"}
             onClick={() => handleStatCardClick("pending", "승인 대기")}
           />
+
+          {/* 반려 카드 */}
           <StatCard
             icon={<XCircleIcon />}
             iconColorClass="bg-[#ffe6e6] text-[#ff3b30]"
@@ -598,6 +535,8 @@ export default function Dashboard() {
             isActive={activeFilter === "rejected"}
             onClick={() => handleStatCardClick("rejected", "반려")}
           />
+
+          {/* 진행중 카드 */}
           <StatCard
             icon={<CheckSquareIcon />}
             iconColorClass="bg-[#e8f4ff] text-[#007bff]"
@@ -608,6 +547,8 @@ export default function Dashboard() {
             isActive={activeFilter === "progress"}
             onClick={() => handleStatCardClick("progress", "진행중")}
           />
+
+          {/* 유지보수 단계 카드 */}
           <StatCard
             icon={<WrenchIcon />}
             iconColorClass="bg-[#e6f7f1] text-[#00c48c]"
@@ -620,21 +561,27 @@ export default function Dashboard() {
           />
         </div>
 
-        {/* 필터된 리스트 카드 - 승인 대기, 반려, 진행중,*/}
+        {/* ========== 필터된 리스트 카드 (승인 대기, 반려, 진행중, 유지보수) ========== */}
         <div className="bg-white rounded-[12px] p-[18px] shadow-[0_1px_3px_rgba(0,0,0,0.08)] mb-5">
+          {/* 리스트 헤더 */}
           <div className="flex justify-between items-center pb-[14px] border-b border-[#e0e0e0] mb-[14px]">
             <h2 className="text-[16px] font-semibold text-[#1a1a1a]">
               {listTitle}
             </h2>
           </div>
+
+          {/* 리스트 그리드 */}
           <div className="grid grid-cols-3 gap-4 max-h-[220px] overflow-y-auto pr-2.5 max-[1200px]:grid-cols-1">
             {data.length === 0 ? (
+              // 데이터가 없을 때
               <div className="col-span-3 text-center py-10 text-[#999]">
                 <p>항목이 없습니다</p>
               </div>
             ) : (
+              // 데이터가 있을 때 - 타입에 따라 다른 컴포넌트 렌더링
               data.map((item) =>
                 type === "board" ? (
+                  // 게시글 타입일 때 DocumentItem 렌더링
                   <DocumentItem
                     key={item.id}
                     id={item.id}
@@ -649,6 +596,7 @@ export default function Dashboard() {
                     onView={handleViewBoard}
                   />
                 ) : (
+                  // 프로젝트 타입일 때 ProjectItem 렌더링
                   <ProjectItem
                     key={item.id}
                     id={item.id}
@@ -665,12 +613,15 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* 모든 프로젝트 리스트 */}
+        {/* ========== 모든 프로젝트 리스트 ========== */}
         <div className="bg-white rounded-[12px] p-[18px] shadow-[0_1px_3px_rgba(0,0,0,0.08)]">
+          {/* 리스트 헤더 */}
           <div className="flex justify-between items-center pb-[14px] border-b border-[#e0e0e0] mb-[14px]">
             <h2 className="text-[16px] font-semibold text-[#1a1a1a]">
               모든 프로젝트 리스트
             </h2>
+
+            {/* 액션 버튼들 */}
             <div className="flex gap-2.5">
               <button
                 onClick={() => alert("전체 프로젝트 페이지로 이동합니다.")}
@@ -688,6 +639,8 @@ export default function Dashboard() {
               </button>
             </div>
           </div>
+
+          {/* 프로젝트 카드 그리드 */}
           <div className="grid grid-cols-[repeat(auto-fill,minmax(380px,1fr))] gap-4 max-h-[600px] overflow-y-auto pr-2 max-[1200px]:grid-cols-[repeat(auto-fill,minmax(320px,1fr))] max-[768px]:grid-cols-1">
             {allProjectsData.map((project) => (
               <ProjectCard

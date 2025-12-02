@@ -1,4 +1,8 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+
+// Mock 데이터 import - 게시글 데이터 가져오기
+import { getBoardById } from "../data/mockBoards";
 
 // 아이콘 컴포넌트들
 const HistoryIcon = () => (
@@ -13,7 +17,11 @@ const FileIcon = () => (
   </svg>
 );
 
-// 초기 데이터
+// ============================================
+// 초기 Mock 데이터 (댓글용)
+// 실제로는 서버에서 가져와야 하지만, 지금은 Mock 데이터 사용
+// ============================================
+
 const initialComments = [
   {
     id: 1,
@@ -38,11 +46,6 @@ const initialComments = [
     content: "브랜드 컬러 적용 잘 되었네요. 승인합니다!",
     isReply: false,
   },
-];
-
-const filesData = [
-  { name: "메인페이지_디자인시안_v2.0.fig", size: "8.4MB" },
-  { name: "디자인가이드.pdf", size: "2.1MB" },
 ];
 
 // CommentItem 컴포넌트
@@ -144,14 +147,67 @@ const FileItem = ({ file, onDownload }) => (
   </div>
 );
 
-// 메인 컴포넌트
+/**
+ * BoardPage 메인 컴포넌트
+ * 게시글 상세 정보를 표시합니다.
+ * 대시보드에서 전달받은 boardId를 사용하여 해당 게시글의 데이터를 조회합니다.
+ */
 export default function BoardPage() {
+  // ============================================
+  // React Router hooks - 대시보드에서 전달받은 데이터 읽기
+  // ============================================
+
+  // location.state에서 boardId를 가져옴 (대시보드에서 navigate로 전달)
+  const location = useLocation();
+  const { boardId } = location.state || {};
+
+  // ============================================
+  // State 관리
+  // ============================================
+
+  // 현재 게시글 데이터 (ID로 조회한 결과)
+  const [boardData, setBoardData] = useState(null);
+
+  // 댓글 관련 state
   const [comments, setComments] = useState(initialComments);
   const [commentInput, setCommentInput] = useState("");
   const [replyingTo, setReplyingTo] = useState(null);
   const [replyText, setReplyText] = useState("");
-  const [approvalStatus, setApprovalStatus] = useState("pending"); // 'pending', 'approved', 'rejected'
-  const [rejectReason, setRejectReason] = useState("");
+
+  // ============================================
+  // 데이터 로딩 - boardId로 게시글 조회
+  // ============================================
+
+  useEffect(() => {
+    // boardId가 있으면 해당 게시글 데이터를 조회
+    if (boardId) {
+      const board = getBoardById(boardId);
+
+      if (board) {
+        // 게시글 데이터가 있으면 state에 저장
+        setBoardData(board);
+      } else {
+        // 게시글을 찾을 수 없는 경우
+        console.error(`게시글 ID ${boardId}를 찾을 수 없습니다.`);
+        alert("게시글을 찾을 수 없습니다.");
+      }
+    }
+  }, [boardId]); // boardId가 변경될 때마다 실행
+
+  // ============================================
+  // 로딩 및 에러 처리
+  // ============================================
+
+  // 게시글 데이터가 아직 로드되지 않은 경우
+  if (!boardData) {
+    return (
+      <div className="min-h-screen bg-white p-5 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-[16px] text-[#999]">게시글을 불러오는 중...</p>
+        </div>
+      </div>
+    );
+  }
 
   const formatDate = () => {
     const now = new Date();
@@ -254,20 +310,31 @@ export default function BoardPage() {
     }
   };
 
+  // ============================================
+  // 렌더링
+  // ============================================
+
   return (
     <div className="min-h-screen bg-white p-5 font-[-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,'Helvetica_Neue',Arial,sans-serif]">
       <div className="max-w-[900px] mx-auto bg-white rounded-[12px] p-8">
+        {/* 게시글 제목 - Mock 데이터에서 가져온 실제 제목 표시 */}
         <h1 className="text-[28px] font-semibold text-[#1a1a1a] mb-4 leading-[1.4]">
-          [디자인] 메인 페이지 시안 검토 요청
+          [{boardData.category === "requirements" ? "요구사항 정의" :
+            boardData.category === "design" ? "화면설계" :
+            boardData.category === "designPub" ? "디자인/퍼블리싱" :
+            boardData.category === "feedback" ? "피드백" :
+            boardData.category === "development" ? "개발" :
+            boardData.category === "inspection" ? "검수" :
+            boardData.category === "maintenance" ? "유지보수" : "기타"}] {boardData.title}
         </h1>
 
-        {/* Header */}
+        {/* Header - 작성자, 작성일, 조회수 표시 */}
         <div className="mb-8 pb-6 border-b-2 border-[#f0f0f0] flex justify-between items-center">
           <div className="flex-1">
             <div className="flex gap-4 text-[13px] text-[#999] items-center">
-              <span>작성자: 김동균</span>
-              <span>작성일: 2024.11.28 14:30</span>
-              <span>조회수: 42</span>
+              <span>작성자: {boardData.author}</span>
+              <span>작성일: {boardData.createdAt}</span>
+              <span>조회수: {boardData.views}</span>
               <div
                 onClick={handleViewHistory}
                 className="flex items-center gap-1 text-[#666] cursor-pointer transition-colors duration-200 hover:text-[#007bff]"
@@ -288,90 +355,89 @@ export default function BoardPage() {
           </div>
         </div>
 
-        {/* 진행단계 */}
+        {/* 진행단계 - 실제 데이터 표시 */}
         <div className="mb-6">
           <label className="block text-[14px] font-semibold text-[#333] mb-2">
             진행단계
           </label>
           <span className="inline-block py-2 px-4 bg-[#f0f6ff] border border-[#c9e0ff] rounded-lg text-[#5a9aeb] text-[14px] font-medium">
-            디자인
+            {boardData.category === "requirements" ? "요구사항 정의" :
+             boardData.category === "design" ? "화면설계" :
+             boardData.category === "designPub" ? "디자인/퍼블리싱" :
+             boardData.category === "feedback" ? "피드백" :
+             boardData.category === "development" ? "개발" :
+             boardData.category === "inspection" ? "검수" :
+             boardData.category === "maintenance" ? "유지보수" : "기타"}
           </span>
         </div>
 
-        {/* 파일 첨부 */}
-        <div className="mb-6">
-          <label className="block text-[14px] font-semibold text-[#333] mb-2">
-            파일 첨부
-          </label>
-          <div className="flex flex-col gap-2">
-            {filesData.map((file, index) => (
-              <FileItem
-                key={index}
-                file={file}
-                onDownload={handleDownloadFile}
-              />
-            ))}
+        {/* 파일 첨부 - 실제 데이터에서 파일 목록 표시 */}
+        {boardData.files && boardData.files.length > 0 && (
+          <div className="mb-6">
+            <label className="block text-[14px] font-semibold text-[#333] mb-2">
+              파일 첨부
+            </label>
+            <div className="flex flex-col gap-2">
+              {boardData.files.map((file, index) => (
+                <FileItem
+                  key={index}
+                  file={file}
+                  onDownload={handleDownloadFile}
+                />
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* 링크 첨부 */}
-        <div className="mb-6">
-          <label className="block text-[14px] font-semibold text-[#333] mb-2">
-            링크 첨부
-          </label>
-          <div className="w-full py-3 px-4 border border-[#e0e0e0] rounded-lg text-[14px] bg-[#fafafa] break-all">
-            <a
-              href="https://www.figma.com/design/example"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[#5a9aeb] no-underline hover:underline"
-            >
-              https://www.figma.com/design/example
-            </a>
+        {/* 링크 첨부 - 실제 데이터에서 링크 표시 */}
+        {boardData.link && (
+          <div className="mb-6">
+            <label className="block text-[14px] font-semibold text-[#333] mb-2">
+              링크 첨부
+            </label>
+            <div className="w-full py-3 px-4 border border-[#e0e0e0] rounded-lg text-[14px] bg-[#fafafa] break-all">
+              <a
+                href={boardData.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#5a9aeb] no-underline hover:underline"
+              >
+                {boardData.link}
+              </a>
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* 글 */}
+        {/* 글 - 실제 데이터에서 내용 표시 */}
         <div className="mb-6">
           <label className="block text-[14px] font-semibold text-[#333] mb-2">
             글
           </label>
           <div className="w-full p-4 border border-[#e0e0e0] rounded-lg min-h-[300px] text-[14px] leading-[1.6] bg-white text-[#333] whitespace-pre-wrap">
-            {`안녕하세요.
-
-메인 페이지 디자인 시안 2차 버전을 첨부합니다.
-
-1차 피드백을 반영하여 다음과 같이 수정했습니다:
-- 메인 배너 영역 레이아웃 개선
-- 모바일 반응형 대응 추가
-- 브랜드 컬러 적용
-
-검토 후 피드백 부탁드립니다.
-
-감사합니다.`}
+            {boardData.content}
           </div>
         </div>
 
-        {/* 승인 섹션 */}
+        {/* 승인 섹션 - 실제 데이터의 승인 상태 표시 */}
         <div className="my-8 p-5 text-center">
-          {approvalStatus === "pending" && (
+          {boardData.approvalStatus === "pending" && (
             <span className="inline-block py-2 px-5 rounded-[20px] text-[14px] font-medium bg-[#d4f4dd] text-[#2d7a4a]">
               승인 요청됨
             </span>
           )}
-          {approvalStatus === "approved" && (
+          {boardData.approvalStatus === "approved" && (
             <span className="inline-block py-2 px-5 rounded-[20px] text-[14px] font-medium bg-[#d4edda] text-[#28a745]">
               승인 완료
             </span>
           )}
-          {approvalStatus === "rejected" && (
+          {boardData.approvalStatus === "rejected" && (
             <div>
               <span className="inline-block py-2 px-5 rounded-[20px] text-[14px] font-medium bg-[#ffe0e3] text-[#dc3545]">
                 반려됨
               </span>
-              {rejectReason && (
+              {boardData.rejectReason && (
                 <div className="mt-3 text-[13px] text-[#666]">
-                  <strong>반려 사유:</strong> {rejectReason}
+                  <strong>반려 사유:</strong> {boardData.rejectReason}
                 </div>
               )}
             </div>
