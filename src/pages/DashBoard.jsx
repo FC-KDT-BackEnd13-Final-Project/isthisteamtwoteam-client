@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 // 아이콘 컴포넌트들
 const ClockIcon = () => (
@@ -207,8 +208,7 @@ const maintenanceProjects = [
 
 const allProjectsData = [
   {
-    number: 1,
-    id: "PRJ-001",
+    id: 1,
     name: "전자상거래 플랫폼 구축",
     client: "㈜신세계",
     startDate: "2024/01/15",
@@ -216,8 +216,7 @@ const allProjectsData = [
     stage: "개발",
   },
   {
-    number: 2,
-    id: "PRJ-002",
+    id: 2,
     name: "모바일 앱 리뉴얼",
     client: "㈜카카오",
     startDate: "2024/02/01",
@@ -225,8 +224,7 @@ const allProjectsData = [
     stage: "유지보수",
   },
   {
-    number: 3,
-    id: "PRJ-003",
+    id: 3,
     name: "AI 챗봇 개발",
     client: "㈜LG",
     startDate: "2024/03/10",
@@ -234,8 +232,7 @@ const allProjectsData = [
     stage: "검수",
   },
   {
-    number: 4,
-    id: "PRJ-004",
+    id: 4,
     name: "클라우드 마이그레이션",
     client: "㈜삼성전자",
     startDate: "2024/01/05",
@@ -243,8 +240,7 @@ const allProjectsData = [
     stage: "유지보수",
   },
   {
-    number: 5,
-    id: "PRJ-005",
+    id: 5,
     name: "고객관리 시스템 구축",
     client: "㈜쿠팡",
     startDate: "2024/04/01",
@@ -252,8 +248,7 @@ const allProjectsData = [
     stage: "화면 설계",
   },
   {
-    number: 6,
-    id: "PRJ-006",
+    id: 6,
     name: "데이터 분석 시스템",
     client: "㈜네이버",
     startDate: "2024/05/10",
@@ -261,8 +256,7 @@ const allProjectsData = [
     stage: "개발",
   },
   {
-    number: 7,
-    id: "PRJ-007",
+    id: 7,
     name: "ERP 시스템 도입",
     client: "㈜현대자동차",
     startDate: "2024/02/20",
@@ -270,8 +264,7 @@ const allProjectsData = [
     stage: "유지보수",
   },
   {
-    number: 8,
-    id: "PRJ-008",
+    id: 8,
     name: "보안 시스템 업그레이드",
     client: "㈜KT",
     startDate: "2024/06/15",
@@ -379,7 +372,7 @@ const ProjectCard = ({ project, onView }) => {
         </div>
         <div className="flex-1 min-w-0">
           <span className="inline-block text-[11px] text-[#007bff] bg-[#e8f4ff] px-2 py-[3px] rounded font-semibold mb-1.5">
-            {project.id}
+            PRJ-00{project.id}
           </span>
           <div className="text-[15px] font-semibold text-[#1a1a1a] mb-1 whitespace-nowrap overflow-hidden text-ellipsis">
             {project.name}
@@ -427,6 +420,7 @@ const ProjectCard = ({ project, onView }) => {
 export default function Dashboard() {
   const [activeFilter, setActiveFilter] = useState("progress");
   const [listTitle, setListTitle] = useState("진행중 리스트");
+  const navigate = useNavigate();
 
   const handleStatCardClick = (filterType, title) => {
     setActiveFilter(filterType);
@@ -434,7 +428,7 @@ export default function Dashboard() {
   };
 
   const handleViewProject = (projectId) => {
-    alert(`프로젝트 ${projectId} 상세 페이지로 이동합니다.`);
+    navigate(`/project/${projectId}`);
   };
 
   const getFilteredData = () => {
@@ -482,11 +476,6 @@ export default function Dashboard() {
           <h1 className="text-[22px] font-semibold text-[#1a1a1a] mb-1.5">
             대시보드
           </h1>
-          <div className="flex items-center gap-2 text-[14px] text-[#999] mb-5">
-            <span className="text-[#007bff] font-medium">Dashboard</span>
-            <span>▸</span>
-            <span>Overview</span>
-          </div>
         </div>
 
         {/* 통계 카드 그리드 */}

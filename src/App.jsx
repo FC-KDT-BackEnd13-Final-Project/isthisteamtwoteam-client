@@ -22,7 +22,7 @@ function App() {
 
       {/* Sidebar + Header 레이아웃 */}
       <Route path="/project" element={<SidebarHeaderLayout />}>
-        <Route index element={<ProjectPage />} />
+        <Route path=":projectId" element={<ProjectPage />} />
       </Route>
 
       {/* Sidebar만 있는 레이아웃 */}
