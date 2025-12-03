@@ -7,7 +7,7 @@ export const BellIcon = () => (
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
-    className="w-8 h-8"
+    className="h-8 w-8"
   >
     <path
       strokeLinecap="round"
@@ -24,7 +24,7 @@ export const SearchIcon = () => (
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
-    className="w-4 h-4"
+    className="h-4 w-4"
   >
     <path
       strokeLinecap="round"
@@ -41,7 +41,7 @@ export const CloseIcon = () => (
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
-    className="w-4 h-4"
+    className="h-4 w-4"
   >
     <path
       strokeLinecap="round"
@@ -58,7 +58,7 @@ export const CheckIcon = () => (
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
-    className="w-4 h-4"
+    className="h-4 w-4"
   >
     <path
       strokeLinecap="round"
@@ -75,7 +75,7 @@ export const InfoIcon = () => (
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
-    className="w-5 h-5"
+    className="h-5 w-5"
   >
     <path
       strokeLinecap="round"
@@ -92,7 +92,7 @@ export const SuccessIcon = () => (
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
-    className="w-5 h-5"
+    className="h-5 w-5"
   >
     <path
       strokeLinecap="round"
@@ -109,7 +109,7 @@ export const WarningIcon = () => (
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
-    className="w-5 h-5"
+    className="h-5 w-5"
   >
     <path
       strokeLinecap="round"
@@ -126,7 +126,7 @@ export const ErrorIcon = () => (
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
-    className="w-5 h-5"
+    className="h-5 w-5"
   >
     <path
       strokeLinecap="round"
@@ -143,7 +143,7 @@ export const EmptyIcon = () => (
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
-    className="w-12 h-12"
+    className="h-12 w-12"
   >
     <path
       strokeLinecap="round"

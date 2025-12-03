@@ -37,26 +37,21 @@ const STATUS_CONFIG = {
  * />
  */
 const ApprovalItem = ({
-  item,          // 승인 요청 항목 데이터
-  onViewDetail,  // 상세보기 버튼 클릭 시 실행할 함수
+  item, // 승인 요청 항목 데이터
+  onViewDetail, // 상세보기 버튼 클릭 시 실행할 함수
 }) => {
   // 상태에 맞는 설정 가져오기
   const status = STATUS_CONFIG[item.status];
 
   return (
     <div
-      className={`
-        grid grid-cols-[1fr_auto_auto] gap-4 items-center p-4 border border-[#e5e7eb] rounded-[10px]
-        transition-all duration-200 bg-white hover:border-[#007bff] hover:shadow-[0_2px_8px_rgba(0,123,255,0.08)]
-        max-[768px]:grid-cols-1 max-[768px]:gap-3
-        ${item.completed ? "bg-[#fafafa] opacity-70" : ""}
-      `}
+      className={`grid grid-cols-[1fr_auto_auto] items-center gap-4 rounded-[10px] border border-[#e5e7eb] bg-white p-4 transition-all duration-200 hover:border-[#007bff] hover:shadow-[0_2px_8px_rgba(0,123,255,0.08)] max-[768px]:grid-cols-1 max-[768px]:gap-3 ${item.completed ? "bg-[#fafafa] opacity-70" : ""} `}
     >
       {/* 왼쪽: 제목 및 프로젝트 정보 */}
-      <div className="flex flex-col gap-1.5 min-w-0">
+      <div className="flex min-w-0 flex-col gap-1.5">
         {/* 제목 - 완료된 항목은 회색으로 표시 */}
         <div
-          className={`text-[14px] font-medium whitespace-nowrap overflow-hidden text-ellipsis ${
+          className={`overflow-hidden text-[14px] font-medium text-ellipsis whitespace-nowrap ${
             item.completed ? "text-[#999]" : "text-[#1a1a1a]"
           }`}
         >
@@ -65,21 +60,21 @@ const ApprovalItem = ({
 
         {/* 프로젝트명, 고객사, 날짜 정보 */}
         <div
-          className={`flex items-center gap-3 text-[12px] flex-wrap ${
+          className={`flex flex-wrap items-center gap-3 text-[12px] ${
             item.completed ? "text-[#bbb]" : "text-[#999]"
           }`}
         >
           <span>{item.project}</span>
-          <span className="w-[3px] h-[3px] bg-[#d0d0d0] rounded-full"></span>
+          <span className="h-[3px] w-[3px] rounded-full bg-[#d0d0d0]"></span>
           <span>{item.client}</span>
-          <span className="w-[3px] h-[3px] bg-[#d0d0d0] rounded-full"></span>
+          <span className="h-[3px] w-[3px] rounded-full bg-[#d0d0d0]"></span>
           <span>{item.date}</span>
         </div>
       </div>
 
       {/* 중앙: 상태 배지 (승인 대기, 승인 완료, 승인 거절) */}
       <span
-        className={`py-1.5 px-3 rounded-[6px] text-[12px] font-semibold whitespace-nowrap ${status.className}`}
+        className={`rounded-[6px] px-3 py-1.5 text-[12px] font-semibold whitespace-nowrap ${status.className}`}
       >
         {status.text}
       </span>
@@ -87,7 +82,7 @@ const ApprovalItem = ({
       {/* 오른쪽: 게시글 이동 버튼 */}
       <button
         onClick={() => onViewDetail(item.id)}
-        className="flex items-center gap-1.5 py-2 px-4 bg-white text-[#555] border border-[#e5e7eb] rounded-lg text-[13px] font-medium cursor-pointer transition-all duration-200 whitespace-nowrap hover:bg-[#007bff] hover:text-white hover:border-[#007bff] max-[768px]:w-full max-[768px]:justify-center"
+        className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-[#e5e7eb] bg-white px-4 py-2 text-[13px] font-medium whitespace-nowrap text-[#555] transition-all duration-200 hover:border-[#007bff] hover:bg-[#007bff] hover:text-white max-[768px]:w-full max-[768px]:justify-center"
       >
         게시글 이동
         <ChevronRightIcon />

@@ -13,16 +13,16 @@
  * />
  */
 const StatCard = ({
-  icon,       // 표시할 아이콘 (예: <ClockIcon />)
-  iconClass,  // 아이콘 배경 색상 클래스 (예: "bg-[#fff3e6] text-[#ff9500]")
-  value,      // 통계 숫자 (예: 15)
-  label,      // 카드 라벨 (예: "승인 대기")
+  icon, // 표시할 아이콘 (예: <ClockIcon />)
+  iconClass, // 아이콘 배경 색상 클래스 (예: "bg-[#fff3e6] text-[#ff9500]")
+  value, // 통계 숫자 (예: 15)
+  label, // 카드 라벨 (예: "승인 대기")
 }) => {
   return (
-    <div className="bg-white rounded-[12px] py-4 px-5 border border-[#e5e7eb] flex items-center gap-[14px] transition-all duration-200 hover:border-[#007bff] hover:shadow-[0_2px_8px_rgba(0,123,255,0.1)]">
+    <div className="flex items-center gap-[14px] rounded-[12px] border border-[#e5e7eb] bg-white px-5 py-4 transition-all duration-200 hover:border-[#007bff] hover:shadow-[0_2px_8px_rgba(0,123,255,0.1)]">
       {/* 아이콘 영역 */}
       <div
-        className={`w-[44px] h-[44px] rounded-[10px] flex items-center justify-center shrink-0 ${iconClass}`}
+        className={`flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-[10px] ${iconClass}`}
       >
         {icon}
       </div>
@@ -30,7 +30,7 @@ const StatCard = ({
       {/* 통계 정보 영역 */}
       <div>
         {/* 숫자 */}
-        <h3 className="text-[24px] font-bold text-[#1a1a1a] mb-0.5">{value}</h3>
+        <h3 className="mb-0.5 text-[24px] font-bold text-[#1a1a1a]">{value}</h3>
         {/* 라벨 */}
         <p className="text-[13px] text-[#999]">{label}</p>
       </div>

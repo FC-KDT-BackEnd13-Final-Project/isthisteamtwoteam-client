@@ -103,7 +103,7 @@ export default function NotificationPage() {
       filtered = filtered.filter(
         (n) =>
           n.title.toLowerCase().includes(query) ||
-          n.message.toLowerCase().includes(query)
+          n.message.toLowerCase().includes(query),
       );
     }
 
@@ -117,13 +117,13 @@ export default function NotificationPage() {
       unread: notifications.filter((n) => !n.isRead).length,
       read: notifications.filter((n) => n.isRead).length,
     }),
-    [notifications]
+    [notifications],
   );
 
   // 읽음 처리
   const handleMarkAsRead = (id) => {
     setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
+      prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)),
     );
   };
 
@@ -146,9 +146,9 @@ export default function NotificationPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="max-w-4xl mx-auto p-6">
+      <div className="mx-auto max-w-4xl p-6">
         {/* ========== 헤더 ========== */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="mb-6 flex items-center justify-between">
           {/* 왼쪽: 제목 영역 */}
           <div className="flex items-center gap-3">
             <div className="text-gray-900">
@@ -164,12 +164,12 @@ export default function NotificationPage() {
           <div className="flex items-center gap-3">
             {counts.unread > 0 && (
               <>
-                <span className="px-3 py-1 text-xs font-medium rounded-lg bg-gray-900 text-white">
+                <span className="rounded-lg bg-gray-900 px-3 py-1 text-xs font-medium text-white">
                   {counts.unread}개 읽지 않음
                 </span>
                 <button
                   onClick={handleMarkAllAsRead}
-                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium border border-gray-200 rounded-lg hover:bg-gray-100 transition"
+                  className="flex items-center gap-2 rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium transition hover:bg-gray-100"
                 >
                   <CheckIcon />
                   모두 읽음으로 표시
@@ -182,7 +182,7 @@ export default function NotificationPage() {
         {/* ========== 검색창 ========== */}
         <div className="relative mb-6">
           {/* 검색 아이콘 */}
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+          <div className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400">
             <SearchIcon />
           </div>
 
@@ -192,14 +192,14 @@ export default function NotificationPage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="알림 검색..."
-            className="w-full py-2 pl-10 pr-10 text-sm border border-gray-200 rounded-lg outline-none focus:border-gray-900 transition"
+            className="w-full rounded-lg border border-gray-200 py-2 pr-10 pl-10 text-sm transition outline-none focus:border-gray-900"
           />
 
           {/* 검색어 지우기 버튼 (검색어가 있을 때만 표시) */}
           {searchQuery && (
             <button
               onClick={clearSearch}
-              className="absolute right-1 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100"
+              className="absolute top-1/2 right-1 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg hover:bg-gray-100"
             >
               <CloseIcon />
             </button>
@@ -215,12 +215,12 @@ export default function NotificationPage() {
 
         {/* ========== 탭 메뉴 (전체, 읽지 않음, 읽음) ========== */}
         <div className="mb-6">
-          <div className="inline-flex p-1 bg-gray-100 rounded-lg">
+          <div className="inline-flex rounded-lg bg-gray-100 p-1">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-4 py-2 text-sm font-medium rounded-md transition ${
+                className={`rounded-md px-4 py-2 text-sm font-medium transition ${
                   activeTab === tab.id
                     ? "bg-white text-gray-900 shadow-sm"
                     : "text-gray-500 hover:text-gray-900"
@@ -247,33 +247,33 @@ export default function NotificationPage() {
             ))
           ) : (
             /* 알림이 없을 때 */
-            <div className="text-center py-12">
+            <div className="py-12 text-center">
               {/* 빈 상태 아이콘 */}
-              <div className="text-gray-400 flex justify-center mb-4">
+              <div className="mb-4 flex justify-center text-gray-400">
                 <EmptyIcon />
               </div>
 
               {/* 제목 */}
-              <h3 className="text-lg font-medium mb-2">
+              <h3 className="mb-2 text-lg font-medium">
                 {searchQuery ? "알림을 찾을 수 없음" : "알림 없음"}
               </h3>
 
               {/* 설명 메시지 */}
-              <p className="text-gray-500 mb-4">
+              <p className="mb-4 text-gray-500">
                 {searchQuery
                   ? `"${searchQuery}"와(과) 일치하는 알림이 없습니다. 검색어를 조정해 보세요.`
                   : activeTab === "unread"
-                  ? "모두 확인했습니다! 읽지 않은 알림이 없습니다."
-                  : activeTab === "read"
-                  ? "읽은 알림이 없습니다."
-                  : "아직 알림이 없습니다."}
+                    ? "모두 확인했습니다! 읽지 않은 알림이 없습니다."
+                    : activeTab === "read"
+                      ? "읽은 알림이 없습니다."
+                      : "아직 알림이 없습니다."}
               </p>
 
               {/* 검색어 지우기 버튼 (검색 중일 때만 표시) */}
               {searchQuery && (
                 <button
                   onClick={clearSearch}
-                  className="px-4 py-2 text-sm font-medium border border-gray-200 rounded-lg hover:bg-gray-100 transition"
+                  className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium transition hover:bg-gray-100"
                 >
                   검색 지우기
                 </button>

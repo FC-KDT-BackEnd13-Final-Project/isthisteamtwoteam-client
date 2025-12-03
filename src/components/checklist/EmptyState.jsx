@@ -7,12 +7,12 @@ import { ClipboardIcon } from "./Icons";
  * 사용자에게 새 체크리스트 추가를 안내합니다.
  */
 const EmptyState = () => (
-  <div className="text-center py-[60px] px-5 text-[#999]">
+  <div className="px-5 py-[60px] text-center text-[#999]">
     {/* 클립보드 아이콘 */}
     <ClipboardIcon />
 
     {/* 메인 메시지 */}
-    <p className="text-[16px] mb-2">등록된 체크리스트가 없습니다</p>
+    <p className="mb-2 text-[16px]">등록된 체크리스트가 없습니다</p>
 
     {/* 안내 메시지 */}
     <p className="text-[14px] text-[#cbd5e0]">

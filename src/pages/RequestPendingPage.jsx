@@ -35,12 +35,12 @@ export default function RequestPendingPage() {
   // ========================================
 
   return (
-    <div className="min-h-screen bg-[#f5f5f5] py-5 px-4 font-[-apple-system,BlinkMacSystemFont,'Segoe_UI','Roboto','Oxygen','Ubuntu',sans-serif] text-[#0a0a0a] leading-normal">
-      <div className="max-w-[1200px] mx-auto">
+    <div className="min-h-screen bg-[#f5f5f5] px-4 py-5 font-[-apple-system,BlinkMacSystemFont,'Segoe_UI','Roboto','Oxygen','Ubuntu',sans-serif] leading-normal text-[#0a0a0a]">
+      <div className="mx-auto max-w-[1200px]">
         {/* ========== 헤더 ========== */}
         <div className="mb-6">
           {/* 페이지 제목 */}
-          <h1 className="text-[22px] font-semibold text-[#1a1a1a] mb-1.5">
+          <h1 className="mb-1.5 text-[22px] font-semibold text-[#1a1a1a]">
             승인 요청 알림
           </h1>
 
@@ -48,12 +48,12 @@ export default function RequestPendingPage() {
           <div className="flex items-center gap-2 text-[14px] text-[#999]">
             <span>알림</span>
             <span>▸</span>
-            <span className="text-[#007bff] font-medium">승인 요청</span>
+            <span className="font-medium text-[#007bff]">승인 요청</span>
           </div>
         </div>
 
         {/* ========== 통계 카드 3개 ========== */}
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4 mb-6">
+        <div className="mb-6 grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
           {/* 1. 승인 대기 */}
           <StatCard
             icon={<ClockIcon />}

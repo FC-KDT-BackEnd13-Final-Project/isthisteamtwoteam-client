@@ -36,7 +36,7 @@ export default function CheckListPage() {
    * 검색어가 포함된 항목만 표시
    */
   const filteredChecklists = checklists.filter((item) =>
-    item.text.toLowerCase().includes(searchTerm.toLowerCase())
+    item.text.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   // ========================================
@@ -69,8 +69,8 @@ export default function CheckListPage() {
     // 체크리스트 업데이트
     setChecklists((prev) =>
       prev.map((item) =>
-        item.id === editingId ? { ...item, text: editingText.trim() } : item
-      )
+        item.id === editingId ? { ...item, text: editingText.trim() } : item,
+      ),
     );
 
     // 편집 모드 종료
@@ -145,15 +145,15 @@ export default function CheckListPage() {
 
   return (
     <div className="min-h-screen bg-white p-5 font-[-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,'Helvetica_Neue',Arial,sans-serif]">
-      <div className="max-w-[900px] mx-auto bg-white rounded-[12px] p-8">
+      <div className="mx-auto max-w-[900px] rounded-[12px] bg-white p-8">
         {/* 페이지 제목 섹션 */}
-        <h1 className="text-[28px] font-semibold text-[#1a1a1a] mb-4 leading-[1.4]">
+        <h1 className="mb-4 text-[28px] leading-[1.4] font-semibold text-[#1a1a1a]">
           체크리스트 관리
         </h1>
 
         {/* 페이지 설명 섹션 */}
-        <div className="mb-8 pb-6 border-b-2 border-[#f0f0f0]">
-          <p className="text-[14px] text-[#999] mt-2">
+        <div className="mb-8 border-b-2 border-[#f0f0f0] pb-6">
+          <p className="mt-2 text-[14px] text-[#999]">
             저장된 체크리스트를 관리하고 수정할 수 있습니다.
           </p>
         </div>
@@ -165,7 +165,7 @@ export default function CheckListPage() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="검색"
-            className="w-full py-3 px-4 border border-[#e0e0e0] rounded-lg text-[14px] text-[#333] bg-[#fafafa] transition-all duration-200 focus:outline-none focus:border-[#007bff] focus:bg-white placeholder:text-[#999]"
+            className="w-full rounded-lg border border-[#e0e0e0] bg-[#fafafa] px-4 py-3 text-[14px] text-[#333] transition-all duration-200 placeholder:text-[#999] focus:border-[#007bff] focus:bg-white focus:outline-none"
           />
         </div>
 
@@ -180,7 +180,7 @@ export default function CheckListPage() {
           {filteredChecklists.length === 0 && searchTerm === "" ? (
             <EmptyState />
           ) : filteredChecklists.length === 0 ? (
-            <div className="text-center py-10 text-[#999]">
+            <div className="py-10 text-center text-[#999]">
               검색 결과가 없습니다.
             </div>
           ) : (
@@ -203,16 +203,16 @@ export default function CheckListPage() {
         {/* 새 체크리스트 추가 버튼 */}
         <button
           onClick={handleAddNew}
-          className="mt-3 py-2.5 px-4 bg-white border border-[#e0e0e0] rounded-[6px] text-[#666] text-[13px] cursor-pointer transition-all duration-200 w-full font-medium hover:bg-[#f5f5f5]"
+          className="mt-3 w-full cursor-pointer rounded-[6px] border border-[#e0e0e0] bg-white px-4 py-2.5 text-[13px] font-medium text-[#666] transition-all duration-200 hover:bg-[#f5f5f5]"
         >
           +
         </button>
 
         {/* 하단 저장 버튼 영역 */}
-        <div className="flex justify-end mt-8 pt-6 border-t border-[#f0f0f0]">
+        <div className="mt-8 flex justify-end border-t border-[#f0f0f0] pt-6">
           <button
             onClick={handleSaveAll}
-            className="py-3 px-8 border-none rounded-lg text-[14px] font-medium cursor-pointer bg-[#155dfc] text-white transition-all duration-200 hover:bg-[#155dfc]"
+            className="cursor-pointer rounded-lg border-none bg-[#155dfc] px-8 py-3 text-[14px] font-medium text-white transition-all duration-200 hover:bg-[#155dfc]"
           >
             저장
           </button>

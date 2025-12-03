@@ -19,13 +19,13 @@
  * />
  */
 const ProjectCard = ({
-  project,   // 프로젝트 정보 객체
-  onView     // 클릭했을 때 실행할 함수
+  project, // 프로젝트 정보 객체
+  onView, // 클릭했을 때 실행할 함수
 }) => {
   return (
     <div
       onClick={() => onView(project.id)}
-      className="group bg-white border border-[#e0e0e0] rounded-[12px] p-[18px] transition-all duration-200 cursor-pointer relative hover:border-[#007bff] hover:shadow-[0_2px_8px_rgba(0,123,255,0.1)]"
+      className="group relative cursor-pointer rounded-[12px] border border-[#e0e0e0] bg-white p-[18px] transition-all duration-200 hover:border-[#007bff] hover:shadow-[0_2px_8px_rgba(0,123,255,0.1)]"
     >
       {/* 설정 버튼 (마우스를 올렸을 때만 보임) */}
       <button
@@ -33,26 +33,26 @@ const ProjectCard = ({
           e.stopPropagation(); // 카드 클릭과 버튼 클릭을 분리
           onView(project.id);
         }}
-        className="absolute top-[18px] right-[18px] px-3 py-1.5 bg-[#007bff] text-white border-none rounded-[6px] text-[12px] font-semibold cursor-pointer opacity-0 transition-opacity duration-200 group-hover:opacity-100 hover:bg-[#0056b3]"
+        className="absolute top-[18px] right-[18px] cursor-pointer rounded-[6px] border-none bg-[#007bff] px-3 py-1.5 text-[12px] font-semibold text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 hover:bg-[#0056b3]"
       >
         설정
       </button>
 
       {/* 프로젝트 헤더 정보 */}
-      <div className="flex items-start gap-[14px] mb-4 pb-[14px] border-b border-[#f0f0f0]">
+      <div className="mb-4 flex items-start gap-[14px] border-b border-[#f0f0f0] pb-[14px]">
         {/* 프로젝트 로고 (이름의 첫 2글자) */}
-        <div className="w-12 h-12 rounded-[10px] bg-[#f8f9fa] flex items-center justify-center text-[16px] font-bold text-[#007bff] shrink-0 border-2 border-[#e8f4ff]">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[10px] border-2 border-[#e8f4ff] bg-[#f8f9fa] text-[16px] font-bold text-[#007bff]">
           {project.name.substring(0, 2)}
         </div>
 
-        <div className="flex-1 min-w-0">
+        <div className="min-w-0 flex-1">
           {/* 프로젝트 ID 배지 */}
-          <span className="inline-block text-[11px] text-[#007bff] bg-[#e8f4ff] px-2 py-[3px] rounded font-semibold mb-1.5">
+          <span className="mb-1.5 inline-block rounded bg-[#e8f4ff] px-2 py-[3px] text-[11px] font-semibold text-[#007bff]">
             PRJ-00{project.id}
           </span>
 
           {/* 프로젝트 이름 */}
-          <div className="text-[15px] font-semibold text-[#1a1a1a] mb-1 whitespace-nowrap overflow-hidden text-ellipsis">
+          <div className="mb-1 overflow-hidden text-[15px] font-semibold text-ellipsis whitespace-nowrap text-[#1a1a1a]">
             {project.name}
           </div>
 
@@ -64,40 +64,40 @@ const ProjectCard = ({
       </div>
 
       {/* 고객사 정보 */}
-      <div className="grid gap-2.5 mb-[14px]">
+      <div className="mb-[14px] grid gap-2.5">
         <div className="flex items-center gap-2 text-[13px]">
-          <div className="w-1.5 h-1.5 bg-[#999] rounded-full shrink-0"></div>
-          <span className="text-[#999] min-w-[50px] text-[12px]">고객사</span>
-          <span className="text-[#333] font-medium flex-1">
+          <div className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#999]"></div>
+          <span className="min-w-[50px] text-[12px] text-[#999]">고객사</span>
+          <span className="flex-1 font-medium text-[#333]">
             {project.client}
           </span>
         </div>
       </div>
 
       {/* 프로젝트 일정 및 단계 정보 */}
-      <div className="flex justify-between items-center pt-[14px] border-t border-[#f0f0f0]">
+      <div className="flex items-center justify-between border-t border-[#f0f0f0] pt-[14px]">
         {/* 날짜 정보 */}
         <div className="flex flex-col gap-1">
           {/* 시작일 */}
           <div className="flex items-center gap-1.5 text-[11px] text-[#666]">
-            <div className="w-1 h-1 bg-[#999] rounded-full"></div>
+            <div className="h-1 w-1 rounded-full bg-[#999]"></div>
             시작:{" "}
-            <strong className="text-[#333] font-semibold">
+            <strong className="font-semibold text-[#333]">
               {project.startDate}
             </strong>
           </div>
           {/* 최근 업데이트일 */}
           <div className="flex items-center gap-1.5 text-[11px] text-[#666]">
-            <div className="w-1 h-1 bg-[#999] rounded-full"></div>
+            <div className="h-1 w-1 rounded-full bg-[#999]"></div>
             업데이트:{" "}
-            <strong className="text-[#333] font-semibold">
+            <strong className="font-semibold text-[#333]">
               {project.updateDate}
             </strong>
           </div>
         </div>
 
         {/* 진행 단계 배지 */}
-        <div className="px-3 py-1.5 rounded-[6px] text-[12px] font-semibold bg-white text-[#007bff] border-[1.5px] border-[#007bff]">
+        <div className="rounded-[6px] border-[1.5px] border-[#007bff] bg-white px-3 py-1.5 text-[12px] font-semibold text-[#007bff]">
           {project.stage}
         </div>
       </div>

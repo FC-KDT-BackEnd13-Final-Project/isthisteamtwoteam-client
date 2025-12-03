@@ -75,7 +75,7 @@ export default function UserManagementPage() {
           u.name?.includes(query) ||
           u.email?.includes(query) ||
           u.companyName?.includes(query) ||
-          u.ceoName?.includes(query)
+          u.ceoName?.includes(query),
       );
     }
 
@@ -88,7 +88,7 @@ export default function UserManagementPage() {
   // 현재 페이지에 표시할 회원 목록
   const paginatedUsers = filteredUsers.slice(
     (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+    currentPage * itemsPerPage,
   );
 
   // ========================================
@@ -191,19 +191,19 @@ export default function UserManagementPage() {
   // ========================================
 
   return (
-    <div className="bg-gray-100 min-h-screen font-sans">
-      <div className="max-w-[1400px] mx-auto p-5">
+    <div className="min-h-screen bg-gray-100 font-sans">
+      <div className="mx-auto max-w-[1400px] p-5">
         {/* 페이지 헤더 */}
-        <div className="py-8 mb-5">
-          <h1 className="text-3xl font-bold text-gray-900 mb-3">회원관리</h1>
+        <div className="mb-5 py-8">
+          <h1 className="mb-3 text-3xl font-bold text-gray-900">회원관리</h1>
           {/* 브레드크럼 네비게이션 */}
           <Breadcrumb />
         </div>
 
         {/* 메인 컨텐츠 영역 */}
-        <div className="bg-white rounded-xl overflow-hidden">
+        <div className="overflow-hidden rounded-xl bg-white">
           {/* 탭 버튼 영역 */}
-          <div className="flex bg-gray-50 px-8 border-b border-gray-200">
+          <div className="flex border-b border-gray-200 bg-gray-50 px-8">
             {tabs.map((tab) => (
               <TabButton
                 key={tab.id}

@@ -2,10 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 // 데이터 가져오기
-import {
-  pendingApprovals,
-  rejectedDocuments,
-} from "../data/mockBoards";
+import { pendingApprovals, rejectedDocuments } from "../data/mockBoards";
 import {
   progressProjects,
   maintenanceProjects,
@@ -142,17 +139,17 @@ export default function Dashboard() {
   // ========================================
 
   return (
-    <div className="min-h-screen bg-[#f5f5f5] py-5 px-4 font-[-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,'Helvetica_Neue',Arial,sans-serif]">
-      <div className="max-w-[1400px] mx-auto">
+    <div className="min-h-screen bg-[#f5f5f5] px-4 py-5 font-[-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,'Helvetica_Neue',Arial,sans-serif]">
+      <div className="mx-auto max-w-[1400px]">
         {/* ========== 페이지 제목 ========== */}
         <div>
-          <h1 className="text-[22px] font-semibold text-[#1a1a1a] mb-1.5">
+          <h1 className="mb-1.5 text-[22px] font-semibold text-[#1a1a1a]">
             대시보드
           </h1>
         </div>
 
         {/* ========== 통계 카드 4개 ========== */}
-        <div className="grid grid-cols-4 gap-4 mb-5 max-[1200px]:grid-cols-2 max-[768px]:grid-cols-1">
+        <div className="mb-5 grid grid-cols-4 gap-4 max-[1200px]:grid-cols-2 max-[768px]:grid-cols-1">
           {/* 1. 승인 대기 */}
           <StatCard
             icon={<ClockIcon />}
@@ -203,19 +200,19 @@ export default function Dashboard() {
         </div>
 
         {/* ========== 필터링된 목록 (선택한 카드에 따라 변경) ========== */}
-        <div className="bg-white rounded-[12px] p-[18px] shadow-[0_1px_3px_rgba(0,0,0,0.08)] mb-5">
+        <div className="mb-5 rounded-[12px] bg-white p-[18px] shadow-[0_1px_3px_rgba(0,0,0,0.08)]">
           {/* 목록 제목 */}
-          <div className="flex justify-between items-center pb-[14px] border-b border-[#e0e0e0] mb-[14px]">
+          <div className="mb-[14px] flex items-center justify-between border-b border-[#e0e0e0] pb-[14px]">
             <h2 className="text-[16px] font-semibold text-[#1a1a1a]">
               {listTitle}
             </h2>
           </div>
 
           {/* 목록 내용 */}
-          <div className="grid grid-cols-3 gap-4 max-h-[220px] overflow-y-auto pr-2.5 max-[1200px]:grid-cols-1">
+          <div className="grid max-h-[220px] grid-cols-3 gap-4 overflow-y-auto pr-2.5 max-[1200px]:grid-cols-1">
             {/* 데이터가 없을 때 */}
             {data.length === 0 && (
-              <div className="col-span-3 text-center py-10 text-[#999]">
+              <div className="col-span-3 py-10 text-center text-[#999]">
                 <p>항목이 없습니다</p>
               </div>
             )}
@@ -260,9 +257,9 @@ export default function Dashboard() {
         </div>
 
         {/* ========== 모든 프로젝트 리스트 ========== */}
-        <div className="bg-white rounded-[12px] p-[18px] shadow-[0_1px_3px_rgba(0,0,0,0.08)]">
+        <div className="rounded-[12px] bg-white p-[18px] shadow-[0_1px_3px_rgba(0,0,0,0.08)]">
           {/* 목록 제목 및 버튼들 */}
-          <div className="flex justify-between items-center pb-[14px] border-b border-[#e0e0e0] mb-[14px]">
+          <div className="mb-[14px] flex items-center justify-between border-b border-[#e0e0e0] pb-[14px]">
             <h2 className="text-[16px] font-semibold text-[#1a1a1a]">
               모든 프로젝트 리스트
             </h2>
@@ -272,7 +269,7 @@ export default function Dashboard() {
               {/* 더보기 버튼 */}
               <button
                 onClick={() => alert("전체 프로젝트 페이지로 이동합니다.")}
-                className="px-[15px] py-2 rounded-[6px] text-[13px] font-semibold cursor-pointer transition-all duration-200 bg-white text-[#555] border border-[#d0d0d0] hover:bg-[#f0f0f0]"
+                className="cursor-pointer rounded-[6px] border border-[#d0d0d0] bg-white px-[15px] py-2 text-[13px] font-semibold text-[#555] transition-all duration-200 hover:bg-[#f0f0f0]"
               >
                 더보기
               </button>
@@ -282,7 +279,7 @@ export default function Dashboard() {
                 onClick={() =>
                   alert("새 프로젝트 생성 모달 또는 페이지로 이동합니다.")
                 }
-                className="px-[15px] py-2 rounded-[6px] text-[13px] font-semibold cursor-pointer transition-all duration-200 bg-[#007bff] text-white border border-[#007bff] hover:bg-[#0056b3] hover:border-[#0056b3]"
+                className="cursor-pointer rounded-[6px] border border-[#007bff] bg-[#007bff] px-[15px] py-2 text-[13px] font-semibold text-white transition-all duration-200 hover:border-[#0056b3] hover:bg-[#0056b3]"
               >
                 프로젝트 생성
               </button>
@@ -290,7 +287,7 @@ export default function Dashboard() {
           </div>
 
           {/* 프로젝트 카드들 */}
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(380px,1fr))] gap-4 max-h-[600px] overflow-y-auto pr-2 max-[1200px]:grid-cols-[repeat(auto-fill,minmax(320px,1fr))] max-[768px]:grid-cols-1">
+          <div className="grid max-h-[600px] grid-cols-[repeat(auto-fill,minmax(380px,1fr))] gap-4 overflow-y-auto pr-2 max-[1200px]:grid-cols-[repeat(auto-fill,minmax(320px,1fr))] max-[768px]:grid-cols-1">
             {allProjectsData.map((project) => (
               <ProjectCard
                 key={project.id}

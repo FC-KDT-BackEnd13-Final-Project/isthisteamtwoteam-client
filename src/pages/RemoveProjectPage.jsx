@@ -93,7 +93,7 @@ export default function RemoveProjectPage() {
 
     if (
       window.confirm(
-        `선택한 ${selectedIds.size}개의 프로젝트를 복원하시겠습니까?`
+        `선택한 ${selectedIds.size}개의 프로젝트를 복원하시겠습니까?`,
       )
     ) {
       // 선택된 프로젝트를 목록에서 제거
@@ -112,7 +112,7 @@ export default function RemoveProjectPage() {
 
     if (
       window.confirm(
-        `선택한 ${selectedIds.size}개의 프로젝트를 영구 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`
+        `선택한 ${selectedIds.size}개의 프로젝트를 영구 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`,
       )
     ) {
       // 선택된 프로젝트를 목록에서 제거
@@ -147,7 +147,7 @@ export default function RemoveProjectPage() {
   const handlePermanentDelete = (id) => {
     if (
       window.confirm(
-        "이 프로젝트를 영구 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다."
+        "이 프로젝트를 영구 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.",
       )
     ) {
       // 프로젝트를 목록에서 제거
@@ -168,10 +168,10 @@ export default function RemoveProjectPage() {
 
   return (
     <div className="min-h-screen bg-white p-5 font-[-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,'Helvetica_Neue',Arial,sans-serif]">
-      <div className="max-w-[1200px] mx-auto bg-white rounded-[12px] p-8">
+      <div className="mx-auto max-w-[1200px] rounded-[12px] bg-white p-8">
         {/* 페이지 헤더 */}
-        <div className="mb-8 pb-6 border-b-2 border-[#f0f0f0]">
-          <h1 className="text-[24px] text-[#1a1a1a] mb-2">삭제된 프로젝트</h1>
+        <div className="mb-8 border-b-2 border-[#f0f0f0] pb-6">
+          <h1 className="mb-2 text-[24px] text-[#1a1a1a]">삭제된 프로젝트</h1>
           <p className="text-[14px] text-[#999]">
             삭제된 프로젝트는 30일 동안 보관되며, 필요한 프로젝트는 복원할 수
             있습니다.
@@ -190,7 +190,7 @@ export default function RemoveProjectPage() {
         />
 
         {/* 프로젝트 목록 */}
-        <div className="border border-[#e8e8e8] rounded-lg overflow-hidden">
+        <div className="overflow-hidden rounded-lg border border-[#e8e8e8]">
           {filteredProjects.length === 0 ? (
             // 검색 결과가 없거나 삭제된 프로젝트가 없을 때
             <EmptyState />
