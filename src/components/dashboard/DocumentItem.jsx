@@ -1,3 +1,5 @@
+import { useLocation } from "react-router-dom";
+
 /**
  * 게시글(문서) 항목 컴포넌트
  *
@@ -18,18 +20,23 @@
  *   onView={(id) => console.log('게시글 보기', id)}
  * />
  */
-const DocumentItem = ({
-  id,              // 게시글 ID
-  title,           // 게시글 제목
-  project,         // 프로젝트 이름
-  client,          // 고객사 이름
-  date,            // 작성 날짜 (예: "2024-03-15")
-  time,            // 작성 시간 (예: "14:30")
-  reason,          // 반려 사유 (선택사항, 반려된 문서만 표시)
-  status,          // 상태 텍스트 (예: "승인대기", "반려")
-  statusClass,     // 상태 배지 스타일 (예: "bg-[#ffe6e6] text-[#ff3b30]")
-  onView,          // 클릭했을 때 실행할 함수
-}) => {
+export default function DocumentItem({
+  id, // 게시글 ID
+  title, // 게시글 제목
+  project, // 프로젝트 이름
+  client, // 고객사 이름
+  date, // 작성 날짜 (예: "2024-03-15")
+  time, // 작성 시간 (예: "14:30")
+  reason, // 반려 사유 (선택사항, 반려된 문서만 표시)
+  status, // 상태 텍스트 (예: "승인대기", "반려")
+  statusClass, // 상태 배지 스타일 (예: "bg-[#ffe6e6] text-[#ff3b30]")
+  onView, // 클릭했을 때 실행할 함수
+}) {
+  const location = useLocation();
+
+  const boardId = location.state?.boardId;
+
+  console.log(boardId);
   return (
     <div
       className="flex flex-col gap-2 p-3 border border-[#b0b0b0] rounded-[10px] transition-all duration-200 hover:bg-[#f8f9fa] hover:border-[#a0a0a0] cursor-pointer"
@@ -75,6 +82,4 @@ const DocumentItem = ({
       </div>
     </div>
   );
-};
-
-export default DocumentItem;
+}

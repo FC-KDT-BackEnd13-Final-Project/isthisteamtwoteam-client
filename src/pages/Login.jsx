@@ -44,10 +44,10 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex justify-center items-center font-sans">
+    <div className="flex min-h-screen items-center justify-center bg-gray-100 font-sans">
       <div className="w-full max-w-[400px] px-5">
         <h1
-          className="text-center text-4xl font-semibold text-gray-800 mb-10"
+          className="mb-10 text-center text-4xl font-semibold text-gray-800"
           style={{ fontFamily: "'Poppins', sans-serif" }}
         >
           Login
@@ -59,7 +59,7 @@ export default function Login() {
               <Icon
                 name="user"
                 size={20}
-                className="absolute left-4 text-gray-400 pointer-events-none"
+                className="pointer-events-none absolute left-4 text-gray-400"
               />
               <input
                 type="text"
@@ -67,7 +67,7 @@ export default function Login() {
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full py-4 pr-5 pl-12 bg-white border border-gray-300 rounded-lg text-gray-800 text-base outline-none transition-all focus:border-gray-500"
+                className="w-full rounded-lg border border-gray-300 bg-white py-4 pr-5 pl-12 text-base text-gray-800 transition-all outline-none focus:border-gray-500"
               />
             </div>
           </div>
@@ -77,7 +77,7 @@ export default function Login() {
               <Icon
                 name="lock"
                 size={20}
-                className="absolute left-4 text-gray-400 pointer-events-none"
+                className="pointer-events-none absolute left-4 text-gray-400"
               />
               <input
                 type="password"
@@ -85,14 +85,14 @@ export default function Login() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full py-4 pr-5 pl-12 bg-white border border-gray-300 rounded-lg text-gray-800 text-base outline-none transition-all focus:border-gray-500"
+                className="w-full rounded-lg border border-gray-300 bg-white py-4 pr-5 pl-12 text-base text-gray-800 transition-all outline-none focus:border-gray-500"
               />
             </div>
           </div>
 
           {/* 에러 메세지 표시 */}
           {error && (
-            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+            <div className="mb-4 rounded-lg border border-red-400 bg-red-100 p-3 text-sm text-red-700">
               {error}
             </div>
           )}
@@ -100,12 +100,11 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading} // 로딩 중 비활성화
-            className={`w-full py-4 bg-blue-600 border-none rounded-lg text-white text-base font-semibold uppercase tracking-wider cursor-pointer transition-all hover:bg-blue-700 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 mb-5
-              ${
-                loading
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
-              }`}
+            className={`mb-5 w-full cursor-pointer rounded-lg border-none bg-blue-600 py-4 text-base font-semibold tracking-wider text-white uppercase transition-all hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-lg active:translate-y-0 ${
+              loading
+                ? "cursor-not-allowed bg-gray-400"
+                : "bg-blue-600 hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-lg active:translate-y-0"
+            }`}
           >
             {loading ? "로그인 중" : "Login"}
           </button>
@@ -113,7 +112,7 @@ export default function Login() {
           <div className="text-center">
             <a
               href="#"
-              className="text-gray-500 text-sm no-underline transition-colors hover:text-gray-800 hover:underline"
+              className="text-sm text-gray-500 no-underline transition-colors hover:text-gray-800 hover:underline"
             >
               Forgot password?
             </a>

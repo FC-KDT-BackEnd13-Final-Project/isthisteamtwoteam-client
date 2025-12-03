@@ -18,9 +18,9 @@ export default function ChangePasswordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex justify-center items-center font-sans">
+    <div className="flex min-h-screen items-center justify-center bg-gray-100 font-sans">
       <div className="w-full max-w-[400px] px-5">
-        <h1 className="text-center text-4xl font-semibold text-gray-800 mb-10">
+        <h1 className="mb-10 text-center text-4xl font-semibold text-gray-800">
           Change Password
         </h1>
 
@@ -29,7 +29,7 @@ export default function ChangePasswordPage() {
           <div className="mb-5">
             <div className="relative flex items-center">
               <svg
-                className="absolute left-[18px] text-gray-400 pointer-events-none"
+                className="pointer-events-none absolute left-[18px] text-gray-400"
                 width="20"
                 height="20"
                 viewBox="0 0 24 24"
@@ -46,7 +46,7 @@ export default function ChangePasswordPage() {
                 required
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
-                className="w-full py-4 pr-5 pl-[50px] bg-white border border-gray-300 rounded-lg text-gray-800 text-base outline-none transition-all focus:border-gray-500"
+                className="w-full rounded-lg border border-gray-300 bg-white py-4 pr-5 pl-[50px] text-base text-gray-800 transition-all outline-none focus:border-gray-500"
               />
             </div>
           </div>
@@ -55,7 +55,7 @@ export default function ChangePasswordPage() {
           <div className="mb-5">
             <div className="relative flex items-center">
               <svg
-                className="absolute left-[18px] text-gray-400 pointer-events-none"
+                className="pointer-events-none absolute left-[18px] text-gray-400"
                 width="20"
                 height="20"
                 viewBox="0 0 24 24"
@@ -72,7 +72,7 @@ export default function ChangePasswordPage() {
                 required
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="w-full py-4 pr-5 pl-[50px] bg-white border border-gray-300 rounded-lg text-gray-800 text-base outline-none transition-all focus:border-gray-500"
+                className="w-full rounded-lg border border-gray-300 bg-white py-4 pr-5 pl-[50px] text-base text-gray-800 transition-all outline-none focus:border-gray-500"
               />
             </div>
           </div>
@@ -81,7 +81,7 @@ export default function ChangePasswordPage() {
           <div className="mb-5">
             <div className="relative flex items-center">
               <svg
-                className="absolute left-[18px] text-gray-400 pointer-events-none"
+                className="pointer-events-none absolute left-[18px] text-gray-400"
                 width="20"
                 height="20"
                 viewBox="0 0 24 24"
@@ -98,14 +98,14 @@ export default function ChangePasswordPage() {
                 required
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full py-4 pr-5 pl-[50px] bg-white border border-gray-300 rounded-lg text-gray-800 text-base outline-none transition-all focus:border-gray-500"
+                className="w-full rounded-lg border border-gray-300 bg-white py-4 pr-5 pl-[50px] text-base text-gray-800 transition-all outline-none focus:border-gray-500"
               />
             </div>
           </div>
 
           <button
             type="submit"
-            className="w-full py-4 mt-2.5 bg-blue-600 border-none rounded-lg text-white text-base font-semibold uppercase tracking-wider cursor-pointer transition-all hover:bg-blue-700 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-600/30 active:translate-y-0"
+            className="mt-2.5 w-full cursor-pointer rounded-lg border-none bg-blue-600 py-4 text-base font-semibold tracking-wider text-white uppercase transition-all hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/30 active:translate-y-0"
           >
             Change
           </button>

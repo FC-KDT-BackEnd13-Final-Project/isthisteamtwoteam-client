@@ -23,7 +23,7 @@ export default function DeveloperMakeForm({
 
   // 검색어로 필터링된 직책 목록
   const filteredPositions = positions.filter((position) =>
-    position.name.toLowerCase().includes(searchTerm.toLowerCase())
+    position.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   // 외부 클릭 시 드롭다운 닫기
@@ -69,17 +69,17 @@ export default function DeveloperMakeForm({
 
   return (
     <div className="p-8">
-      <h2 className="text-xl font-semibold text-gray-900 mb-2">
+      <h2 className="mb-2 text-xl font-semibold text-gray-900">
         개발사 회원 정보
       </h2>
-      <p className="text-sm text-gray-400 mb-6 leading-relaxed">
+      <p className="mb-6 text-sm leading-relaxed text-gray-400">
         회원의 기본 정보를 입력해주세요.
       </p>
 
       <form onSubmit={handleSubmit}>
         {/* 이름 */}
         <div className="mb-5">
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
+          <label className="mb-2 block text-sm font-semibold text-gray-700">
             이름
           </label>
           <input
@@ -88,13 +88,13 @@ export default function DeveloperMakeForm({
             value={formData.name || ""}
             onChange={handleChange}
             placeholder="이름을 입력하세요"
-            className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 transition"
+            className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm transition outline-none focus:border-blue-500"
           />
         </div>
 
         {/* 직책 (검색 가능) */}
         <div className="mb-5">
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
+          <label className="mb-2 block text-sm font-semibold text-gray-700">
             직책
           </label>
           <div className="relative">
@@ -110,7 +110,7 @@ export default function DeveloperMakeForm({
               onKeyDown={handleKeyDown}
               placeholder="직책을 검색하세요"
               autoComplete="off"
-              className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 transition bg-white cursor-pointer"
+              className="w-full cursor-pointer rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm transition outline-none focus:border-blue-500"
               style={{
                 backgroundImage: `url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23999' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`,
                 backgroundRepeat: "no-repeat",
@@ -122,16 +122,16 @@ export default function DeveloperMakeForm({
             {isDropdownOpen && (
               <div
                 ref={dropdownRef}
-                className="absolute top-full left-0 right-0 max-h-[250px] overflow-y-auto bg-white border border-gray-200 rounded-lg mt-1 shadow-lg z-50"
+                className="absolute top-full right-0 left-0 z-50 mt-1 max-h-[250px] overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg"
               >
                 {filteredPositions.length > 0 ? (
                   filteredPositions.map((position) => (
                     <div
                       key={position.id}
                       onClick={() => handleSelectPosition(position)}
-                      className={`px-4 py-3 text-sm cursor-pointer transition hover:bg-gray-50 ${
+                      className={`cursor-pointer px-4 py-3 text-sm transition hover:bg-gray-50 ${
                         selectedPosition === position.name
-                          ? "bg-blue-50 text-blue-600 font-medium"
+                          ? "bg-blue-50 font-medium text-blue-600"
                           : "text-gray-700"
                       }`}
                     >
@@ -139,7 +139,7 @@ export default function DeveloperMakeForm({
                     </div>
                   ))
                 ) : (
-                  <div className="px-4 py-3 text-sm text-gray-400 text-center">
+                  <div className="px-4 py-3 text-center text-sm text-gray-400">
                     검색 결과가 없습니다
                   </div>
                 )}
@@ -150,7 +150,7 @@ export default function DeveloperMakeForm({
 
         {/* 전화번호 */}
         <div className="mb-5">
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
+          <label className="mb-2 block text-sm font-semibold text-gray-700">
             전화번호
           </label>
           <input
@@ -159,13 +159,13 @@ export default function DeveloperMakeForm({
             value={formData.phone || ""}
             onChange={handleChange}
             placeholder="전화번호를 입력하세요"
-            className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 transition"
+            className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm transition outline-none focus:border-blue-500"
           />
         </div>
 
         {/* 이메일 */}
         <div className="mb-5">
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
+          <label className="mb-2 block text-sm font-semibold text-gray-700">
             이메일
           </label>
           <input
@@ -174,13 +174,13 @@ export default function DeveloperMakeForm({
             value={formData.email || ""}
             onChange={handleChange}
             placeholder="이메일을 입력하세요"
-            className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 transition"
+            className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm transition outline-none focus:border-blue-500"
           />
         </div>
 
         {/* 비밀번호 */}
         <div className="mb-5">
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
+          <label className="mb-2 block text-sm font-semibold text-gray-700">
             비밀번호
           </label>
           <input
@@ -189,14 +189,14 @@ export default function DeveloperMakeForm({
             value={formData.password || ""}
             onChange={handleChange}
             placeholder="비밀번호를 입력하세요"
-            className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 transition"
+            className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm transition outline-none focus:border-blue-500"
           />
         </div>
 
         {/* 생성 버튼 */}
         <button
           type="submit"
-          className="w-[200px] py-3.5 mt-5 bg-blue-500 text-white text-[15px] font-semibold rounded-lg hover:bg-blue-600 transition"
+          className="mt-5 w-[200px] rounded-lg bg-blue-500 py-3.5 text-[15px] font-semibold text-white transition hover:bg-blue-600"
         >
           생성
         </button>

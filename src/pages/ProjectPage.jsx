@@ -50,7 +50,7 @@ export default function ProjectPage() {
         // 해당 프로젝트의 게시글만 필터링
         // allBoards에서 projectId가 일치하는 게시글만 가져옴
         const boards = allBoards.filter(
-          (board) => board.projectId === parseInt(projectId, 10)
+          (board) => board.projectId === parseInt(projectId, 10),
         );
         setProjectBoards(boards);
       } else {
@@ -92,7 +92,7 @@ export default function ProjectPage() {
   // 프로젝트 데이터가 아직 로드되지 않은 경우
   if (!projectData) {
     return (
-      <div className="flex-1 p-4 flex items-center justify-center">
+      <div className="flex flex-1 items-center justify-center p-4">
         <div className="text-center">
           <p className="text-[16px] text-[#999]">프로젝트를 불러오는 중...</p>
         </div>
@@ -106,35 +106,37 @@ export default function ProjectPage() {
 
   return (
     <>
-      <div className="flex-1 p-4 space-y-3 flex gap-6">
+      <div className="flex flex-1 gap-6 space-y-3 p-4">
         {/* 프로젝트 단계 카드 */}
-        <div className="flex-1 bg-white border border-slate-200 rounded-xl p-5 space-y-4">
+        <div className="flex-1 space-y-4 rounded-xl border border-slate-200 bg-white p-5">
           {/* 프로젝트 정보 헤더 */}
-          <div className="mb-4 pb-4 border-b border-slate-200">
-            <h3 className="text-lg font-bold text-slate-900 mb-2">
+          <div className="mb-4 border-b border-slate-200 pb-4">
+            <h3 className="mb-2 text-lg font-bold text-slate-900">
               {projectData.name}
             </h3>
             <div className="flex gap-4 text-sm text-slate-600">
               <span>고객사: {projectData.client}</span>
               <span>단계: {projectData.stage}</span>
-              {projectData.progress && <span>진행률: {projectData.progress}%</span>}
+              {projectData.progress && (
+                <span>진행률: {projectData.progress}%</span>
+              )}
             </div>
           </div>
 
-          <h3 className="text-sm font-semibold text-slate-900 mb-4">
+          <h3 className="mb-4 text-sm font-semibold text-slate-900">
             프로젝트 게시글 ({filteredPosts.length})
           </h3>
 
           {/* 카테고리 필터 버튼 */}
-          <div className="flex justify-center flex-wrap gap-2">
+          <div className="flex flex-wrap justify-center gap-2">
             {categories.map((cat) => (
               <button
                 key={cat.id}
                 type="button"
-                className={`px-4 py-2.5 rounded-lg text-sm font-medium border transition ${
+                className={`rounded-lg border px-4 py-2.5 text-sm font-medium transition ${
                   activeCategory === cat.id
-                    ? "bg-blue-600 text-white border-blue-600"
-                    : "bg-white text-slate-700 border-slate-200 hover:border-blue-500 hover:text-blue-600"
+                    ? "border-blue-600 bg-blue-600 text-white"
+                    : "border-slate-200 bg-white text-slate-700 hover:border-blue-500 hover:text-blue-600"
                 }`}
                 onClick={() => setActiveCategory(cat.id)}
               >
@@ -145,14 +147,14 @@ export default function ProjectPage() {
 
           {/* 게시글 목록 - 실제 데이터 표시 */}
           {filteredPosts.length === 0 ? (
-            <div className="text-center py-10 text-slate-500">
+            <div className="py-10 text-center text-slate-500">
               <p>해당 카테고리의 게시글이 없습니다.</p>
             </div>
           ) : (
             filteredPosts.map((post) => (
               <div
                 key={post.id}
-                className="flex px-4 py-3 gap-4 border border-slate-200 rounded-lg items-center hover:bg-slate-50 hover:border-blue-200 transition cursor-pointer"
+                className="flex cursor-pointer items-center gap-4 rounded-lg border border-slate-200 px-4 py-3 transition hover:border-blue-200 hover:bg-slate-50"
               >
                 {/* 제목 */}
                 <div className="flex-1 font-medium text-slate-900">
@@ -161,38 +163,38 @@ export default function ProjectPage() {
 
                 {/* 작성자 */}
                 <div className="flex items-center gap-2">
-                  <span className="px-2 py-1 rounded text-xs bg-blue-100 text-blue-600">
+                  <span className="rounded bg-blue-100 px-2 py-1 text-xs text-blue-600">
                     {post.author}
                   </span>
                 </div>
 
                 {/* 날짜 */}
-                <div className="px-2 py-1 bg-slate-100 rounded text-xs text-slate-500">
+                <div className="rounded bg-slate-100 px-2 py-1 text-xs text-slate-500">
                   {post.date}
                 </div>
 
                 {/* 승인 상태 - 뱃지 스타일 */}
                 <div
-                  className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+                  className={`rounded-full px-2.5 py-1 text-xs font-medium ${
                     post.approvalStatus === "approved"
                       ? "bg-green-100 text-green-600"
                       : post.approvalStatus === "rejected"
-                      ? "bg-red-100 text-red-600"
-                      : "bg-amber-100 text-amber-600"
+                        ? "bg-red-100 text-red-600"
+                        : "bg-amber-100 text-amber-600"
                   }`}
                 >
                   {post.approvalStatus === "approved"
                     ? "승인완료"
                     : post.approvalStatus === "rejected"
-                    ? "반려"
-                    : "승인대기"}
+                      ? "반려"
+                      : "승인대기"}
                 </div>
               </div>
             ))
           )}
         </div>
 
-        <div className="flex flex-col h-full ">
+        <div className="flex h-full flex-col">
           {/* 메모 */}
           <Memo />
           {/* 체크 리스트 */}

@@ -61,11 +61,11 @@ export default function UserFormModal({
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
       {/* 모달 컨텐츠 */}
-      <div className="relative bg-white rounded-xl max-w-[900px] w-full max-h-[90vh] overflow-y-auto mx-4">
+      <div className="relative mx-4 max-h-[90vh] w-full max-w-[900px] overflow-y-auto rounded-xl bg-white">
         {/* 닫음 버튼 */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 text-2xl"
+          className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center text-2xl text-gray-400 hover:text-gray-600"
         >
           x
         </button>

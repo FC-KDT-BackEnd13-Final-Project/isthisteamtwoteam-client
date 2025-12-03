@@ -64,10 +64,10 @@ export default function SideBar() {
   }, [location.pathname]);
 
   return (
-    <aside className="w-[260px] bg-white border-r border-slate-200 fixed inset-y-0 overflow-y-auto flex flex-col">
-      <div className="px-5 py-4 border-b border-slate-200">
+    <aside className="fixed inset-y-0 flex w-[260px] flex-col overflow-y-auto border-r border-slate-200 bg-white">
+      <div className="border-b border-slate-200 px-5 py-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white">
             <Icon name="user" />
           </div>
           <div>
@@ -79,9 +79,9 @@ export default function SideBar() {
         </div>
       </div>
 
-      <nav className="flex-1 py-5 space-y-6 flex flex-col">
+      <nav className="flex flex-1 flex-col space-y-6 py-5">
         <div>
-          <p className="px-5 mb-2 text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase">
+          <p className="mb-2 px-5 text-[11px] font-semibold tracking-[0.08em] text-slate-400 uppercase">
             GENERAL
           </p>
           <div className="space-y-1">
@@ -92,15 +92,14 @@ export default function SideBar() {
                   setActiveMenu(item.label);
                   handleClick(item.path);
                 }}
-                className={`flex items-center gap-3 px-5 py-3 font-medium text-sm relative
-                  ${
-                    activeMenu === item.label
-                      ? " bg-blue-50 text-blue-600"
-                      : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
-                  }`}
+                className={`relative flex items-center gap-3 px-5 py-3 text-sm font-medium ${
+                  activeMenu === item.label
+                    ? " bg-blue-50 text-blue-600"
+                    : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+                }`}
               >
                 {activeMenu === item.label && (
-                  <span className="absolute left-0 top-0 h-full w-[3px] bg-blue-600" />
+                  <span className="absolute top-0 left-0 h-full w-[3px] bg-blue-600" />
                 )}
                 <Icon name={item.icon} />
                 <span>{item.label}</span>
@@ -110,7 +109,7 @@ export default function SideBar() {
         </div>
 
         <div className="mt-auto">
-          <p className="px-5 mb-2 text-[11px] font-semibold text-slate-400 tracking-[0.08em] uppercase">
+          <p className="mb-2 px-5 text-[11px] font-semibold tracking-[0.08em] text-slate-400 uppercase">
             SETTINGS
           </p>
           <div className="space-y-1">
@@ -121,15 +120,14 @@ export default function SideBar() {
                   setActiveMenu(item.label);
                   handleClick(item.path);
                 }}
-                className={`flex items-center gap-3 px-5 py-3 font-medium text-sm relative
-                  ${
-                    activeMenu === item.label
-                      ? "bg-blue-50 text-blue-600"
-                      : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
-                  }`}
+                className={`relative flex items-center gap-3 px-5 py-3 text-sm font-medium ${
+                  activeMenu === item.label
+                    ? "bg-blue-50 text-blue-600"
+                    : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+                }`}
               >
                 {activeMenu === item.label && (
-                  <span className="absolute left-0 top-0 h-full w-[3px] bg-blue-600" />
+                  <span className="absolute top-0 left-0 h-full w-[3px] bg-blue-600" />
                 )}
                 <Icon name={item.icon} />
                 <span>{item.label}</span>
