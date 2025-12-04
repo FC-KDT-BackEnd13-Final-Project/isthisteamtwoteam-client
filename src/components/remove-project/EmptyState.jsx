@@ -10,12 +10,12 @@ import { EmptyTrashIcon } from "./Icons";
  * <EmptyState />
  */
 const EmptyState = () => (
-  <div className="px-5 py-20 text-center text-[#999]">
+  <div className="text-center py-20 px-5 text-[#999]">
     {/* 빈 휴지통 아이콘 */}
     <EmptyTrashIcon />
 
     {/* 메인 메시지 */}
-    <p className="mb-2 text-[15px]">삭제된 프로젝트가 없습니다.</p>
+    <p className="text-[15px] mb-2">삭제된 프로젝트가 없습니다.</p>
 
     {/* 안내 메시지 */}
     <p className="text-[13px] text-[#bbb]">휴지통이 비어있습니다.</p>
