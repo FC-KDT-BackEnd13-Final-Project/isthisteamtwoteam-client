@@ -72,20 +72,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-// export const allProjectsData = [
-//   {
-//     id: 1,
-//     name: "전자상거래 플랫폼 구축",
-//     client: "㈜신세계",
-//     startDate: "2024/01/15",
-//     updateDate: "2024/11/20",
-//     stage: "개발",
-//     number: "PRJ-2024-001",
-//     description: "대규모 온라인 쇼핑몰 구축 프로젝트",
-//     manager: "김동균",
-//     team: ["김동균", "이민수", "박지영"],
-//     progress: 65,
-//     budget: "5억원",
-//     status: "진행중",
-//   },
