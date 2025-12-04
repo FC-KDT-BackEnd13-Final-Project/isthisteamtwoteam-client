@@ -1,4 +1,4 @@
-import { RestoreIcon, TrashIcon } from "./Icons";
+import { RestoreIcon, TrashIcon } from "../../../shared/ui/Icon/RemoveProjectIcon";
 
 /**
  * 삭제된 프로젝트 항목 컴포넌트
@@ -14,7 +14,7 @@ import { RestoreIcon, TrashIcon } from "./Icons";
  * @param {Function} onDelete - 영구삭제 버튼 클릭 함수
  *
  * 사용 예시:
- * <ProjectItem
+ * <RemovedProjectItem
  *   project={{ id: 'PRJ-001', name: '프로젝트', client: '클라이언트', ... }}
  *   isSelected={false}
  *   onToggle={(id) => console.log('선택', id)}
@@ -22,7 +22,7 @@ import { RestoreIcon, TrashIcon } from "./Icons";
  *   onDelete={(id) => console.log('삭제', id)}
  * />
  */
-const ProjectItem = ({
+const RemovedProjectItem = ({
   project,
   isSelected,
   onToggle,
@@ -109,4 +109,4 @@ const ProjectItem = ({
   );
 };
 
-export default ProjectItem;
+export default RemovedProjectItem;

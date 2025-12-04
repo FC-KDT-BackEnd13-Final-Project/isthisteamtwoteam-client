@@ -4,9 +4,10 @@ import { useState } from "react";
 import { initialRemovedProjects } from "../../../data/mockRemovedProjects";
 
 // 컴포넌트 가져오기
-import ProjectItem from "../../../components/remove-project/ProjectItem";
-import EmptyState from "../../../components/remove-project/EmptyState";
-import ControlBar from "../../../components/remove-project/ControlBar";
+import ProjectItem from "../../../entities/project/ui/RemovedProjectItem";
+import EmptyState from "../../../shared/ui/EmptyState/EmptyState";
+import { EmptyTrashIcon } from "../../../shared/ui/Icon/RemoveProjectIcon";
+import ControlBar from "../../../widgets/remove-project-controls/ui/ControlBar";
 
 /**
  * 삭제된 프로젝트 관리 페이지 (휴지통)
@@ -193,7 +194,11 @@ export default function RemoveProjectPage() {
         <div className="overflow-hidden rounded-lg border border-[#e8e8e8]">
           {filteredProjects.length === 0 ? (
             // 검색 결과가 없거나 삭제된 프로젝트가 없을 때
-            <EmptyState />
+            <EmptyState
+              icon={<EmptyTrashIcon />}
+              message="삭제된 프로젝트가 없습니다."
+              subMessage="휴지통이 비어있습니다."
+            />
           ) : (
             // 프로젝트 목록 표시
             filteredProjects.map((project) => (

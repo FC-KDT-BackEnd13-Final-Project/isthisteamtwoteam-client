@@ -1,4 +1,4 @@
-import { ChevronRightIcon } from "./Icons";
+import { ChevronRightIcon } from "../../../shared/ui/Icon/RequestPendingIcon";
 
 // 승인 상태별 스타일 설정
 const STATUS_CONFIG = {

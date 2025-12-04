@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Icon from "../../../shared/ui/Icon/Icon";
-import Memo from "../../../components/Memo";
+import Memo from "../../../widgets/memo/ui/Memo";
 import ChecklistWidget from "../../../widgets/checklist-widget/ui/ChecklistWidget";
 
 // Mock 데이터 import - 프로젝트 데이터 가져오기

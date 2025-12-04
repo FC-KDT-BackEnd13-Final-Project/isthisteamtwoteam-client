@@ -1,4 +1,4 @@
-import { Icons } from "../../../global/components/Icons";
+import { Icons } from "../Icon/GlobalIcon";
 
 /**
  * 페이지네이션 컴포넌트

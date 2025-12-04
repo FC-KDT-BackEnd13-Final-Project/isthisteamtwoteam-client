@@ -1,4 +1,4 @@
-import { InfoIcon, SuccessIcon, WarningIcon, ErrorIcon } from "../../../components/notification/Icons";
+import { InfoIcon, SuccessIcon, WarningIcon, ErrorIcon } from "../../../shared/ui/Icon/NotificationIcon";
 
 // 알림 타입별 아이콘과 스타일 설정
 const TYPE_CONFIG = {

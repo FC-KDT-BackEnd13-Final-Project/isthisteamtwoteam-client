@@ -1,10 +1,11 @@
-import StatCard from "../../components/dashboard/StatCard";
+import StatCard from "./ui/StatCard";
+
 import {
   CheckSquareIcon,
   ClockIcon,
   WrenchIcon,
   XCircleIcon,
-} from "../../components/dashboard/Icons";
+} from "../../shared/ui/Icon/DashboardIcon";
 
 export default function DashboardStats({ activeFilter, onFilterChange }) {
   const stats = [

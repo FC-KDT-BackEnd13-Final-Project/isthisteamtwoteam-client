@@ -4,8 +4,9 @@ import { useState } from "react";
 import { initialChecklists } from "../../../data/mockChecklistData";
 
 // 컴포넌트 가져오기
-import ChecklistItem from "../../../components/checklist/ChecklistItem";
-import EmptyState from "../../../components/checklist/EmptyState";
+import EditableChecklistItem from "./EditableChecklistItem";
+import EmptyState from "../../../shared/ui/EmptyState/EmptyState";
+import { ClipboardIcon } from "../../../shared/ui/Icon/ChecklistIcon";
 
 /**
  * 체크리스트 관리 페이지
@@ -178,14 +179,18 @@ export default function CheckListPage() {
             3. 그 외의 경우 → 체크리스트 항목들을 표시
           */}
           {filteredChecklists.length === 0 && searchTerm === "" ? (
-            <EmptyState />
+            <EmptyState
+              icon={<ClipboardIcon />}
+              message="등록된 체크리스트가 없습니다"
+              subMessage="+ 버튼을 눌러 새로운 체크리스트를 추가하세요"
+            />
           ) : filteredChecklists.length === 0 ? (
             <div className="py-10 text-center text-[#999]">
               검색 결과가 없습니다.
             </div>
           ) : (
             filteredChecklists.map((item) => (
-              <ChecklistItem
+              <EditableChecklistItem
                 key={item.id}
                 item={item}
                 isEditing={editingId === item.id}

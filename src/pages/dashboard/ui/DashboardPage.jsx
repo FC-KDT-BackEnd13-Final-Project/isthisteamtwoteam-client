@@ -36,39 +36,39 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#f5f5f5] px-4 py-5 font-[-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,'Helvetica_Neue',Arial,sans-serif]">
-      <div className="mx-auto max-w-[1400px]">
+      <div className="mx-auto max-w-[1350px]">
         {/* 페이지 제목 */}
         <div>
-          <h1 className="mb-1.5 text-[22px] font-semibold text-[#1a1a1a]">
+          <h1 className="mb-5 text-[22px] font-semibold text-[#1a1a1a]">
             대시보드
           </h1>
         </div>
+
+        {/* 게시물과 프로젝트에 관한 상태 카드들 */}
+        <DashboardStats
+          activeFilter={activeFilter}
+          onFilterChange={handleFilterChange}
+        />
+
+        {/* 필터링된 목록 */}
+        <FilteredList
+          activeFilter={activeFilter}
+          title={listTitle}
+          pendingApprovals={pendingApprovals}
+          rejectedDocuments={rejectedDocuments}
+          progressProjects={progressProjects}
+          maintenanceProjects={maintenanceProjects}
+          onViewBoard={handleViewBoard}
+          onViewProject={handleViewProject}
+        />
+
+        {/* 모든 프로젝트 리스트 */}
+        <ProjectList
+          projects={allProjectsData}
+          onViewProject={handleViewProject}
+          onCreateProject={handleCreateProject}
+        />
       </div>
-
-      {/* 게시물과 프로젝트에 관한 상태 카드들 */}
-      <DashboardStats
-        activeFilter={activeFilter}
-        onFilterChange={handleFilterChange}
-      />
-
-      {/* 필터링된 목록 */}
-      <FilteredList
-        activeFilter={activeFilter}
-        title={listTitle}
-        pendingApprovals={pendingApprovals}
-        rejectedDocuments={rejectedDocuments}
-        progressProjects={progressProjects}
-        maintenanceProjects={maintenanceProjects}
-        onViewBoard={handleViewBoard}
-        onViewProject={handleViewProject}
-      />
-
-      {/* 모든 프로젝트 리스트 */}
-      <ProjectList
-        projects={allProjectsData}
-        onViewProject={handleViewProject}
-        onCreateProject={handleCreateProject}
-      />
     </div>
   );
 }
