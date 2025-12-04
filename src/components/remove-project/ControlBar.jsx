@@ -39,16 +39,16 @@ const ControlBar = ({
   onSearchChange,
 }) => {
   return (
-    <div className="mb-5 flex items-center justify-between rounded-lg bg-[#f8f9fa] p-4">
+    <div className="flex justify-between items-center mb-5 p-4 bg-[#f8f9fa] rounded-lg">
       {/* 왼쪽: 전체 선택 및 일괄 작업 버튼 */}
-      <div className="flex items-center gap-3">
+      <div className="flex gap-3 items-center">
         {/* 전체 선택 체크박스 */}
         <label className="flex items-center gap-2 text-[14px] text-[#666]">
           <input
             type="checkbox"
             checked={isAllSelected}
             onChange={(e) => onSelectAll(e.target.checked)}
-            className="h-[18px] w-[18px] cursor-pointer"
+            className="w-[18px] h-[18px] cursor-pointer"
           />
           <span>전체 선택</span>
         </label>
@@ -57,10 +57,10 @@ const ControlBar = ({
         <button
           onClick={onRestoreSelected}
           disabled={!hasSelection}
-          className={`flex cursor-pointer items-center gap-1 rounded-[6px] border-none px-3 py-1.5 text-[12px] font-medium transition-all duration-200 ${
+          className={`py-1.5 px-3 border-none rounded-[6px] text-[12px] font-medium cursor-pointer transition-all duration-200 flex items-center gap-1 ${
             hasSelection
               ? "bg-[#5a9aeb] text-white hover:bg-[#4a8ada]"
-              : "cursor-not-allowed bg-[#e0e0e0] text-[#999]"
+              : "bg-[#e0e0e0] text-[#999] cursor-not-allowed"
           }`}
         >
           <RestoreIcon />
@@ -71,10 +71,10 @@ const ControlBar = ({
         <button
           onClick={onDeleteSelected}
           disabled={!hasSelection}
-          className={`flex cursor-pointer items-center gap-1 rounded-[6px] border-none px-3 py-1.5 text-[12px] font-medium transition-all duration-200 ${
+          className={`py-1.5 px-3 border-none rounded-[6px] text-[12px] font-medium cursor-pointer transition-all duration-200 flex items-center gap-1 ${
             hasSelection
               ? "bg-[#ff6b6b] text-white hover:bg-[#ff5252]"
-              : "cursor-not-allowed bg-[#e0e0e0] text-[#999]"
+              : "bg-[#e0e0e0] text-[#999] cursor-not-allowed"
           }`}
         >
           <TrashIcon />
@@ -83,14 +83,14 @@ const ControlBar = ({
       </div>
 
       {/* 오른쪽: 검색 입력창 */}
-      <div className="flex w-[300px] items-center gap-2 rounded-[6px] border border-[#e0e0e0] bg-white px-3 py-2">
+      <div className="flex items-center gap-2 py-2 px-3 bg-white border border-[#e0e0e0] rounded-[6px] w-[300px]">
         <SearchIcon />
         <input
           type="text"
           placeholder="프로젝트 검색..."
           value={searchQuery}
           onChange={onSearchChange}
-          className="flex-1 border-none text-[14px] outline-none"
+          className="flex-1 border-none outline-none text-[14px]"
         />
       </div>
     </div>

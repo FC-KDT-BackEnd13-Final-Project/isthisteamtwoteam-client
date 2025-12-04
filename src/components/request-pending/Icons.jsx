@@ -52,7 +52,7 @@ export const ChevronRightIcon = () => (
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
-    className="h-4 w-4"
+    className="w-4 h-4"
   >
     <path
       strokeLinecap="round"

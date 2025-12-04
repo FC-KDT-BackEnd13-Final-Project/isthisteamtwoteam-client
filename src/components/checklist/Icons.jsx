@@ -8,7 +8,7 @@ export const ClipboardIcon = () => (
     fill="none"
     viewBox="0 0 24 24"
     stroke="currentColor"
-    className="mb-4 h-20 w-20 text-[#cbd5e0]"
+    className="w-20 h-20 mb-4 text-[#cbd5e0]"
   >
     <path
       strokeLinecap="round"

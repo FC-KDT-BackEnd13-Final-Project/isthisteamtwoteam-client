@@ -34,37 +34,37 @@ const ProjectItem = ({
     <img
       src={project.imageUrl}
       alt={project.name}
-      className="h-full w-full rounded-lg object-cover"
+      className="w-full h-full object-cover rounded-lg"
     />
   ) : (
     project.name.substring(0, 2)
   );
 
   return (
-    <div className="flex items-center border-b border-[#e8e8e8] px-5 py-4 transition-all duration-200 last:border-b-0 hover:bg-[#fafafa]">
+    <div className="flex items-center py-4 px-5 border-b border-[#e8e8e8] last:border-b-0 transition-all duration-200 hover:bg-[#fafafa]">
       {/* 선택 체크박스 */}
       <div className="mr-4">
         <input
           type="checkbox"
           checked={isSelected}
           onChange={() => onToggle(project.id)}
-          className="h-[18px] w-[18px] cursor-pointer"
+          className="w-[18px] h-[18px] cursor-pointer"
         />
       </div>
 
       {/* 프로젝트 로고 */}
-      <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-lg bg-[#f0f6ff] text-[16px] font-semibold text-[#5a9aeb]">
+      <div className="w-12 h-12 flex items-center justify-center bg-[#f0f6ff] rounded-lg mr-4 text-[16px] font-semibold text-[#5a9aeb]">
         {logo}
       </div>
 
       {/* 프로젝트 정보 영역 */}
-      <div className="grid min-w-0 flex-1 grid-cols-[2fr_1.5fr_1fr_1fr] items-center gap-6">
+      <div className="flex-1 min-w-0 grid grid-cols-[2fr_1.5fr_1fr_1fr] gap-6 items-center">
         {/* 프로젝트 ID 및 이름 */}
         <div className="min-w-0">
-          <div className="mb-1 text-[13px] font-medium text-[#5a9aeb]">
+          <div className="text-[13px] font-medium text-[#5a9aeb] mb-1">
             {project.id}
           </div>
-          <div className="overflow-hidden text-[14px] text-ellipsis whitespace-nowrap text-[#333]">
+          <div className="text-[14px] text-[#333] overflow-hidden text-ellipsis whitespace-nowrap">
             {project.name}
           </div>
         </div>
@@ -86,11 +86,11 @@ const ProjectItem = ({
       </div>
 
       {/* 액션 버튼 영역 */}
-      <div className="ml-4 flex gap-2">
+      <div className="flex gap-2 ml-4">
         {/* 복원 버튼 */}
         <button
           onClick={() => onRestore(project.id)}
-          className="flex cursor-pointer items-center gap-1 rounded-[6px] border border-[#5a9aeb] bg-white px-3 py-1.5 text-[12px] text-[#5a9aeb] transition-all duration-200 hover:bg-[#f0f6ff]"
+          className="py-1.5 px-3 border border-[#5a9aeb] bg-white rounded-[6px] text-[12px] text-[#5a9aeb] cursor-pointer transition-all duration-200 flex items-center gap-1 hover:bg-[#f0f6ff]"
         >
           <RestoreIcon />
           복원
@@ -99,7 +99,7 @@ const ProjectItem = ({
         {/* 영구삭제 버튼 */}
         <button
           onClick={() => onDelete(project.id)}
-          className="flex cursor-pointer items-center gap-1 rounded-[6px] border border-[#ff6b6b] bg-white px-3 py-1.5 text-[12px] text-[#ff6b6b] transition-all duration-200 hover:bg-[#fff5f5]"
+          className="py-1.5 px-3 border border-[#ff6b6b] bg-white rounded-[6px] text-[12px] text-[#ff6b6b] cursor-pointer transition-all duration-200 flex items-center gap-1 hover:bg-[#fff5f5]"
         >
           <TrashIcon />
           영구삭제
