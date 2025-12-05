@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 // Mock 데이터 import - 게시글 데이터 가져오기
 import { getBoardById } from "../../../data/mockBoards";
@@ -147,18 +147,10 @@ const FileItem = ({ file, onDownload }) => (
   </div>
 );
 
-/**
- * BoardPage 메인 컴포넌트
- * 게시글 상세 정보를 표시합니다.
- * 대시보드에서 전달받은 boardId를 사용하여 해당 게시글의 데이터를 조회합니다.
- */
+// BoardPage 메인 컴포넌트
 export default function BoardPage() {
-  // ============================================
-  // React Router hooks - 대시보드에서 전달받은 데이터 읽기
-  // ============================================
-
-  // location.state에서 boardId를 가져옴 (대시보드에서 navigate로 전달)
   const location = useLocation();
+  const navigate = useNavigate();
   const { boardId } = location.state || {};
 
   // ============================================
@@ -221,6 +213,7 @@ export default function BoardPage() {
 
   const handleViewHistory = () => {
     alert("게시글 히스토리 페이지로 이동합니다.");
+    navigate(`/project/board/history/${boardId}`);
   };
 
   const handleEditPost = () => {
