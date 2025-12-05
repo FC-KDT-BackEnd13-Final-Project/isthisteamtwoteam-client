@@ -7,7 +7,7 @@ import { useEffect, useRef } from "react";
  * 편집 모드와 일반 모드 두 가지 상태가 있습니다.
  *
  * 사용 예시:
- * <ChecklistItem
+ * <EditableChecklistItem
  *   item={{ id: 1, text: "요구사항 정의서 파일 업로드" }}
  *   isEditing={false}
  *   editingText=""
@@ -18,7 +18,7 @@ import { useEffect, useRef } from "react";
  *   onCancel={() => console.log('취소')}
  * />
  */
-const ChecklistItem = ({
+const EditableChecklistItem = ({
   item,           // 체크리스트 항목 데이터 { id, text }
   onEdit,         // 편집 버튼 클릭 시 실행할 함수
   onDelete,       // 삭제 버튼 클릭 시 실행할 함수
@@ -123,4 +123,4 @@ const ChecklistItem = ({
   );
 };
 
-export default ChecklistItem;
+export default EditableChecklistItem;

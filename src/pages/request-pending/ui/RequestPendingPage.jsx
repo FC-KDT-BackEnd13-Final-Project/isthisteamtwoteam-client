@@ -6,9 +6,9 @@ import {
   ClockIcon,
   CheckCircleIcon,
   XCircleIcon,
-} from "../../../components/request-pending/Icons";
-import StatCard from "../../../components/request-pending/StatCard";
-import Section from "../../../components/request-pending/Section";
+} from "../../../shared/ui/Icon/RequestPendingIcon";
+import StatCard from "../../../widgets/request-pending-stats/ui/StatCard";
+import Section from "../../../widgets/request-pending-section/ui/Section";
 
 /**
  * 승인 요청 알림 페이지
@@ -35,8 +35,8 @@ export default function RequestPendingPage() {
   // ========================================
 
   return (
-    <div className="min-h-screen bg-[#f5f5f5] px-4 py-5 font-[-apple-system,BlinkMacSystemFont,'Segoe_UI','Roboto','Oxygen','Ubuntu',sans-serif] leading-normal text-[#0a0a0a]">
-      <div className="mx-auto max-w-[1200px]">
+    <div className="px-min-h-screen bg-[#f5f5f5] py-5 font-[-apple-system,BlinkMacSystemFont,'Segoe_UI','Roboto','Oxygen','Ubuntu',sans-serif] leading-normal text-[#0a0a0a]">
+      <div className="mx-auto max-w-[1350px]">
         {/* ========== 헤더 ========== */}
         <div className="mb-6">
           {/* 페이지 제목 */}

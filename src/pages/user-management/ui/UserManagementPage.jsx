@@ -1,7 +1,10 @@
 import { useState, useMemo } from "react";
 
 // 설정 및 데이터 가져오기
-import { tabs as tabsConfig, tableConfig } from "../../../shared/config/tableConfig";
+import {
+  tabs as tabsConfig,
+  tableConfig,
+} from "../../../shared/config/tableConfig";
 import { mockUsers } from "../../../data/mockUsers";
 
 // 컴포넌트 가져오기
@@ -192,7 +195,7 @@ export default function UserManagementPage() {
 
   return (
     <div className="min-h-screen bg-gray-100 font-sans">
-      <div className="mx-auto max-w-[1400px] p-5">
+      <div className="mx-auto max-w-[1350px]">
         {/* 페이지 헤더 */}
         <div className="mb-5 py-8">
           <h1 className="mb-3 text-3xl font-bold text-gray-900">회원관리</h1>

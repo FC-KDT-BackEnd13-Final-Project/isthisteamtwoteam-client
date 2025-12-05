@@ -1,4 +1,4 @@
-// 아이콘 컴포넌트
+// 전역적으로 사용하는 범용 아이콘 컴포넌트
 export const Icons = {
   search: (
     <svg

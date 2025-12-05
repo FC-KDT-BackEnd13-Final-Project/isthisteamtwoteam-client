@@ -7,7 +7,7 @@ import {
   CloseIcon,
   CheckIcon,
   EmptyIcon,
-} from "../../../components/notification/Icons";
+} from "../../../shared/ui/Icon/NotificationIcon";
 import NotificationItem from "../../../entities/notification/ui/NotificationItem";
 
 // 날짜 포맷 함수 가져오기

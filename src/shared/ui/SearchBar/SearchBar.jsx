@@ -1,4 +1,4 @@
-import { Icons } from "../../../global/components/Icons";
+import { Icons } from "../Icon/GlobalIcon";
 
 /**
  * 검색 바 컴포넌트

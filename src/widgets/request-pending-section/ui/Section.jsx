@@ -1,4 +1,4 @@
-import ApprovalItem from "./ApprovalItem";
+import ApprovalItem from "../../../entities/approval/ui/ApprovalItem";
 
 /**
  * 섹션 컴포넌트
