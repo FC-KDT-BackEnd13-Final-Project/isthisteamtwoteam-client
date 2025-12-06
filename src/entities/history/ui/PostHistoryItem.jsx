@@ -2,7 +2,7 @@
  * 히스토리 아코디언 항목 컴포넌트
  * 개별 변경 이력을 아코디언 형태로 표시합니다.
  */
-export default function HistoryItem({ history, isOpen, onToggle }) {
+export default function PostHistoryItem({ history, isOpen, onToggle }) {
   return (
     <div
       className={`mb-4 rounded-[10px] border transition-all duration-200 ${
