@@ -20,10 +20,10 @@ export default function HistoryFilter({ activeFilter = "all", onChange }) {
             type="button"
             onClick={() => onChange(f.key)}
             className={[
-              "inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium transition",
+              "inline-flex items-center justify-center rounded-full border text-xs font-medium transition w-[100px] h-7 bg-white",
               isActive
-                ? "border-indigo-400 bg-indigo-100 text-indigo-700"
-                : "border-slate-300 bg-white text-slate-600 hover:border-slate-400 hover:bg-slate-50",
+                ? "border-indigo-400 text-indigo-700"
+                : "border-slate-300 text-slate-600 hover:border-slate-400 hover:bg-slate-50",
             ].join(" ")}
           >
             {f.label}

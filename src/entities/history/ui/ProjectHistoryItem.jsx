@@ -52,45 +52,45 @@ export default function ProjectHistoryItem({ item }) {
 
         {/* 상세 정보 */}
         {detail && (
-          <div className="mt-3 p-3 bg-slate-700 border border-slate-600 rounded-md text-xs space-y-1.5">
+          <div className="mt-3 p-3 bg-white border border-slate-300 rounded-md text-xs space-y-1.5">
             {detail.client && (
               <div className="flex gap-2">
-                <span className="font-medium text-slate-300 min-w-20">
+                <span className="font-medium text-slate-600 min-w-20">
                   고객사:
                 </span>
-                <span className="text-slate-200">{detail.client}</span>
+                <span className="text-slate-700">{detail.client}</span>
               </div>
             )}
             {detail.period && (
               <div className="flex gap-2">
-                <span className="font-medium text-slate-300 min-w-20">
+                <span className="font-medium text-slate-600 min-w-20">
                   프로젝트 기간:
                 </span>
-                <span className="text-slate-200">{detail.period}</span>
+                <span className="text-slate-700">{detail.period}</span>
               </div>
             )}
             {detail.step && (
               <div className="flex gap-2">
-                <span className="font-medium text-slate-300 min-w-20">
+                <span className="font-medium text-slate-600 min-w-20">
                   초기 단계:
                 </span>
-                <span className="text-slate-200">{detail.step}</span>
+                <span className="text-slate-700">{detail.step}</span>
               </div>
             )}
             {detail.reason && (
               <div className="flex gap-2">
-                <span className="font-medium text-slate-300 min-w-20">
+                <span className="font-medium text-slate-600 min-w-20">
                   이유:
                 </span>
-                <span className="text-slate-200">{detail.reason}</span>
+                <span className="text-slate-700">{detail.reason}</span>
               </div>
             )}
             {detail.approver && (
               <div className="flex gap-2">
-                <span className="font-medium text-slate-300 min-w-20">
+                <span className="font-medium text-slate-600 min-w-20">
                   승인자:
                 </span>
-                <span className="text-slate-200">{detail.approver}</span>
+                <span className="text-slate-700">{detail.approver}</span>
               </div>
             )}
           </div>
