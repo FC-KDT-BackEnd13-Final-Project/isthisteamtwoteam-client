@@ -1,8 +1,10 @@
 import { useState } from "react";
 import Icon from "../../../shared/ui/Icon/Icon";
+import { useNavigate } from "react-router-dom";
 
 export default function Header() {
   const [activeMainTab, setActiveMainTab] = useState("checklist");
+  const navigate = useNavigate();
 
   const tabs = [
     { id: "pending", label: "승인 대기", badge: 5, icon: "clock" },

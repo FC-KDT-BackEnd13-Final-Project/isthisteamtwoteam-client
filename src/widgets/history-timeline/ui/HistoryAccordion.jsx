@@ -1,5 +1,5 @@
 import { useState } from "react";
-import HistoryItem from "../../../entities/history/ui/HistoryItem";
+import PostHistoryItem from "../../../entities/history/ui/PostHistoryItem";
 
 export default function HistoryAccordion({ histories }) {
   const [openId, setOpenId] = useState(1); // 첫 번째 항목이 기본으로 열림
@@ -11,7 +11,7 @@ export default function HistoryAccordion({ histories }) {
   return (
     <div>
       {histories.map((history) => (
-        <HistoryItem
+        <PostHistoryItem
           key={history.id}
           history={history}
           isOpen={openId === history.id}

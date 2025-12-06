@@ -14,6 +14,7 @@ import RemoveProjectPage from "../pages/remove-project/ui/RemoveProjectPage";
 import CheckListPage from "../pages/checklist/ui/CheckListPage";
 import BoardPage from "../pages/board/ui/BoardPage";
 import PostHistoryPage from "../pages/post-history/ui/PostHistoryPage";
+import ProjectHistoryPage from "../pages/project-history/ui/ProjectHistoryPage";
 
 function App() {
   return (
@@ -27,6 +28,10 @@ function App() {
         <Route path=":projectId" element={<ProjectPage />} />
         <Route path="board" element={<BoardPage />} />
         <Route path="board/history/:boardId" element={<PostHistoryPage />} />
+        <Route
+          path="project-history/:projectId"
+          element={<ProjectHistoryPage />}
+        />
       </Route>
 
       {/* Sidebar만 있는 레이아웃 */}
