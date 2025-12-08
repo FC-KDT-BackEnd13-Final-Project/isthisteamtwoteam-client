@@ -1,4 +1,4 @@
-import "../styles/App.css";
+import "./styles/App.css";
 import { Route, Routes } from "react-router-dom";
 import SidebarHeaderLayout from "./components/layout/SidebarHeaderLayout";
 import SidebarLayout from "./components/layout/SidebarLayout";
