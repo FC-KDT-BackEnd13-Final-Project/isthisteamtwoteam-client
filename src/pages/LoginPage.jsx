@@ -1,14 +1,17 @@
 import { useState } from "react";
 import Icon from "../components/common/icons/Icon";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthConext";
+import api from "../utils/api/axios";
 
 export default function LoginPage() {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   let navigate = useNavigate();
+  const {login} = useAuth();
 
   // 로그인 처리 함수
   const handleLogin = async (e) => {
@@ -21,24 +24,26 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      // TODO: 여기에 API 호출 추가 예정
-      console.log("로그인 시도:", { username, password });
+      const response = await login({ 
+        email,
+        password 
+      });
 
-      // 임시: 2초 후 성공한 것 처럼 처리
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      if (username === "test" && password === "1234") {
-        // 성공시 홈으로 이동
-        navigate("/");
-      } else {
-        throw new Error("아이디 또는 비밀번호가 올바르지 않습니다.");
+      const sessionRes = await api.get("/auth/session");
+      const userRole = sessionRes.data.response.role; // "ADMIN"
+      
+      // role에 따라 다른 페이지로 이동
+      if (userRole === 'ADMIN') {
+        navigate("/"); // 관리자 대시보드
+      } else if (userRole === 'DEVELOPER') {
+        navigate("/developer/dashboard"); // 개발사 페이지
+      } else if (userRole === 'CUSTOMER') {
+        navigate("/customer/dashboard"); // 고객사 페이지
       }
+      
     } catch (err) {
-      // 에러 처리
-      setError("로그인에 실패했습니다. 다시 시도해주세요");
-      console.error("로그인 에러:", err);
+      setError(err.response?.data?.message || "로그인에 실패했습니다.");
     } finally {
-      // 로딩 종료
       setLoading(false);
     }
   };
@@ -46,10 +51,7 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 font-sans">
       <div className="w-full max-w-[400px] px-5">
-        <h1
-          className="mb-10 text-center text-4xl font-semibold text-gray-800"
-          style={{ fontFamily: "'Poppins', sans-serif" }}
-        >
+          <h1 className="mb-10 text-center text-4xl font-semibold text-gray-800">
           Login
         </h1>
 
@@ -63,10 +65,10 @@ export default function LoginPage() {
               />
               <input
                 type="text"
-                placeholder="USERNAME"
+                placeholder="EMAIL"
                 required
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full rounded-lg border border-gray-300 bg-white py-4 pr-5 pl-12 text-base text-gray-800 transition-all outline-none focus:border-gray-500"
               />
             </div>
