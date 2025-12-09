@@ -31,7 +31,7 @@ export default function DashboardPage() {
   };
 
   const handleCreateProject = () => {
-    alert("새 프로젝트 생성 모달 또는 페이지로 이동합니다.");
+    navigate('/create-project');
   };
 
   return (

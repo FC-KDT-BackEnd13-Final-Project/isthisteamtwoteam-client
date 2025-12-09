@@ -19,6 +19,7 @@ import ProjectPage from "./pages/ProjectPage";
 import RemoveProjectPage from "./pages/RemoveProjectPage";
 import RequestPendingPage from "./pages/RequestPendingPage";
 import UserManagementPage from "./pages/UserManagementPage";
+import CreateProjectPage from "./pages/Createprojectpage";
 
 function App() {
   return (
@@ -40,6 +41,9 @@ function App() {
         <Route path="user-management" element={<UserManagementPage />} />
         <Route path="remove-projects" element={<RemoveProjectPage />} />
         <Route path="change-password" element={<ChangePasswordPage />} />
+        <Route path="create-project" element={<CreateProjectPage />} /> 
+
+
       </Route>
 
       {/* ========== 개발사 전용 페이지 ========== */}
