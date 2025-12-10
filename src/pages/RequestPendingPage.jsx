@@ -9,6 +9,21 @@ import {
 } from "../components/common/icons/RequestPendingIcon";
 import StatCard from "../components/requestPending/RequestStatCard";
 import Section from "../components/requestPending/RequestSection";
+import { useEffect, useState } from "react";
+import { getRequestPendingPosts } from "../utils/api/getRequestPendingPostsApi";
+
+
+const [requestPendingPosts,setRequestPendingPosts] = useState(null);
+
+
+  useEffect(()=>{
+    const fetchData = async() => {
+      const response = await getRequestPendingPosts();
+      setRequestPendingPosts(response)
+    }
+    fetchData();
+  },[])
+
 
 /**
  * 승인 요청 알림 페이지
@@ -58,7 +73,7 @@ export default function RequestPendingPage() {
           <StatCard
             icon={<ClockIcon />}
             iconClass="bg-[#fff3e6] text-[#ff9500]"
-            value={approvalData.stats.pending}
+            value={requestPendingPosts.statusCount.pending}
             label="승인 대기"
           />
 
@@ -66,7 +81,7 @@ export default function RequestPendingPage() {
           <StatCard
             icon={<CheckCircleIcon />}
             iconClass="bg-[#e6f7f1] text-[#16a34a]"
-            value={approvalData.stats.approved}
+            value={requestPendingPosts.statusCount.approved}
             label="승인 완료"
           />
 
@@ -74,22 +89,50 @@ export default function RequestPendingPage() {
           <StatCard
             icon={<XCircleIcon />}
             iconClass="bg-[#ffe6e6] text-[#dc2626]"
-            value={approvalData.stats.rejected}
+            value={approvalData.statusCount.rejected}
             label="반려"
           />
         </div>
 
         {/* ========== 카테고리별 승인 요청 목록 ========== */}
-        {approvalData.sections.map((section, index) => (
-          <Section
-            key={index}
-            title={section.title}
-            count={section.count}
-            items={section.items}
-            onViewDetail={handleViewDetail}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
+        {/* ========== 카테고리별 승인 요청 목록 ========== */}
+        <Section
+          title="요구사항 정의"
+          count={requestPendingPosts.stageCount.requirements}
+          items={requestPendingPosts.requirements}
+          onViewDetail={handleViewDetail}
+        />
+        <Section
+          title="화면 설계"
+          count={requestPendingPosts.stageCount.screenDesign}
+          items={requestPendingPosts.screenDesign}
+          onViewDetail={handleViewDetail}
+        />
+        <Section
+          title="디자인, 퍼블리싱"
+          count={requestPendingPosts.stageCount.designPublishing}
+          items={requestPendingPosts.designPublishing}
+          onViewDetail={handleViewDetail}
+        />
+        <Section
+          title="개발"
+          count={requestPendingPosts.stageCount.development}
+          items={requestPendingPosts.development}
+          onViewDetail={handleViewDetail}
+        />
+        <Section
+          title="검수"
+          count={requestPendingPosts.stageCount.qa}
+          items={requestPendingPosts.qa}
+          onViewDetail={handleViewDetail}
+        />
+        <Section
+          title="유지보수"
+          count={requestPendingPosts.stageCount.maintenance}
+          items={requestPendingPosts.maintenance}
+          onViewDetail={handleViewDetail}
+        />
+              </div>
+            </div>
+          );
+        }
