@@ -80,7 +80,6 @@ const UserTable = ({
                   onChange={(e) => onSelectOne(user.id, e.target.checked)}
                 />
               </td>
-
               {/* 사용자 데이터 컬럼들 */}
               {columns.map((col) => (
                 <td
