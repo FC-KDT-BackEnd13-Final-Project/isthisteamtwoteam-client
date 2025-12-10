@@ -26,8 +26,6 @@ const StatCard = ({
   iconColorClass, // 아이콘 배경 색상 (예: "bg-[#fff3e6] text-[#ff9500]")
   label, // 카드 제목 (예: "승인 대기")
   value, // 통계 숫자 (예: "8")
-  change, // 변화량 텍스트 (예: "+2 오늘")
-  changeType, // 변화 방향 ("up" 또는 "down")
   isActive, // 현재 선택된 카드인지 여부
   onClick, // 클릭했을 때 실행할 함수
 }) => {
@@ -58,19 +56,6 @@ const StatCard = ({
         <div className="mb-2 text-[24px] leading-none font-bold text-[#1a1a1a]">
           {value}
         </div>
-
-        {/* 변화량 배지 (예: "+2 오늘") */}
-        <span
-          className={`inline-flex items-center gap-1 rounded px-1.5 py-[3px] text-[11px] font-medium ${
-            changeType === "up"
-              ? "bg-[#e6f7f1] text-[#00c48c]" // 증가할 때: 초록색
-              : "bg-[#ffe6e6] text-[#ff3b30]" // 감소할 때: 빨간색
-          } `}
-        >
-          {/* 위/아래 화살표 아이콘 */}
-          {changeType === "up" ? <ChevronUpIcon /> : <ChevronDownIcon />}
-          {change}
-        </span>
       </div>
     </div>
   );

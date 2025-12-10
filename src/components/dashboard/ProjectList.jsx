@@ -31,7 +31,7 @@ export default function ProjectList({
       <div className="grid max-h-[600px] grid-cols-[repeat(auto-fill,minmax(380px,1fr))] gap-4 overflow-y-auto pr-2 max-[1200px]:grid-cols-[repeat(auto-fill,minmax(320px,1fr))] max-[768px]:grid-cols-1">
         {projects.map((project) => (
           <ProjectCard
-            key={project.id}
+            key={project.project_id}
             project={project}
             onView={onViewProject}
           />
