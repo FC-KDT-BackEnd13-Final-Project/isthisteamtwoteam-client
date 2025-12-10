@@ -12,13 +12,12 @@ export default function FilteredList({
   onViewBoard,
   onViewProject,
 }) {
-  // 필터링 로직을 Widget 내부로 이동
   const { type, data, statusClass, statusText } = useMemo(() => {
     if (activeFilter === "pending") {
       return {
         type: "board",
         data: pendingApprovals,
-        statusClass: "bg-[#fff3e6 text-[#ff9500]",
+        statusClass: "bg-[#fff3e6] text-[#ff9500]",
         statusText: "승인대기",
       };
     }
@@ -74,14 +73,13 @@ export default function FilteredList({
             if (type === "board") {
               return (
                 <DocumentItem
-                  key={item.id}
-                  id={item.id}
+                  key={item.postId}
+                  id={item.postId}
                   title={item.title}
-                  project={item.project}
-                  client={item.client}
-                  date={item.date}
-                  time={item.time}
-                  reason={item.reason}
+                  project={item.projectName}
+                  client={item.companyName}
+                  date={item.createdAt}
+                  reason={item.rejectReason}
                   status={statusText}
                   statusClass={statusClass}
                   onView={onViewBoard}
@@ -90,12 +88,12 @@ export default function FilteredList({
             }
             return (
               <ProjectItem
-                key={item.id}
-                id={item.id}
-                logo={item.name.substring(0, 2)}
-                name={item.name}
-                subtitle={item.client}
-                status={item.status}
+                key={item.projectId}
+                id={item.projectId}
+                logo={item.projectName.substring(0, 2)}
+                name={item.projectName}
+                subtitle={item.companyName}
+                status={item.projectStageName}
                 statusClass={statusClass}
                 onView={onViewProject}
               />

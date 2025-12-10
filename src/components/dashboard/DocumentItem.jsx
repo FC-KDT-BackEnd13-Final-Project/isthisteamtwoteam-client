@@ -36,7 +36,24 @@ export default function DocumentItem({
 
   const boardId = location.state?.boardId;
 
-  console.log(boardId);
+  // API 날짜 형식을 "날짜 · 시간" 형식으로 변환
+  const formatDateTime = (dateString) => {
+    if (!dateString) return "";
+    const dateObj = new Date(dateString);
+    const dateStr = dateObj.toLocaleDateString('ko-KR', { 
+      year: 'numeric', 
+      month: '2-digit', 
+      day: '2-digit' 
+    }).replace(/\. /g, '-').replace('.', '');
+    const timeStr = dateObj.toLocaleTimeString('ko-KR', { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      hour12: false
+    });
+    return `${dateStr} · ${timeStr}`;
+  };
+
+  
   return (
     <div
       className="flex flex-col gap-2 p-3 border border-[#b0b0b0] rounded-[10px] transition-all duration-200 hover:bg-[#f8f9fa] hover:border-[#a0a0a0] cursor-pointer"
