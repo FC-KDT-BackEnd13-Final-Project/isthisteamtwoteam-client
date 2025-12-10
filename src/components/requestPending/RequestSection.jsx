@@ -36,7 +36,7 @@ const Section = ({
       {/* 승인 요청 항목 목록 */}
       <div className="flex flex-col gap-3">
         {items.map((item) => (
-          <ApprovalItem key={item.id} item={item} onViewDetail={onViewDetail} />
+          <ApprovalItem key={item.postId} item={item} onViewDetail={onViewDetail} />
         ))}
       </div>
     </div>

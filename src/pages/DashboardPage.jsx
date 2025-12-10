@@ -4,8 +4,7 @@ import DashboardStats from "../components/dashboard/DashboardStats";
 
 import FilteredList from "../components/dashboard/FilteredList";
 import ProjectList from "../components/dashboard/ProjectList";
-import { getDashboardData } from "../utils/api/dashboardApi";
-import { getDashboardAllProjects } from "../utils/api/dashboardApi";
+import { getDashboardData,getDashboardAllProjects } from "../utils/api/dashboardApi";
 
 
 export default function DashboardPage() {

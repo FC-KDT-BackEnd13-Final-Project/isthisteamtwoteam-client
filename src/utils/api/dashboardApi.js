@@ -1,4 +1,3 @@
-import { Trophy } from 'lucide-react'
 import api from './axios'
 
 export const getDashboardData = async () => {
