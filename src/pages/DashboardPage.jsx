@@ -62,7 +62,7 @@ export default function DashboardPage() {
 
 
   return (
-    <div className="min-h-screen bg-[#f5f5f5] px-4 py-5 font-[-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,'Helvetica_Neue',Arial,sans-serif]">
+    <div className="min-h-screen bg-gray-100 font-sans px-4 py-5 font-[-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,'Helvetica_Neue',Arial,sans-serif]">
       <div className="mx-auto max-w-[1350px]">
         {/* 페이지 제목 */}
         <div>

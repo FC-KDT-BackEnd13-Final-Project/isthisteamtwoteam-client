@@ -11,6 +11,7 @@ export default function ProjectList({
         <h2 className="text-[16px] font-semibold text-[#1a1a1a]">
           모든 프로젝트 리스트
         </h2>
+        
 
         <div className="flex gap-2.5">
           <button
@@ -29,6 +30,11 @@ export default function ProjectList({
       </div>
 
       <div className="grid max-h-[600px] grid-cols-[repeat(auto-fill,minmax(380px,1fr))] gap-4 overflow-y-auto pr-2 max-[1200px]:grid-cols-[repeat(auto-fill,minmax(320px,1fr))] max-[768px]:grid-cols-1">
+        {projects.length === 0 && (
+          <div className="col-span-3 py-10 text-center text-[#999]">
+            <p>진행중인 프로젝트가 없습니다.</p>
+          </div>
+        )}        
         {projects.map((project) => (
           <ProjectCard
             key={project.project_id}

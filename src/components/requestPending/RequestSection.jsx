@@ -35,6 +35,11 @@ const Section = ({
 
       {/* 승인 요청 항목 목록 */}
       <div className="flex flex-col gap-3">
+        {count == 0 && (
+          <div className="col-span-3 py-10 text-center text-[#999]">
+            <p>{title} 요청이 존재하지 않습니다.</p>
+          </div>
+        )}
         {items.map((item) => (
           <ApprovalItem key={item.postId} item={item} onViewDetail={onViewDetail} />
         ))}

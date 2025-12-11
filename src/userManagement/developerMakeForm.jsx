@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { getCompanies } from "../utils/api/dashboardApi";
 
 export default function DeveloperMakeForm({
   handleSubmit,
@@ -7,23 +8,32 @@ export default function DeveloperMakeForm({
 }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedPosition, setSelectedPosition] = useState("");
+  const [selectedCompany, setSelectedCompany] = useState("");
+  const [companies, setCompanies] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const dropdownRef = useRef(null);
   const searchInputRef = useRef(null);
 
-  // 직책 목록
-  const positions = [
-    { id: "pm", name: "PM" },
-    { id: "designer", name: "디자이너" },
-    { id: "publisher", name: "퍼블리셔" },
-    { id: "frontend", name: "프론트엔드 개발자" },
-    { id: "backend", name: "백엔드 개발자" },
-  ];
+  // 회사 목록 불러오기
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        const data = await getCompanies();
+        setCompanies(data);
+        setLoading(false);
+      } catch (error) {
+        console.error("회사 목록 조회 실패:", error);
+        setLoading(false);
+      }
+    };
 
-  // 검색어로 필터링된 직책 목록
-  const filteredPositions = positions.filter((position) =>
-    position.name.toLowerCase().includes(searchTerm.toLowerCase())
+    fetchCompanies();
+  }, []);
+
+  // 검색어로 필터링된 회사 목록
+  const filteredCompanies = companies.filter((company) =>
+    company.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // 외부 클릭 시 드롭다운 닫기
@@ -43,17 +53,17 @@ export default function DeveloperMakeForm({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // 직책 선택 핸들러
-  const handleSelectPosition = (position) => {
-    setSelectedPosition(position.name);
-    setSearchTerm(position.name);
+  // 회사 선택 핸들러
+  const handleSelectCompany = (company) => {
+    setSelectedCompany(company.name);
+    setSearchTerm(company.name);
     setIsDropdownOpen(false);
 
-    // formData에 직책 정보 저장
+    // formData에 회사 ID 저장
     const event = {
       target: {
-        name: "position",
-        value: position.id,
+        name: "companyId",
+        value: company.id,
       },
     };
     handleChange(event);
@@ -61,9 +71,9 @@ export default function DeveloperMakeForm({
 
   // Enter 키로 첫 번째 결과 선택
   const handleKeyDown = (e) => {
-    if (e.key === "Enter" && filteredPositions.length > 0) {
+    if (e.key === "Enter" && filteredCompanies.length > 0) {
       e.preventDefault();
-      handleSelectPosition(filteredPositions[0]);
+      handleSelectCompany(filteredCompanies[0]);
     }
   };
 
@@ -92,10 +102,10 @@ export default function DeveloperMakeForm({
           />
         </div>
 
-        {/* 직책 (검색 가능) */}
+        {/* 회사 (검색 가능) */}
         <div className="mb-5">
           <label className="block text-sm font-semibold text-gray-700 mb-2">
-            직책
+            회사
           </label>
           <div className="relative">
             <input
@@ -108,9 +118,10 @@ export default function DeveloperMakeForm({
               }}
               onFocus={() => setIsDropdownOpen(true)}
               onKeyDown={handleKeyDown}
-              placeholder="직책을 검색하세요"
+              placeholder={loading ? "회사 목록 불러오는 중..." : "회사를 검색하세요"}
               autoComplete="off"
-              className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 transition bg-white cursor-pointer"
+              disabled={loading}
+              className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 transition bg-white cursor-pointer disabled:bg-gray-50"
               style={{
                 backgroundImage: `url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23999' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`,
                 backgroundRepeat: "no-repeat",
@@ -119,23 +130,23 @@ export default function DeveloperMakeForm({
             />
 
             {/* 드롭다운 */}
-            {isDropdownOpen && (
+            {isDropdownOpen && !loading && (
               <div
                 ref={dropdownRef}
                 className="absolute top-full left-0 right-0 max-h-[250px] overflow-y-auto bg-white border border-gray-200 rounded-lg mt-1 shadow-lg z-50"
               >
-                {filteredPositions.length > 0 ? (
-                  filteredPositions.map((position) => (
+                {filteredCompanies.length > 0 ? (
+                  filteredCompanies.map((company) => (
                     <div
-                      key={position.id}
-                      onClick={() => handleSelectPosition(position)}
+                      key={company.id}
+                      onClick={() => handleSelectCompany(company)}
                       className={`px-4 py-3 text-sm cursor-pointer transition hover:bg-gray-50 ${
-                        selectedPosition === position.name
+                        selectedCompany === company.name
                           ? "bg-blue-50 text-blue-600 font-medium"
                           : "text-gray-700"
                       }`}
                     >
-                      {position.name}
+                      {company.name}
                     </div>
                   ))
                 ) : (
@@ -146,6 +157,21 @@ export default function DeveloperMakeForm({
               </div>
             )}
           </div>
+        </div>
+
+        {/* 직책 */}
+        <div className="mb-5">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            직책
+          </label>
+          <input
+            type="text"
+            name="position"
+            value={formData.position || ""}
+            onChange={handleChange}
+            placeholder="직책을 입력하세요 (예: PM, 백엔드 개발자)"
+            className="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm outline-none focus:border-blue-500 transition"
+          />
         </div>
 
         {/* 전화번호 */}
