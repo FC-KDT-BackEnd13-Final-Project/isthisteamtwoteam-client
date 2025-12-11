@@ -20,3 +20,8 @@ export const getDashboardAllProjects = async () => {
         throw error; 
     }
 }
+
+export const getCompanies = async () => {
+  const response = await api.get("/companies");
+  return response.data.response;
+};

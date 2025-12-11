@@ -55,11 +55,11 @@ export default function RequestPendingPage() {
   };
 
   return (
-    <div className="px-min-h-screen bg-[#f5f5f5] py-5">
+    <div className="min-h-screen bg-gray-100 font-sans py-5">
       <div className="mx-auto max-w-[1350px]">
         <div className="mb-6">
           <h1 className="mb-1.5 text-[22px] font-semibold text-[#1a1a1a]">
-            승인 요청 알림
+            승인 요청
           </h1>
 
           <div className="flex items-center gap-2 text-[14px] text-[#999]">

@@ -18,8 +18,8 @@ import ProjectHistoryPage from "./pages/ProjectHistoryPage";
 import ProjectPage from "./pages/ProjectPage";
 import RemoveProjectPage from "./pages/RemoveProjectPage";
 import RequestPendingPage from "./pages/RequestPendingPage";
-import UserManagementPage from "./pages/UserManagementPage";
 import CreateProjectPage from "./pages/Createprojectpage";
+import UserManagementPage from "./pages/UserManagementPage"
 
 function App() {
   return (
@@ -38,7 +38,7 @@ function App() {
         <Route path="notification" element={<NotificationPage />} />
         <Route path="request-pending" element={<RequestPendingPage />} />
         <Route path="checklist" element={<CheckListPage />} />
-        <Route path="user-management" element={<UserManagementPage />} />
+        <Route path="user-management" element={<UserManagementPage/>} />
         <Route path="remove-projects" element={<RemoveProjectPage />} />
         <Route path="change-password" element={<ChangePasswordPage />} />
         <Route path="create-project" element={<CreateProjectPage />} /> 

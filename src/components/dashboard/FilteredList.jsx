@@ -64,7 +64,7 @@ export default function FilteredList({
       <div className="grid max-h-[220px] grid-cols-3 gap-4 overflow-y-auto pr-2.5 max-[1200px]:grid-cols-1">
         {data.length === 0 && (
           <div className="col-span-3 py-10 text-center text-[#999]">
-            <p>항목이 없습니다.</p>
+            <p>{statusText} 항목이 없습니다.</p>
           </div>
         )}
 
