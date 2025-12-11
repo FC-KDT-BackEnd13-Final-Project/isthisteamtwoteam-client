@@ -42,6 +42,7 @@ function App() {
         <Route path="remove-projects" element={<RemoveProjectPage />} />
         <Route path="change-password" element={<ChangePasswordPage />} />
         <Route path="create-project" element={<CreateProjectPage />} /> 
+        <Route path="projects" element={<ProjectPage/>}/>
 
 
       </Route>

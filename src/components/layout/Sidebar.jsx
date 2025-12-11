@@ -15,6 +15,11 @@ export default function Sidebar() {
       path: "/",
     },
     {
+      icon: "folder-open",
+      label: "프로젝트",
+      path: "/projects",
+    },
+    {
       icon: "bell",
       label: "알림",
       path: "/notification",
@@ -24,6 +29,7 @@ export default function Sidebar() {
       label: "승인 대기",
       path: "/request-pending",
     },
+
     {
       icon: "check-square",
       label: "체크리스트",
@@ -92,7 +98,7 @@ export default function Sidebar() {
                   setActiveMenu(item.label);
                   handleClick(item.path);
                 }}
-                className={`relative flex items-center gap-3 px-5 py-3 text-sm font-medium ${
+                className={`relative flex items-center gap-3 px-5 py-3 text-sm font-medium cursor-pointer ${
                   activeMenu === item.label
                     ? " bg-blue-50 text-blue-600"
                     : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
@@ -120,7 +126,7 @@ export default function Sidebar() {
                   setActiveMenu(item.label);
                   handleClick(item.path);
                 }}
-                className={`relative flex items-center gap-3 px-5 py-3 text-sm font-medium ${
+                className={`relative flex items-center gap-3 px-5 py-3 text-sm font-medium cursor-pointer ${
                   activeMenu === item.label
                     ? "bg-blue-50 text-blue-600"
                     : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"

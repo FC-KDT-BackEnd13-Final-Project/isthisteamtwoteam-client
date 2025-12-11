@@ -1,212 +1,355 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import Icon from "../components/common/icons/Icon";
-import ChecklistWidget from "../components/project/ChecklistWidget";
-import Memo from "../components/memo/Memo";
-
-// Mock 데이터 import - 프로젝트 데이터 가져오기
-import { allBoards } from "../utils/data/mockBoards";
-import { getProjectById } from "../utils/data/mockProjects";
+import { useNavigate } from "react-router-dom";
+import { getProjects } from "../utils/api/project/projectApi";
 
 /**
- * ProjectPage 메인 컴포넌트
- * 프로젝트 상세 정보와 해당 프로젝트의 게시글 목록을 표시합니다.
- * URL 파라미터에서 projectId를 가져와 해당 프로젝트의 데이터를 조회합니다.
+ * ProjectsPage - 프로젝트 목록 페이지
+ * HTML 디자인을 참고한 리스트 형태의 프로젝트 관리 페이지
  */
-export default function ProjectPage() {
-  // ============================================
-  // React Router hooks - URL에서 projectId 가져오기
-  // ============================================
-
-  // URL 파라미터에서 projectId를 추출 (예: /project/1 -> projectId = 1)
-  const { projectId } = useParams();
+export default function ProjectsPage() {
+  const navigate = useNavigate();
 
   // ============================================
   // State 관리
   // ============================================
-
-  // 현재 프로젝트 데이터 (ID로 조회한 결과)
-  const [projectData, setProjectData] = useState(null);
-
-  // 현재 프로젝트의 게시글 목록
-  const [projectBoards, setProjectBoards] = useState([]);
-
-  // 현재 선택된 카테고리 (게시글 필터링용)
-  const [activeCategory, setActiveCategory] = useState("all");
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   // ============================================
-  // 데이터 로딩 - projectId로 프로젝트 및 게시글 조회
+  // 데이터 로딩
   // ============================================
-
   useEffect(() => {
-    // projectId가 있으면 해당 프로젝트 데이터를 조회
-    if (projectId) {
-      const project = getProjectById(projectId);
+    loadProjects();
+  }, []);
 
-      if (project) {
-        // 프로젝트 데이터가 있으면 state에 저장
-        setProjectData(project);
-
-        // 해당 프로젝트의 게시글만 필터링
-        // allBoards에서 projectId가 일치하는 게시글만 가져옴
-        const boards = allBoards.filter(
-          (board) => board.projectId === parseInt(projectId, 10),
-        );
-        setProjectBoards(boards);
+  const loadProjects = async () => {
+    try {
+      setLoading(true);
+      const data = await getProjects();
+      
+      // API 응답이 { success, response, message } 형태인 경우
+      if (data.success && data.response) {
+        setProjects(data.response);
+      } else if (Array.isArray(data)) {
+        setProjects(data);
       } else {
-        // 프로젝트를 찾을 수 없는 경우
-        console.error(`프로젝트 ID ${projectId}를 찾을 수 없습니다.`);
+        setProjects([]);
       }
+    } catch (error) {
+      console.error("프로젝트 목록 조회 실패:", error);
+      setProjects([]);
+    } finally {
+      setLoading(false);
     }
-  }, [projectId]); // projectId가 변경될 때마다 실행
+  };
 
   // ============================================
-  // 카테고리 정의
+  // 단계별 탭 정의
   // ============================================
-
-  const categories = [
-    { id: "all", label: "전체" },
-    { id: "requirements", label: "요구사항 정의" },
-    { id: "design", label: "화면설계" },
-    { id: "designPub", label: "디자인/퍼블리싱" },
-    { id: "feedback", label: "피드백" },
-    { id: "development", label: "개발" },
-    { id: "inspection", label: "검수" },
-    { id: "maintenance", label: "유지보수" },
-    { id: "files", label: "업로드된 파일 목록" },
+  const tabs = [
+    { id: "all", label: "전체", stageId: null },
+    { id: "stage1", label: "진행 전", stageId: 1 },
+    { id: "stage2", label: "진행 중단", stageId: 2 },
+    { id: "stage3", label: "요구사항 정의", stageId: 3 },
+    { id: "stage4", label: "화면 설계", stageId: 4 },
+    { id: "stage5", label: "디자인/퍼블리싱", stageId: 5 },
+    { id: "stage6", label: "개발", stageId: 6 },
+    { id: "stage7", label: "검수", stageId: 7 },
+    { id: "stage8", label: "유지보수", stageId: 8 },
+    { id: "stage9", label: "완료", stageId: 9 },
   ];
 
   // ============================================
-  // 게시글 필터링 - 선택된 카테고리에 따라 필터링
+  // 필터링 로직
   // ============================================
+  const getFilteredProjects = () => {
+    let filtered = projects;
 
-  const filteredPosts =
-    activeCategory === "all"
-      ? projectBoards // 전체 카테고리면 모든 게시글 표시
-      : projectBoards.filter((post) => post.category === activeCategory); // 선택된 카테고리의 게시글만 표시
+    // 탭 필터링
+    if (activeTab !== "all") {
+      const tab = tabs.find((t) => t.id === activeTab);
+      if (tab && tab.stageId) {
+        filtered = filtered.filter((p) => p.stageId === tab.stageId);
+      }
+    }
+
+    // 검색 필터링
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (p) =>
+          p.projectName.toLowerCase().includes(query) ||
+          p.stageName.toLowerCase().includes(query) ||
+          `PRJ-${String(p.projectId).padStart(3, "0")}`
+            .toLowerCase()
+            .includes(query),
+      );
+    }
+
+    return filtered;
+  };
+
+  const filteredProjects = getFilteredProjects();
 
   // ============================================
-  // 로딩 처리
+  // 페이지네이션 계산
   // ============================================
+  const totalPages = Math.ceil(filteredProjects.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentProjects = filteredProjects.slice(startIndex, endIndex);
 
-  // 프로젝트 데이터가 아직 로드되지 않은 경우
-  if (!projectData) {
-    return (
-      <div className="flex flex-1 items-center justify-center p-4">
-        <div className="text-center">
-          <p className="text-[16px] text-[#999]">프로젝트를 불러오는 중...</p>
-        </div>
-      </div>
-    );
-  }
+  // 페이지 변경 시 currentPage 초기화
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeTab, searchQuery]);
+
+  // ============================================
+  // 탭별 카운트 계산
+  // ============================================
+  const getTabCount = (tabId) => {
+    if (tabId === "all") return projects.length;
+    const tab = tabs.find((t) => t.id === tabId);
+    if (!tab || !tab.stageId) return 0;
+    return projects.filter((p) => p.stageId === tab.stageId).length;
+  };
+
+  // ============================================
+  // Stage별 뱃지 스타일 (9단계)
+  // ============================================
+  const getStageBadgeClass = (stageId) => {
+    const stageStyles = {
+      1: "bg-gray-100 text-gray-600", // 진행 전
+      2: "bg-red-100 text-red-600", // 진행 중단
+      3: "bg-blue-100 text-blue-600", // 요구사항 정의
+      4: "bg-indigo-100 text-indigo-600", // 화면 설계
+      5: "bg-purple-100 text-purple-600", // 디자인/퍼블리싱
+      6: "bg-green-100 text-green-600", // 개발
+      7: "bg-yellow-100 text-yellow-600", // 검수
+      8: "bg-orange-100 text-orange-600", // 유지보수
+      9: "bg-slate-200 text-slate-600", // 완료
+    };
+    return stageStyles[stageId] || "bg-gray-100 text-gray-600";
+  };
+
+  // ============================================
+  // 이벤트 핸들러
+  // ============================================
+  const handleCreateProject = () => {
+    navigate("/create-project");
+  };
+
+  const handleEditProject = (projectId) => {
+    navigate(`/project/${projectId}`);
+  };
+
+  const handleDeleteProject = (projectId, projectName) => {
+    if (window.confirm(`"${projectName}" 프로젝트를 삭제하시겠습니까?`)) {
+      // TODO: 실제 삭제 API 호출
+      alert("프로젝트가 삭제되었습니다.");
+    }
+  };
 
   // ============================================
   // 렌더링
   // ============================================
-
   return (
-    <>
-      <div className="flex flex-1 gap-6 space-y-3 p-4">
-        {/* 프로젝트 단계 카드 */}
-        <div className="flex-1 space-y-4 rounded-xl border border-slate-200 bg-white p-5">
-          {/* 프로젝트 정보 헤더 */}
-          <div className="mb-4 border-b border-slate-200 pb-4">
-            <h3 className="mb-2 text-lg font-bold text-slate-900">
-              {projectData.name}
-            </h3>
-            <div className="flex gap-4 text-sm text-slate-600">
-              <span>고객사: {projectData.client}</span>
-              <span>단계: {projectData.stage}</span>
-              {projectData.progress && (
-                <span>진행률: {projectData.progress}%</span>
-              )}
-            </div>
-          </div>
+    <div className="min-h-screen bg-gray-100 py-5">
+      <div className="mx-auto max-w-[1400px] px-4">
+        {/* 페이지 헤더 */}
+        <div className="mb-4 pb-4">
+          <h1 className="text-[28px] font-semibold leading-tight text-gray-900">
+            프로젝트
+          </h1>
+        </div>
 
-          <h3 className="mb-4 text-sm font-semibold text-slate-900">
-            프로젝트 게시글 ({filteredPosts.length})
-          </h3>
-
-          {/* 카테고리 필터 버튼 */}
-          <div className="flex flex-wrap justify-center gap-2">
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                type="button"
-                className={`rounded-lg border px-4 py-2.5 text-sm font-medium transition ${
-                  activeCategory === cat.id
-                    ? "border-blue-600 bg-blue-600 text-white"
-                    : "border-slate-200 bg-white text-slate-700 hover:border-blue-500 hover:text-blue-600"
-                }`}
-                onClick={() => setActiveCategory(cat.id)}
-              >
-                {cat.label}
-              </button>
-            ))}
-          </div>
-
-          {/* 게시글 목록 - 실제 데이터 표시 */}
-          {filteredPosts.length === 0 ? (
-            <div className="py-10 text-center text-slate-500">
-              <p>해당 카테고리의 게시글이 없습니다.</p>
-            </div>
-          ) : (
-            filteredPosts.map((post) => (
-              <div
-                key={post.id}
-                className="flex cursor-pointer items-center gap-4 rounded-lg border border-slate-200 px-4 py-3 transition hover:border-blue-200 hover:bg-slate-50"
-              >
-                {/* 제목 */}
-                <div className="flex-1 font-medium text-slate-900">
-                  {post.title}
-                </div>
-
-                {/* 작성자 */}
-                <div className="flex items-center gap-2">
-                  <span className="rounded bg-blue-100 px-2 py-1 text-xs text-blue-600">
-                    {post.author}
-                  </span>
-                </div>
-
-                {/* 날짜 */}
-                <div className="rounded bg-slate-100 px-2 py-1 text-xs text-slate-500">
-                  {post.date}
-                </div>
-
-                {/* 승인 상태 - 뱃지 스타일 */}
-                <div
-                  className={`rounded-full px-2.5 py-1 text-xs font-medium ${
-                    post.approvalStatus === "approved"
-                      ? "bg-green-100 text-green-600"
-                      : post.approvalStatus === "rejected"
-                        ? "bg-red-100 text-red-600"
-                        : "bg-amber-100 text-amber-600"
+        {/* 흰색 카드 컨테이너 */}
+        <div className="flex min-h-[1100px] flex-col rounded-lg bg-white p-8 shadow-sm">
+          {/* 탭 메뉴 */}
+          <div className="mb-6 border-b-2 border-gray-100">
+            <div className="flex flex-wrap gap-2">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`relative mb-[-2px] whitespace-nowrap border-b-2 px-6 py-4 text-sm font-medium transition-colors ${
+                    activeTab === tab.id
+                      ? "border-blue-500 text-blue-500"
+                      : "border-transparent text-gray-500 hover:text-gray-700"
                   }`}
                 >
-                  {post.approvalStatus === "approved"
-                    ? "승인완료"
-                    : post.approvalStatus === "rejected"
-                      ? "반려"
-                      : "승인대기"}
-                </div>
+                  {tab.label}
+                  <span className="ml-2 text-inherit">
+                    ({getTabCount(tab.id)})
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* 컨트롤 영역 */}
+          <div className="mb-6 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={handleCreateProject}
+                className="flex items-center gap-2 rounded-lg bg-blue-500 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-600"
+              >
+                <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24">
+                  <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
+                </svg>
+                프로젝트 생성
+              </button>
+            </div>
+
+            {/* 검색 박스 */}
+            <div className="flex w-[300px] items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5">
+              <svg className="h-[18px] w-[18px] fill-gray-400" viewBox="0 0 24 24">
+                <path d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" />
+              </svg>
+              <input
+                type="text"
+                placeholder="프로젝트 검색..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="flex-1 border-none text-sm text-gray-900 outline-none placeholder:text-gray-400"
+              />
+            </div>
+          </div>
+
+          {/* 프로젝트 리스트 */}
+          <div className="mb-6 flex-grow overflow-hidden rounded-lg border border-gray-200">
+            {loading ? (
+              <div className="py-20 text-center text-gray-500">
+                <p>프로젝트를 불러오는 중...</p>
               </div>
-            ))
+            ) : currentProjects.length === 0 ? (
+              <div className="py-20 text-center text-gray-500">
+                <svg
+                  className="mx-auto mb-4 h-16 w-16 fill-gray-300 opacity-30"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M19,19H5V5H19V19Z" />
+                </svg>
+                <p className="mb-2 text-[15px]">프로젝트가 없습니다.</p>
+                <p className="text-[13px] text-gray-400">
+                  새로운 프로젝트를 생성해보세요.
+                </p>
+              </div>
+            ) : (
+              currentProjects.map((project, index) => (
+                <div
+                  key={project.projectId}
+                  className={`flex items-center px-5 py-4 transition-colors hover:bg-gray-50 ${
+                    index !== currentProjects.length - 1
+                      ? "border-b border-gray-200"
+                      : ""
+                  }`}
+                >
+                  {/* 프로젝트 아이콘 */}
+                  <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-lg bg-blue-50 text-base font-semibold text-blue-500">
+                    {project.projectName.substring(0, 2)}
+                  </div>
+
+                  {/* 프로젝트 정보 그리드 */}
+                  <div className="grid flex-1 grid-cols-[minmax(250px,3fr)_minmax(120px,1fr)_minmax(120px,1fr)_minmax(120px,1fr)_minmax(100px,120px)] items-center gap-8">
+                    {/* 프로젝트 ID & 이름 */}
+                    <div className="min-w-0">
+                      <div className="mb-1 text-[13px] font-medium text-blue-500">
+                        PRJ-{String(project.projectId).padStart(3, "0")}
+                      </div>
+                      <div className="overflow-hidden text-ellipsis whitespace-nowrap text-sm text-gray-900">
+                        {project.projectName}
+                      </div>
+                    </div>
+
+                    {/* 멤버 수 */}
+                    <div className="text-[13px] text-gray-600">
+                      멤버 {project.members?.length || 0}명
+                    </div>
+
+                    {/* 시작일 */}
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-xs text-gray-400">시작일</span>
+                      <span className="text-[13px] text-gray-900">
+                        {project.startDate || "-"}
+                      </span>
+                    </div>
+
+                    {/* 종료일 */}
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-xs text-gray-400">종료일</span>
+                      <span className="text-[13px] text-gray-900">
+                        {project.endDate || "-"}
+                      </span>
+                    </div>
+
+                    {/* 단계 뱃지 */}
+                    <div className="flex justify-center">
+                      <span
+                        className={`inline-flex items-center justify-center whitespace-nowrap rounded-xl px-3 py-1.5 text-xs font-medium ${getStageBadgeClass(project.stageId)}`}
+                      >
+                        {project.stageName}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* 액션 버튼 */}
+                  <div className="ml-4 flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleEditProject(project.projectId)}
+                      className="flex items-center gap-1 rounded border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-blue-500 transition-colors hover:border-blue-500 hover:bg-blue-50"
+                    >
+                      <svg className="h-3.5 w-3.5 fill-current" viewBox="0 0 24 24">
+                        <path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" />
+                      </svg>
+                      수정
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleDeleteProject(project.projectId, project.projectName)
+                      }
+                      className="flex items-center gap-1 rounded border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-red-500 transition-colors hover:border-red-500 hover:bg-red-50"
+                    >
+                      <svg className="h-3.5 w-3.5 fill-current" viewBox="0 0 24 24">
+                        <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
+                      </svg>
+                      삭제
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* 페이지네이션 - 하단 중앙 고정 */}
+          {totalPages > 1 && (
+            <div className="mt-auto flex justify-center gap-2 pt-4">
+              {Array.from({ length: totalPages }, (_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => setCurrentPage(i + 1)}
+                  className={`h-10 w-10 rounded ${
+                    currentPage === i + 1
+                      ? "bg-blue-500 text-white"
+                      : "border border-gray-200 text-gray-700 hover:bg-gray-50"
+                  }`}
+                >
+                  {i + 1}
+                </button>
+              ))}
+            </div>
           )}
         </div>
-
-        <div className="flex h-full flex-col">
-          {/* 메모 */}
-          <Memo />
-          {/* 체크 리스트 */}
-          <ChecklistWidget
-            initialItems={[
-              { id: 1, title: "내용1", files: [] },
-              { id: 2, title: "내용2", files: [] },
-              { id: 3, title: "내용3", files: [] },
-            ]}
-          />
-        </div>
       </div>
-    </>
+    </div>
   );
 }
