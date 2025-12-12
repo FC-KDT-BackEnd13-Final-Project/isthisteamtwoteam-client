@@ -20,6 +20,8 @@ import RemoveProjectPage from "./pages/RemoveProjectPage";
 import RequestPendingPage from "./pages/RequestPendingPage";
 import CreateProjectPage from "./pages/Createprojectpage";
 import UserManagementPage from "./pages/UserManagementPage"
+import PostDetailPage from "./pages/PostDetailPage";
+import CreateUserPage from "./pages/CreateUserPage";
 
 function App() {
   return (
@@ -43,7 +45,9 @@ function App() {
         <Route path="change-password" element={<ChangePasswordPage />} />
         <Route path="create-project" element={<CreateProjectPage />} /> 
         <Route path="projects" element={<ProjectPage/>}/>
-
+        <Route path="posts/:postId" element={<PostDetailPage/>} />
+        <Route path="create-user" element={<CreateUserPage />} />
+        <Route path="edit-user/:userId" element={<CreateUserPage />} />
 
       </Route>
 
@@ -59,7 +63,7 @@ function App() {
         <Route path="board/history/:boardId" element={<PostHistoryPage />} />
         <Route path="project-history/:projectId" element={<ProjectHistoryPage />} />
         <Route path="notification" element={<NotificationPage />} />
-        <Route path="change-password" element={<ChangePasswordPage />} />
+        <Route path="change-password" element={<ChangePasswordPage/>} />
       </Route>
 
       {/* ========== 고객사 전용 페이지 ========== */}

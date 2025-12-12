@@ -61,12 +61,6 @@ export default function RequestPendingPage() {
           <h1 className="mb-1.5 text-[22px] font-semibold text-[#1a1a1a]">
             승인 요청
           </h1>
-
-          <div className="flex items-center gap-2 text-[14px] text-[#999]">
-            <span>알림</span>
-            <span>▸</span>
-            <span className="font-medium text-[#007bff]">승인 요청</span>
-          </div>
         </div>
 
         {/* 통계 카드 */}

@@ -253,7 +253,17 @@ export default function ProjectsPage() {
                 >
                   {/* 프로젝트 아이콘 */}
                   <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-lg bg-blue-50 text-base font-semibold text-blue-500">
-                    {project.projectName.substring(0, 2)}
+                    {project.projectImageUrl ? (
+                                <img 
+                                  // src={project.project_image_url} 
+                                  src={project.projectImageUrl} 
+                                  alt={project.projectName}
+                                  className="h-full w-full object-cover"
+                                />
+                              ) : (
+                                project.projectName?.substring(0, 2) || "프"
+                              )}
+
                   </div>
 
                   {/* 프로젝트 정보 그리드 */}
