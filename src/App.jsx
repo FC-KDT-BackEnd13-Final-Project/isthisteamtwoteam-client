@@ -22,6 +22,9 @@ import CreateProjectPage from "./pages/Createprojectpage";
 import UserManagementPage from "./pages/UserManagementPage"
 import PostDetailPage from "./pages/PostDetailPage";
 import CreateUserPage from "./pages/CreateUserPage";
+import ProjectTrashPage from "./pages/ProjectTrashPage";
+import CustomerDashboardPage from "./pages/customer/CustomerDashboardPage";
+import DeveloperDashboardPage from "./pages/developer/DeveloperDashboardPage";
 
 function App() {
   return (
@@ -48,16 +51,17 @@ function App() {
         <Route path="posts/:postId" element={<PostDetailPage/>} />
         <Route path="create-user" element={<CreateUserPage />} />
         <Route path="edit-user/:userId" element={<CreateUserPage />} />
+        <Route path="proect-trash" element={<ProjectTrashPage/>}/>
 
       </Route>
 
       {/* ========== 개발사 전용 페이지 ========== */}
       <Route path="/developer" element={
         <ProtectedRoute allowedRoles={['DEVELOPER']}>
-          <SidebarHeaderLayout />
+          <SidebarHeaderLayout/>
         </ProtectedRoute>
       }>
-        <Route path="dashboard" element={<DashboardPage />} />
+        <Route path="dashboard" element={<DeveloperDashboardPage/>} />
         <Route path="project/:projectId" element={<ProjectPage />} />
         <Route path="board" element={<BoardPage />} />
         <Route path="board/history/:boardId" element={<PostHistoryPage />} />
@@ -68,11 +72,11 @@ function App() {
 
       {/* ========== 고객사 전용 페이지 ========== */}
       <Route path="/client" element={
-        <ProtectedRoute allowedRoles={['CLIENT']}>
+        <ProtectedRoute allowedRoles={['CUSTOMER']}>
           <SidebarHeaderLayout />
         </ProtectedRoute>
       }>
-        <Route path="dashboard" element={<DashboardPage />} />
+        <Route path="dashboard" element={<CustomerDashboardPage />} />
         <Route path="project/:projectId" element={<ProjectPage />} />
         <Route path="board" element={<BoardPage />} />
         <Route path="board/history/:boardId" element={<PostHistoryPage />} />
