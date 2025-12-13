@@ -9,9 +9,8 @@ export default function UserFormModal({ mode, initialData, activeTab, onClose, o
     email: "",
     password: "",
     phone: "",
-    company_name: "",
-    companyId: "",
-    role: "" // 👈 role 필드 추가
+    company: "", // 👈 개발사용 companyName 추가
+    role: ""
   });
 
   // initialData가 있을 때 (수정 모드)
@@ -22,9 +21,9 @@ export default function UserFormModal({ mode, initialData, activeTab, onClose, o
         email: initialData.email || "",
         password: "", // 수정 시 비밀번호는 비워둠
         phone: initialData.phone || "",
-        company_name: initialData.company_name || initialData.companyName || "",
         companyId: initialData.companyId || "",
-        role: initialData.role || "" // 👈 기존 role 값 설정
+        companyName: initialData.companyName || "", // 👈 companyName 설정
+        role: initialData.role || ""
       });
     }
   }, [initialData]);
@@ -49,8 +48,8 @@ export default function UserFormModal({ mode, initialData, activeTab, onClose, o
 
       console.log('=== 폼 제출 데이터 ===');
       console.log('모드:', mode);
+      console.log('activeTab:', activeTab);
       console.log('제출 데이터:', submitData);
-      console.log('권한:', submitData.role); // 👈 role 확인
       
       await onSubmit(submitData);
     } catch (error) {

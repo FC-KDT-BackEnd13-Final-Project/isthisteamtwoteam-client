@@ -12,17 +12,26 @@ export const getUsers = async() => {
 }
 
 // 유저 생성 - 추가!
-export const createUser = async(userData, userType) => {
-    try {
+// export const createUser = async(userData, userType) => {
+//     try {
         
         
-        const response = await api.post('/admin/user', userData);
-        return response.data.response;
-    } catch (error) {
-        console.error('유저 생성 실패:', error);
-        throw error;
-    }
-}
+//         const response = await api.post('/admin/user', userData);
+//         return response.data.response;
+//     } catch (error) {
+//         console.error('유저 생성 실패:', error);
+//         throw error;
+//     }
+// }
+export const createUser = async (userData, userType) => {
+
+  console.log('=== API 요청 정보 ===');
+  console.log('유저 타입:', userType);
+  console.log('전송 데이터:', userData);
+
+  const response = await api.post('/admin/user', userData);
+  return response.data;
+};
 
 export const createNewMember = async(formData) => {
     try {

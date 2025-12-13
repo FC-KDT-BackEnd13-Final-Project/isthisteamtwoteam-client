@@ -38,7 +38,7 @@ export default function UserTable({
                 {column.label}
               </th>
             ))}
-            <th className="px-4 py-3 text-right text-sm font-semibold text-gray-700">
+            <th className="px-4 py-3 text- text-sm font-semibold text-gray-700">
             </th>
           </tr>
         </thead>
@@ -67,7 +67,9 @@ export default function UserTable({
                   />
                 </td>
                 {columns.map((column) => (
+                  
                   <td
+                    
                     key={column.key}
                     className="px-4 py-3 text-sm text-gray-700"
                   >
@@ -75,6 +77,7 @@ export default function UserTable({
                       ? column.render(user[column.key], user)
                       : user[column.key] || "-"}
                   </td>
+                  
                 ))}
                 <td className="px-4 py-3">
                   <div className="flex items-center justify-end gap-2">

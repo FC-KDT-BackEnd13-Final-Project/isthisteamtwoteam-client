@@ -39,9 +39,18 @@ export default function CustomerMakeForm({
     fetchCompanies();
   }, []);
 
-  const filteredCompanies = companies.filter((company) =>
-    company.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  useEffect(() => {
+    if (mode === "edit" && formData.company) {
+      setSearchTerm(formData.company);
+      setSelectedCompany(formData.company);
+    }
+  }, [mode, formData.company]);
+
+  const filteredCompanies = searchTerm.trim()
+    ? companies.filter((company) =>
+        company.name.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : companies;
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -73,8 +82,8 @@ export default function CustomerMakeForm({
 
     const event = {
       target: {
-        name: "companyId",
-        value: company.id,
+        name: "company",
+        value: company.name,
       },
     };
     handleChange(event);
@@ -98,7 +107,53 @@ export default function CustomerMakeForm({
     }
   };
 
+  const handleFocus = () => {
+    setSearchTerm("");
+    setIsDropdownOpen(true);
+  };
+
   const selectedRoleLabel = roles.find(r => r.value === formData.role)?.label || "권한 선택";
+
+  // 👇 폼 제출 전 검증 함수 (생성 모드일 때만)
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    
+    // 생성 모드일 때만 검증
+    if (mode === "create") {
+      if (!formData.name || !formData.name.trim()) {
+        alert("이름을 입력해주세요.");
+        return;
+      }
+      
+      if (!formData.company) {
+        alert("회사를 선택해주세요.");
+        return;
+      }
+      
+      if (!formData.role) {
+        alert("권한을 선택해주세요.");
+        return;
+      }
+      
+      if (!formData.phone || !formData.phone.trim()) {
+        alert("전화번호를 입력해주세요.");
+        return;
+      }
+      
+      if (!formData.email || !formData.email.trim()) {
+        alert("이메일을 입력해주세요.");
+        return;
+      }
+      
+      if (!formData.password || !formData.password.trim()) {
+        alert("비밀번호를 입력해주세요.");
+        return;
+      }
+    }
+    
+    // 원래 handleSubmit 호출
+    handleSubmit(e);
+  };
 
   return (
     <div className="p-8">
@@ -107,7 +162,8 @@ export default function CustomerMakeForm({
         회원의 기본 정보를 입력해주세요.
       </p>
 
-      <form onSubmit={handleSubmit}>
+      {/* 👇 onSubmit을 handleFormSubmit으로 변경 */}
+      <form onSubmit={handleFormSubmit}>
         <div className="mb-5">
           <label className="mb-2 block text-sm font-semibold text-gray-700">이름</label>
           <input
@@ -131,9 +187,9 @@ export default function CustomerMakeForm({
                 setSearchTerm(e.target.value);
                 setIsDropdownOpen(true);
               }}
-              onFocus={() => setIsDropdownOpen(true)}
+              onFocus={handleFocus}
               onKeyDown={handleKeyDown}
-              placeholder={loading ? "회사 목록 불러오는 중..." : "회사를 검색하세요"}
+              placeholder={loading ? "회사 목록 불러오는 중..." : selectedCompany || "회사를 검색하세요"}
               autoComplete="off"
               disabled={loading}
               className="w-full cursor-pointer rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-blue-500 disabled:bg-gray-50"
@@ -173,7 +229,7 @@ export default function CustomerMakeForm({
           </div>
         </div>
 
-        {/* 권한 드롭다운 추가 */}
+        {/* 권한 드롭다운 */}
         <div className="mb-5">
           <label className="mb-2 block text-sm font-semibold text-gray-700">
             권한

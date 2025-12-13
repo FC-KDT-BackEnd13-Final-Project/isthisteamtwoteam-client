@@ -1,7 +1,9 @@
 // 테이블 컬럼 설정
 export const tableConfig = {
   developer: [
+
     { key: "name", label: "이름" },
+    { key: "companyName", label: "회사명" }, // 👈 추가
     { key: "email", label: "이메일" },
     { key: "phone", label: "전화번호" },
   ],
