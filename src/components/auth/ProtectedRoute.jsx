@@ -17,6 +17,8 @@ export default function ProtectedRoute({children, allowedRoles}){
         return <div>접근 권한이 없습니다.</div>;
   }
 
+  console.log("권한 :" , user.role)
+
   return children;
 }
 

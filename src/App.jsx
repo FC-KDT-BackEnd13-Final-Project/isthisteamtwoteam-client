@@ -1,7 +1,7 @@
 // src/App.jsx
 import "./styles/App.css";
 import { Route, Routes } from "react-router-dom";
-import SidebarHeaderLayout from "./components/layout/SidebarHeaderLayout";
+import SidebarHeaderLayout from "./components/layout/developer/DeveloperSidebarHeaderLayout";
 import SidebarLayout from "./components/layout/SidebarLayout";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 
@@ -25,6 +25,8 @@ import CreateUserPage from "./pages/CreateUserPage";
 import ProjectTrashPage from "./pages/ProjectTrashPage";
 import CustomerDashboardPage from "./pages/customer/CustomerDashboardPage";
 import DeveloperDashboardPage from "./pages/developer/DeveloperDashboardPage";
+import DeveloperSidebarHeaderLayout from "./components/layout/developer/DeveloperSidebarHeaderLayout";
+import CustomerSidebarHeaderLayout from "./components/layout/customer/CustomerSidebarHeaderLayout copy";
 
 function App() {
   return (
@@ -45,7 +47,6 @@ function App() {
         <Route path="checklist" element={<CheckListPage />} />
         <Route path="user-management" element={<UserManagementPage/>} />
         <Route path="remove-projects" element={<RemoveProjectPage />} />
-        <Route path="change-password" element={<ChangePasswordPage />} />
         <Route path="create-project" element={<CreateProjectPage />} /> 
         <Route path="projects" element={<ProjectPage/>}/>
         <Route path="posts/:postId" element={<PostDetailPage/>} />
@@ -58,7 +59,7 @@ function App() {
       {/* ========== 개발사 전용 페이지 ========== */}
       <Route path="/developer" element={
         <ProtectedRoute allowedRoles={['DEVELOPER']}>
-          <SidebarHeaderLayout/>
+          <DeveloperSidebarHeaderLayout/>
         </ProtectedRoute>
       }>
         <Route path="dashboard" element={<DeveloperDashboardPage/>} />
@@ -71,18 +72,19 @@ function App() {
       </Route>
 
       {/* ========== 고객사 전용 페이지 ========== */}
-      <Route path="/client" element={
-        <ProtectedRoute allowedRoles={['CUSTOMER']}>
-          <SidebarHeaderLayout />
-        </ProtectedRoute>
-      }>
-        <Route path="dashboard" element={<CustomerDashboardPage />} />
-        <Route path="project/:projectId" element={<ProjectPage />} />
-        <Route path="board" element={<BoardPage />} />
-        <Route path="board/history/:boardId" element={<PostHistoryPage />} />
-        <Route path="notification" element={<NotificationPage />} />
-        <Route path="change-password" element={<ChangePasswordPage />} />
-      </Route>
+      <Route path="/customer" element={
+          <ProtectedRoute allowedRoles={['CUSTOMER']}>
+            <CustomerSidebarHeaderLayout />
+          </ProtectedRoute>
+        }>
+          <Route path="change-password" element={<ChangePasswordPage />} />
+          <Route path="dashboard" element={<CustomerDashboardPage/>} />
+          <Route path="project/:projectId" element={<ProjectPage />} />
+          <Route path="board" element={<BoardPage />} />
+          <Route path="board/history/:boardId" element={<PostHistoryPage />} />
+          <Route path="notification" element={<NotificationPage />} />
+          <Route path="change-password" element={<ChangePasswordPage />} />
+        </Route>
     </Routes>
   );
 }

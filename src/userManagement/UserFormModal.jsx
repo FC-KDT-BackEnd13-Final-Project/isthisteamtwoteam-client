@@ -9,24 +9,45 @@ export default function UserFormModal({ mode, initialData, activeTab, onClose, o
     email: "",
     password: "",
     phone: "",
-    company: "", // 👈 개발사용 companyName 추가
+    company: "",
     role: ""
   });
 
-  // initialData가 있을 때 (수정 모드)
+  // ✅ activeTab에 따라 기본 role 반환하는 함수
+  const getDefaultRole = (tab) => {
+    switch(tab) {
+      case "developer":
+        return "DEVELOPER"; // 백엔드 형식에 맞춰서 수정하세요
+      case "customer":
+        return "CUSTOMER";
+      case "company":
+        return "COMPANY";
+      default:
+        return "";
+    }
+  };
+
+  // initialData가 있을 때 (수정 모드) 또는 생성 모드
   useEffect(() => {
     if (initialData) {
+      // 수정 모드
       setFormData({
         name: initialData.name || "",
         email: initialData.email || "",
         password: "", // 수정 시 비밀번호는 비워둠
         phone: initialData.phone || "",
         companyId: initialData.companyId || "",
-        companyName: initialData.companyName || "", // 👈 companyName 설정
-        role: initialData.role || ""
+        company: initialData.companyName || "",
+        role: initialData.role || getDefaultRole(activeTab) // ✅ role이 없으면 activeTab 기반으로 설정
       });
+    } else {
+      // 생성 모드일 때도 activeTab 기반으로 role 설정
+      setFormData(prev => ({
+        ...prev,
+        role: getDefaultRole(activeTab) // ✅ 생성 모드에서도 기본값 설정
+      }));
     }
-  }, [initialData]);
+  }, [initialData, activeTab]); // ✅ activeTab도 dependency에 추가
 
   const handleChange = (e) => {
     setFormData({

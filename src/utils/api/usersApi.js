@@ -95,15 +95,7 @@ export const updateUser = async (userId, userData, userType) => {
   return response.data;
 };
 
-// 회사 생성 API
-export const createCompany = async (companyData) => {
-  console.log('=== 회사 생성 API 호출 ===');
-  console.log('엔드포인트:', '/api/v1/companies');
-  console.log('전송 데이터:', companyData);
-  
-  const response = await api.post('/api/v1/companies', companyData);
-  return response.data;
-};
+
 
 export const deleteUser = async (userId, userType) => {
   // Company는 삭제 불가
@@ -120,4 +112,32 @@ export const deleteUser = async (userId, userType) => {
 
   const response = await api.delete(endpoint);
   return response.data;
+};
+
+export const createCompany = async (data) => {
+  try {
+    console.log('=== 회사 생성 API 호출 ===');
+    console.log('원본 데이터:', data);
+    
+    const requestData = {
+      companyName: data.companyName,
+      companyAddress: data.companyAddress || "",
+      companyCeo: data.ceoName || "",                    // ✅ ceoName → companyCeo
+      companyPhone: data.companyPhone || "",                                   // ✅ 빈 값
+      companyContactPerson: data.managerName,            // ✅ managerName → companyContactPerson
+      companyContactPhone: data.phoneNumber,             // ✅ phoneNumber → companyContactPhone
+      businessRegistration: data.businessNumber || ""    // ✅ businessNumber → businessRegistration
+    };
+    
+    console.log('전송할 데이터:', requestData);
+    
+    const response = await api.post('/companies', requestData);
+    
+    console.log('API 응답:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('회사 생성 API 실패:', error);
+    console.error('에러 응답:', error.response?.data);
+    throw error;
+  }
 };
