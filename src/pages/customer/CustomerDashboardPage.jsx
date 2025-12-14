@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import DashboardStats from "../components/dashboard/DashboardStats";
 
-import FilteredList from "../components/dashboard/FilteredList";
-import ProjectList from "../components/dashboard/ProjectList";
-import { getDashboardData,getDashboardAllProjects } from "../utils/api/dashboardApi";
+// import { getDashboardData,getDashboardAllProjects } from "../utils/api/dashboardApi";
+import DashboardStats from "../../components/dashboard/DashboardStats";
+import FilteredList from "../../components/dashboard/FilteredList";
+import ProjectList from "../../components/dashboard/ProjectList";
+import { getDashboardAllProjects,getDashboardData } from "../../utils/api/dashboardApi";
 
 
-export default function DashboardPage() {
+export default function CustomerDashboardPage() {
   const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState("pending");
   const [listTitle, setListTitle] = useState("진행중 리스트");

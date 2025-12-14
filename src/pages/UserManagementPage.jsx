@@ -4,29 +4,15 @@ import { useState, useMemo, useEffect } from "react";
 import { tabs as tabsConfig, tableConfig } from "../utils/config/tableConfig";
 
 // 컴포넌트 가져오기
-import Breadcrumb from "../components/common/Breadcrumb/Breadcrumb";
 import TabButton from "../components/common/TabButton/TabButton";
 import SearchBar from "../components/common/SearchBar/SearchBar";
 import UserTable from "../components/common/Table/UserTable";
 import Pagination from "../components/common/Pagination/Pagination";
 import UserFormModal from "../userManagement/UserFormModal";
-import { getUsers } from "../utils/api/usersApi";
+import CompanyCreateModal from "../userManagement/CompanyCreateModal";
+import { getUsers, createUser, updateUser, createCompany,deleteUser } from "../utils/api/usersApi";
 
-/**
- * 회원 관리 페이지
- *
- * 이 페이지는 다음 기능을 제공합니다:
- * 1. 회원 타입별 탭 필터링 (개발자, 사업자, 관리자)
- * 2. 회원 검색 (ID, 이름, 이메일, 회사명, 대표자명)
- * 3. 회원 선택 (전체 선택, 개별 선택)
- * 4. 회원 추가/수정/삭제
- * 5. 페이지네이션
- */
 export default function UserManagementPage() {
-  // ========================================
-  // 1. 상태(State) 관리
-  // ========================================
-
   const [activeTab, setActiveTab] = useState("developer");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedIds, setSelectedIds] = useState([]);
@@ -38,16 +24,17 @@ export default function UserManagementPage() {
     mode: "create",
     userData: null,
   });
-  
+  const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await getUsers();
-        console.log("API 응답:", response); // 디버깅용
+        console.log("API 응답:", response);
         setUsers(response);
         setLoading(false);
       } catch (error) {
-        console.error('유저 데이터 불러오기 실패:', error);
+        console.error("유저 데이터 불러오기 실패:", error);
         setLoading(false);
       }
     };
@@ -55,64 +42,63 @@ export default function UserManagementPage() {
     fetchData();
   }, []);
 
-  // ========================================
-  // 2. 상수 및 계산된 값
-  // ========================================
-
   const itemsPerPage = 10;
 
-  // API 데이터를 탭별로 분류 (항상 배열 보장!)
-  const usersByType = users ? {
-    developer: users.developers?.items || [],
-    customer: users.customers?.items || [],
-    company: users.companies?.items || [],
-  } : { developer: [], customer: [], company: [] };
+  const usersByType = users
+    ? {
+        developer: users.developers?.items || [],
+        customer: users.customers?.items || [],
+        company: users.companies?.items || [],
+      }
+    : { developer: [], customer: [], company: [] };
 
-  // 현재 탭에 맞는 테이블 컬럼 설정
   const columns = tableConfig?.[activeTab] || [];
 
-  // 모든 유저를 하나의 배열로 합치기 (type 속성 추가)
   const allUsers = [
-    ...(usersByType.developer || []).map(user => ({ ...user, type: 'developer' })),
-    ...(usersByType.customer || []).map(user => ({ ...user, type: 'customer' })),
-    ...(usersByType.company || []).map(user => ({ ...user, type: 'company' })),
+    ...(usersByType.developer || []).map((user) => ({
+      ...user,
+      id: user.userId,
+      type: "developer",
+    })),
+    ...(usersByType.customer || []).map((user) => ({
+      ...user,
+      id: user.userId,
+      type: "customer",
+    })),
+    ...(usersByType.company || []).map((user) => ({ ...user, type: "company" })),
   ];
 
-  // 각 탭의 회원 수를 계산하여 탭 정보 생성
   const tabs = tabsConfig.map((tab) => ({
     ...tab,
-    count: users ? (
-      tab.id === 'developer' ? users.developers?.total || 0 :
-      tab.id === 'customer' ? users.customers?.total || 0 :
-      users.companies?.total || 0
-    ) : 0,
+    count: users
+      ? tab.id === "developer"
+        ? users.developers?.total || 0
+        : tab.id === "customer"
+          ? users.customers?.total || 0
+          : users.companies?.total || 0
+      : 0,
   }));
 
-  // ========================================
-  // 3. 데이터 처리 (필터링 및 페이지네이션)
-  // ========================================
-
   const filteredUsers = useMemo(() => {
-    // 현재 탭의 유저 가져오기 (항상 배열 보장)
     let filtered = usersByType[activeTab] || [];
 
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter((u) => {
-        if (activeTab === 'developer') {
+        if (activeTab === "developer") {
           return (
             u.name?.toLowerCase().includes(query) ||
             u.email?.toLowerCase().includes(query) ||
             u.phone?.toLowerCase().includes(query)
           );
-        } else if (activeTab === 'customer') {
+        } else if (activeTab === "customer") {
           return (
             u.name?.toLowerCase().includes(query) ||
             u.email?.toLowerCase().includes(query) ||
             u.phone?.toLowerCase().includes(query) ||
             u.companyName?.toLowerCase().includes(query)
           );
-        } else { // company
+        } else {
           return (
             u.id?.toString().includes(query) ||
             u.companyName?.toLowerCase().includes(query) ||
@@ -124,31 +110,34 @@ export default function UserManagementPage() {
       });
     }
 
-    return filtered;
+    return filtered.map((user) => {
+      if (activeTab === "developer" || activeTab === "customer") {
+        return { ...user, id: user.userId };
+      }
+      return user;
+    });
   }, [activeTab, searchQuery, usersByType]);
 
   const totalPages = Math.max(1, Math.ceil(filteredUsers.length / itemsPerPage));
 
   const paginatedUsers = filteredUsers.slice(
     (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage,
+    currentPage * itemsPerPage
   );
 
-  // ========================================
-  // 조건부 렌더링
-  // ========================================
-
   if (loading) {
-    return <div className="flex justify-center items-center min-h-screen">로딩 중...</div>;
+    return (
+      <div className="flex min-h-screen items-center justify-center">로딩 중...</div>
+    );
   }
 
   if (!users) {
-    return <div className="flex justify-center items-center min-h-screen">데이터를 불러올 수 없습니다.</div>;
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        데이터를 불러올 수 없습니다.
+      </div>
+    );
   }
-
-  // ========================================
-  // 4. 이벤트 핸들러 함수들
-  // ========================================
 
   const handleCreateUser = () => {
     setModalState({
@@ -158,8 +147,23 @@ export default function UserManagementPage() {
     });
   };
 
+  const handleCreateCompany = () => {
+    setIsCompanyModalOpen(true);
+  };
+
   const handleEditUser = (userId) => {
+    console.log("=== 수정 시작 ===");
+    console.log("전달받은 userId:", userId);
+    console.log("allUsers:", allUsers);
+
     const user = allUsers.find((u) => u.id === userId);
+    console.log("찾은 user:", user);
+
+    if (!user) {
+      alert("유저를 찾을 수 없습니다.");
+      return;
+    }
+
     setModalState({
       isOpen: true,
       mode: "edit",
@@ -167,21 +171,39 @@ export default function UserManagementPage() {
     });
   };
 
-  const handleDelete = (userId) => {
-    console.log("삭제", userId);
-    const updatedUsers = { ...users };
-    if (activeTab === 'developer' && updatedUsers.developers) {
-      updatedUsers.developers.items = (updatedUsers.developers.items || []).filter(u => u.id !== userId);
-      updatedUsers.developers.total = Math.max(0, (updatedUsers.developers.total || 0) - 1);
-    } else if (activeTab === 'customer' && updatedUsers.customers) {
-      updatedUsers.customers.items = (updatedUsers.customers.items || []).filter(u => u.id !== userId);
-      updatedUsers.customers.total = Math.max(0, (updatedUsers.customers.total || 0) - 1);
-    } else if (updatedUsers.companies) {
-      updatedUsers.companies.items = (updatedUsers.companies.items || []).filter(u => u.id !== userId);
-      updatedUsers.companies.total = Math.max(0, (updatedUsers.companies.total || 0) - 1);
+  // 👇 handleDelete 수정 - 회사 삭제 방지 + 통합 엔드포인트
+  const handleDelete = async (userId) => {
+    // 회사 탭에서는 삭제 불가
+    if (activeTab === 'company') {
+      alert('회사는 삭제할 수 없습니다.');
+      return;
     }
-    setUsers(updatedUsers);
-    setSelectedIds((prev) => prev.filter((id) => id !== userId));
+
+    if (!window.confirm("정말 삭제하시겠습니까?")) {
+      return;
+    }
+
+    try {
+      console.log("=== 삭제 시작 ===");
+      console.log("삭제할 userId:", userId);
+      console.log("현재 activeTab:", activeTab);
+
+      // API 호출 (통합 엔드포인트)
+      await deleteUser(userId, activeTab);
+      
+      alert("회원이 삭제되었습니다.");
+
+      // 데이터 새로고침
+      const updatedData = await getUsers();
+      setUsers(updatedData);
+      
+      // 선택된 ID 목록에서 제거
+      setSelectedIds((prev) => prev.filter((id) => id !== userId));
+      
+    } catch (error) {
+      console.error("삭제 실패:", error);
+      alert(`삭제에 실패했습니다: ${error.message}`);
+    }
   };
 
   const handleSelectAll = (checked) => {
@@ -208,32 +230,42 @@ export default function UserManagementPage() {
 
   const handleModalSubmit = async (data) => {
     try {
+      console.log("modalState:", modalState);
+      console.log("userData:", modalState.userData);
+      console.log("userId:", modalState.userData?.id);
+
       if (modalState.mode === "create") {
-        console.log("=== 회원 생성 시작 ===");
-        console.log("activeTab:", activeTab);
-        console.log("받은 데이터:", data);
-        
-        // API 호출
         await createUser(data, activeTab);
-        
-        console.log("✅ 회원 생성 성공!");
-        
-        // 데이터 다시 불러오기
-        const updatedData = await getUsers();
-        setUsers(updatedData);
-        
-        // 모달 닫기
-        setModalState({ isOpen: false, mode: "create", userData: null });
-        
-        alert("회원이 성공적으로 등록되었습니다.");
-        
+        alert("회원이 생성되었습니다.");
       } else {
-        console.log("회원 정보 수정: ", data);
-        // TODO: 수정 API도 나중에 추가
+        if (!modalState.userData?.id) {
+          alert("유저 ID가 없습니다.");
+          return;
+        }
+        await updateUser(modalState.userData.id, data, activeTab);
+        alert("회원 정보가 수정되었습니다.");
       }
+
+      const updatedData = await getUsers();
+      setUsers(updatedData);
+      setModalState({ isOpen: false, mode: "create", userData: null });
     } catch (error) {
-      console.error("❌ 회원 생성 실패:", error);
-      alert(`회원 등록에 실패했습니다: ${error.message}`);
+      console.error("작업 실패:", error);
+      alert(`작업에 실패했습니다: ${error.message}`);
+    }
+  };
+
+  const handleCompanySubmit = async (data) => {
+    try {
+      await createCompany(data);
+      alert("회사가 생성되었습니다.");
+      
+      const updatedData = await getUsers();
+      setUsers(updatedData);
+      setIsCompanyModalOpen(false);
+    } catch (error) {
+      console.error("회사 생성 실패:", error);
+      alert(`회사 생성에 실패했습니다: ${error.message}`);
     }
   };
 
@@ -241,16 +273,15 @@ export default function UserManagementPage() {
     setModalState({ isOpen: false, mode: "create", userData: null });
   };
 
-  // ========================================
-  // 5. 화면 그리기 (렌더링)
-  // ========================================
+  const handleCompanyModalClose = () => {
+    setIsCompanyModalOpen(false);
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 font-sans">
-      <div className="mx-auto max-w-[1350px]">
-        <div className="mb-5 py-8">
+      <div className="mx-auto max-w-[1400px]">
+        <div className="mb-0 py-8">
           <h1 className="mb-3 text-3xl font-bold text-gray-900">회원관리</h1>
-          <Breadcrumb />
         </div>
 
         <div className="overflow-hidden rounded-xl bg-white">
@@ -270,6 +301,8 @@ export default function UserManagementPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onCreateUser={handleCreateUser}
+              activeTab={activeTab}
+              onCreateCompany={handleCreateCompany}
             />
 
             <UserTable
@@ -300,6 +333,13 @@ export default function UserManagementPage() {
             activeTab={activeTab}
             onClose={handleModalClose}
             onSubmit={handleModalSubmit}
+          />
+        )}
+
+        {isCompanyModalOpen && (
+          <CompanyCreateModal
+            onClose={handleCompanyModalClose}
+            onSubmit={handleCompanySubmit}
           />
         )}
       </div>

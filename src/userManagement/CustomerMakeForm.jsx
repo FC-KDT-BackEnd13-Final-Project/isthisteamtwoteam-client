@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { getCompanies } from "../utils/api/dashboardApi";
 
-export default function DeveloperMakeForm({
+export default function CustomerMakeForm({
   handleSubmit,
   formData,
   handleChange,
@@ -39,7 +39,6 @@ export default function DeveloperMakeForm({
     fetchCompanies();
   }, []);
 
-  // 수정 모드에서 초기 회사명 설정
   useEffect(() => {
     if (mode === "edit" && formData.company) {
       setSearchTerm(formData.company);
@@ -47,7 +46,6 @@ export default function DeveloperMakeForm({
     }
   }, [mode, formData.company]);
 
-  // 검색어가 있을 때만 필터링, 없으면 전체 목록
   const filteredCompanies = searchTerm.trim()
     ? companies.filter((company) =>
         company.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -81,10 +79,14 @@ export default function DeveloperMakeForm({
     setSelectedCompany(company.name);
     setSearchTerm(company.name);
     setIsDropdownOpen(false);
-    
-    handleChange({
-      target: { name: "company", value: company.name }
-    });
+
+    const event = {
+      target: {
+        name: "company",
+        value: company.name,
+      },
+    };
+    handleChange(event);
   };
 
   const handleSelectRole = (roleValue) => {
@@ -105,7 +107,6 @@ export default function DeveloperMakeForm({
     }
   };
 
-  // 드롭다운 열릴 때 검색어 초기화
   const handleFocus = () => {
     setSearchTerm("");
     setIsDropdownOpen(true);
@@ -156,7 +157,7 @@ export default function DeveloperMakeForm({
 
   return (
     <div className="p-8">
-      <h2 className="mb-2 text-xl font-semibold text-gray-900">개발사 회원 정보</h2>
+      <h2 className="mb-2 text-xl font-semibold text-gray-900">고객사 회원 정보</h2>
       <p className="mb-6 text-sm leading-relaxed text-gray-400">
         회원의 기본 정보를 입력해주세요.
       </p>

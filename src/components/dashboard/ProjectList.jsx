@@ -1,10 +1,15 @@
 import ProjectCard from "./ProjectCard";
+import { useNavigate } from "react-router-dom";
 
 export default function ProjectList({
+
   projects,
   onViewProject,
   onCreateProject,
 }) {
+
+  const navigate = useNavigate();
+
   return (
     <div className="rounded-[12px] bg-white p-[18px] shadow-[0_1px_3px_rgba(0,0,0,0.08)]">
       <div className="mb-[14px] flex items-center justify-between border-b border-[#e0e0e0] pb-[14px]">
@@ -15,7 +20,7 @@ export default function ProjectList({
 
         <div className="flex gap-2.5">
           <button
-            onClick={() => alert("전체 프로젝트 페이지로 이동.")}
+            onClick={() =>navigate("/projects")}
             className="cursor-pointer rounded-[6px] border border-[#d0d0d0] bg-white px-[15px] py-2 text-[13px] font-semibold text-[#555] transition-all duration-200 hover:bg-[#f0f0f0]"
           >
             더보기

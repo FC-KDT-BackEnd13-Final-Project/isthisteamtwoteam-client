@@ -1,8 +1,8 @@
+import Icon from "../../common/icons/Icon";
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import Icon from "../common/icons/Icon";
 
-export default function Sidebar() {
+export default function CustomerSidebar() {
   let navigate = useNavigate();
   let location = useLocation();
 
@@ -12,39 +12,34 @@ export default function Sidebar() {
     {
       icon: "layout-dashboard",
       label: "대시보드",
-      path: "/",
+      path: "/customer/dashboard",
     },
     {
       icon: "folder-open",
       label: "프로젝트",
-      path: "/projects",
+      path: "/customer/projects",
     },
     {
       icon: "bell",
       label: "알림",
-      path: "/notification",
+      path: "/customer/notification",
     },
     {
       icon: "clock",
       label: "승인 대기",
-      path: "/request-pending",
+      path: "/customer/request-pending",
     },
-
     {
       icon: "check-square",
       label: "체크리스트",
-      path: "/checklist",
+      path: "/customer/checklist",
     },
     {
-      icon: "users",
-      label: "회원 관리",
-      path: "/user-management",
+      icon: "lock",
+      label: "비밀번호 변경",
+      path: "/customer/change-password",
     },
-    {
-      icon: "folder-open",
-      label: "삭제한 프로젝트 관리",
-      path: "/remove-projects",
-    },
+
   ];
 
   const settingItems = [

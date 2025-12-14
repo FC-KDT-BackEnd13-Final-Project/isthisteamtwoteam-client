@@ -22,10 +22,11 @@ const useUsers = () => {
     // 개발사 목록 로딩
     const loadDevelopers = async () => {
         try {
-            const response = await api.get('/admin/projects/users?type=developers');
+            const response = await api.get('/admin/projects/users?role=DEVELOPER');
             if (response.data.success && Array.isArray(response.data.response)) {
                 setDevelopers(response.data.response);
             }
+
         } catch (error) {
             console.error('개발사 로딩 실패:', error);
             setDevelopers([]);
@@ -35,7 +36,7 @@ const useUsers = () => {
     // 고객사 목록 로딩
     const loadClients = async () => {
         try {
-            const response = await api.get('/admin/projects/users?type=clients');
+            const response = await api.get('/admin/projects/users?role=CUSTOMER');
             if (response.data.success && Array.isArray(response.data.response)) {
                 setClients(response.data.response);
             }

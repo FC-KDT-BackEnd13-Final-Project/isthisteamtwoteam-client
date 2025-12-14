@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import Icon from "../common/icons/Icon";
+import Icon from "../../common/icons/Icon";
 
-export default function Sidebar() {
+export default function DeveloperSidebar() {
   let navigate = useNavigate();
   let location = useLocation();
 

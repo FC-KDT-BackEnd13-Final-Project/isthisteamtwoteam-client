@@ -17,12 +17,7 @@ export default function CheckListPage() {
     const fetchData = async () => {
       try {
         const response = await getChecklists(currentPage, 10);
-        // API 응답의 checkListId를 id로 변환
-        const normalizedData = response.content.map(item => ({
-          id: item.checkListId,
-          content: item.content
-        }));
-        setChecklists(normalizedData);
+        setChecklists(response.content);
         setPageInfo(response.pageInfo);
         setLoading(false);
       } catch (error) {
@@ -51,8 +46,7 @@ export default function CheckListPage() {
       return;
     }
 
-    // 음수 ID인 경우 새 항목
-    const isNewItem = editingId < 0;
+    const isNewItem = checklists.find((c) => c.id === editingId && !c.content);
 
     try {
       if (isNewItem) {
@@ -61,7 +55,7 @@ export default function CheckListPage() {
         setChecklists((prev) =>
           prev.map((item) =>
             item.id === editingId
-              ? { id: newChecklist.checkListId, content: editingText.trim() }
+              ? { id: newChecklist.id, content: editingText.trim() }
               : item
           )
         );
@@ -80,7 +74,6 @@ export default function CheckListPage() {
       setEditingId(null);
       setEditingText("");
     } catch (error) {
-      console.error("저장 실패:", error);
       alert("작업을 실패하였습니다.");
     }
   };
@@ -104,7 +97,6 @@ export default function CheckListPage() {
       setChecklists((prev) => prev.filter((c) => c.id !== id));
       alert("체크리스트가 삭제되었습니다.");
     } catch (error) {
-      console.error("삭제 실패:", error);
       alert("삭제에 실패했습니다. 프로젝트에서 사용 중인 체크리스트는 삭제할 수 없습니다.");
     }
   };
@@ -123,7 +115,7 @@ export default function CheckListPage() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-5">
-      <div className="mx-auto max-w-[900px]">
+      <div className="mx-auto max-w-[1400px]">
         <h1 className="mb-4 text-[28px] font-semibold text-[#1a1a1a]">
           체크리스트 관리
         </h1>

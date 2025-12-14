@@ -1,7 +1,7 @@
 // src/App.jsx
 import "./styles/App.css";
 import { Route, Routes } from "react-router-dom";
-import SidebarHeaderLayout from "./components/layout/SidebarHeaderLayout";
+import SidebarHeaderLayout from "./components/layout/developer/DeveloperSidebarHeaderLayout";
 import SidebarLayout from "./components/layout/SidebarLayout";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 
@@ -20,6 +20,13 @@ import RemoveProjectPage from "./pages/RemoveProjectPage";
 import RequestPendingPage from "./pages/RequestPendingPage";
 import CreateProjectPage from "./pages/Createprojectpage";
 import UserManagementPage from "./pages/UserManagementPage"
+import PostDetailPage from "./pages/PostDetailPage";
+import CreateUserPage from "./pages/CreateUserPage";
+import ProjectTrashPage from "./pages/ProjectTrashPage";
+import CustomerDashboardPage from "./pages/customer/CustomerDashboardPage";
+import DeveloperDashboardPage from "./pages/developer/DeveloperDashboardPage";
+import DeveloperSidebarHeaderLayout from "./components/layout/developer/DeveloperSidebarHeaderLayout";
+import CustomerSidebarHeaderLayout from "./components/layout/customer/CustomerSidebarHeaderLayout copy";
 
 function App() {
   return (
@@ -40,40 +47,44 @@ function App() {
         <Route path="checklist" element={<CheckListPage />} />
         <Route path="user-management" element={<UserManagementPage/>} />
         <Route path="remove-projects" element={<RemoveProjectPage />} />
-        <Route path="change-password" element={<ChangePasswordPage />} />
         <Route path="create-project" element={<CreateProjectPage />} /> 
-
+        <Route path="projects" element={<ProjectPage/>}/>
+        <Route path="posts/:postId" element={<PostDetailPage/>} />
+        <Route path="create-user" element={<CreateUserPage />} />
+        <Route path="edit-user/:userId" element={<CreateUserPage />} />
+        <Route path="proect-trash" element={<ProjectTrashPage/>}/>
 
       </Route>
 
       {/* ========== 개발사 전용 페이지 ========== */}
       <Route path="/developer" element={
         <ProtectedRoute allowedRoles={['DEVELOPER']}>
-          <SidebarHeaderLayout />
+          <DeveloperSidebarHeaderLayout/>
         </ProtectedRoute>
       }>
-        <Route path="dashboard" element={<DashboardPage />} />
+        <Route path="dashboard" element={<DeveloperDashboardPage/>} />
         <Route path="project/:projectId" element={<ProjectPage />} />
         <Route path="board" element={<BoardPage />} />
         <Route path="board/history/:boardId" element={<PostHistoryPage />} />
         <Route path="project-history/:projectId" element={<ProjectHistoryPage />} />
         <Route path="notification" element={<NotificationPage />} />
-        <Route path="change-password" element={<ChangePasswordPage />} />
+        <Route path="change-password" element={<ChangePasswordPage/>} />
       </Route>
 
       {/* ========== 고객사 전용 페이지 ========== */}
-      <Route path="/client" element={
-        <ProtectedRoute allowedRoles={['CLIENT']}>
-          <SidebarHeaderLayout />
-        </ProtectedRoute>
-      }>
-        <Route path="dashboard" element={<DashboardPage />} />
-        <Route path="project/:projectId" element={<ProjectPage />} />
-        <Route path="board" element={<BoardPage />} />
-        <Route path="board/history/:boardId" element={<PostHistoryPage />} />
-        <Route path="notification" element={<NotificationPage />} />
-        <Route path="change-password" element={<ChangePasswordPage />} />
-      </Route>
+      <Route path="/customer" element={
+          <ProtectedRoute allowedRoles={['CUSTOMER']}>
+            <CustomerSidebarHeaderLayout />
+          </ProtectedRoute>
+        }>
+          <Route path="change-password" element={<ChangePasswordPage />} />
+          <Route path="dashboard" element={<CustomerDashboardPage/>} />
+          <Route path="project/:projectId" element={<ProjectPage />} />
+          <Route path="board" element={<BoardPage />} />
+          <Route path="board/history/:boardId" element={<PostHistoryPage />} />
+          <Route path="notification" element={<NotificationPage />} />
+          <Route path="change-password" element={<ChangePasswordPage />} />
+        </Route>
     </Routes>
   );
 }

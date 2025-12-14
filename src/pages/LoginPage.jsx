@@ -40,6 +40,7 @@ export default function LoginPage() {
       } else if (userRole === 'CUSTOMER') {
         navigate("/customer/dashboard"); // 고객사 페이지
       }
+      console.log("user.role", userRole)
       
     } catch (err) {
       setError(err.response?.data?.message || "로그인에 실패했습니다.");
