@@ -1,20 +1,43 @@
 import { useState } from "react";
+import { changePassword } from "../utils/api/usersApi";
 
 export default function ChangePasswordPage() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setSuccess("");
 
     if (newPassword !== confirmPassword) {
-      alert("새 비밀번호가 일치하지 않습니다.");
+      setError("새 비밀번호가 일치하지 않습니다.");
       return;
     }
 
-    // 비밀번호 변경 API 호출
-    console.log("비밀번호 변경 요청");
+    setLoading(true);
+
+    try {
+      await changePassword({
+        currentPassword,
+        newPassword,
+        confirmPassword,
+      });
+
+      setSuccess("비밀번호가 성공적으로 변경되었습니다.");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (err) {
+      const message = err.response?.data?.message || "기존 비밀번호와 일치하지 않습니다.";
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -23,6 +46,18 @@ export default function ChangePasswordPage() {
         <h1 className="mb-10 text-center text-4xl font-semibold text-gray-800">
           Change Password
         </h1>
+
+        {error && (
+          <div className="mb-4 rounded-lg bg-red-100 p-3 text-red-700">
+            {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="mb-4 rounded-lg bg-green-100 p-3 text-green-700">
+            {success}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit}>
           {/* 현재 비밀번호 */}
@@ -105,9 +140,10 @@ export default function ChangePasswordPage() {
 
           <button
             type="submit"
-            className="mt-2.5 w-full cursor-pointer rounded-lg border-none bg-blue-600 py-4 text-base font-semibold tracking-wider text-white uppercase transition-all hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/30 active:translate-y-0"
+            disabled={loading}
+            className="mt-2.5 w-full cursor-pointer rounded-lg border-none bg-blue-600 py-4 text-base font-semibold tracking-wider text-white uppercase transition-all hover:-translate-y-0.5 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/30 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Change
+            {loading ? "Changing..." : "Change"}
           </button>
         </form>
       </div>

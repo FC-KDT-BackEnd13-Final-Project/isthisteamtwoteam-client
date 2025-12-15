@@ -34,16 +34,11 @@ export default function CustomerSidebar() {
       label: "체크리스트",
       path: "/customer/checklist",
     },
-    {
-      icon: "lock",
-      label: "비밀번호 변경",
-      path: "/customer/change-password",
-    },
 
   ];
 
   const settingItems = [
-    { icon: "settings", label: "비밀번호 변경", path: "/change-password" },
+    { icon: "settings", label: "비밀번호 변경", path: "/customer/change-password" },
     { icon: "log-out", label: "로그아웃", path: "/login" },
   ];
 
