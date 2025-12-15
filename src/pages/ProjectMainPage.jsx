@@ -147,7 +147,7 @@ export default function ProjectMainPage() {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`relative px-6 py-4 text-sm font-medium transition-colors whitespace-nowrap ${
+                    className={`relative px-4 py-4 text-sm font-medium transition-colors whitespace-nowrap ${
                       activeTab === tab.id
                         ? 'text-blue-600 border-b-2 border-blue-600'
                         : 'text-gray-600 hover:text-gray-900'
@@ -161,8 +161,8 @@ export default function ProjectMainPage() {
               {/* 콘텐츠 영역 */}
               <div className="p-8">
                 {/* 검색바와 버튼 */}
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex-1 max-w-md">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="flex-1">
                     <div className="relative">
                       <input
                         type="text"
@@ -174,7 +174,7 @@ export default function ProjectMainPage() {
                       </svg>
                     </div>
                   </div>
-                  <button className="ml-4 px-6 py-2.5 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors flex items-center gap-2">
+                  <button className="px-6 py-2.5 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors flex items-center gap-2 whitespace-nowrap">
                     <span>+</span>
                     <span>게시글 생성</span>
                   </button>
@@ -224,13 +224,16 @@ export default function ProjectMainPage() {
                 </div>
 
                 {/* 페이지네이션 */}
-                <div className="flex items-center justify-center mt-6">
-                  <div className="text-sm text-gray-600 mr-auto">
+                <div className="flex items-center justify-between mt-6">
+                  <div className="text-sm text-gray-600">
                     1 - {posts.length} of {posts.length} items
                   </div>
-                  <button className="px-4 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors">
-                    1
-                  </button>
+                  <div className="flex justify-center flex-1">
+                    <button className="px-4 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors">
+                      1
+                    </button>
+                  </div>
+                  <div className="w-[150px]"></div>
                 </div>
               </div>
             </div>

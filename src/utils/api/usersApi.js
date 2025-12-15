@@ -141,3 +141,24 @@ export const createCompany = async (data) => {
     throw error;
   }
 };
+
+export const changePassword = async (passwordData) => {
+  try {
+    const response = await api.put(
+      '/users/password',
+      {
+        currentPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword,
+        confirmPassword: passwordData.confirmPassword,
+      },
+      { skipAuthRedirect: true }
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response?.data?.code === 'A005') {
+      throw new Error(error.response.data.message);
+    }
+    throw error;
+  }
+};
+

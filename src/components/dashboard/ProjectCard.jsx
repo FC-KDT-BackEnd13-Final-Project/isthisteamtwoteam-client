@@ -3,16 +3,25 @@
  *
  * "모든 프로젝트 리스트" 섹션에 표시되는 프로젝트 카드입니다.
  * 프로젝트의 상세 정보(고객사, 시작일, 종료일, 단계 등)를 보여줍니다.
- */
+*/
+
+import { useNavigate } from "react-router-dom";
+
 const ProjectCard = ({
-  project,
-  onView,
-}) => {
+    project,
+    onView,
+
+  }) => {
+  const navigate = useNavigate()
+
   // 날짜 포맷팅 함수 (YYYY-MM-DD)
   const formatDate = (dateString) => {
     if (!dateString) return '-';
     return dateString.split('T')[0]; // ISO 형식에서 날짜 부분만 추출
   };
+
+
+
 
   return (
     <div
@@ -22,7 +31,8 @@ const ProjectCard = ({
       <button
         onClick={(e) => {
           e.stopPropagation();
-          onView(project.project_id);
+          navigate(`/edit-project/${project.project_id}`);
+
         }}
         className="absolute top-[18px] right-[18px] cursor-pointer rounded-[6px] border-none bg-[#007bff] px-3 py-1.5 text-[12px] font-semibold text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 hover:bg-[#0056b3]"
       >

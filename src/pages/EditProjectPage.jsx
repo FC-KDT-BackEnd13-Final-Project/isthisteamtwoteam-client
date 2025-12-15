@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import api from "../utils/api/axios.js";
+import { useNavigate, useParams } from 'react-router-dom';
 import ChecklistModal from '../components/projectCreate/ChecklistModal';
 import ChecklistItem from '../components/projectCreate/ChecklistItem';
 import UserSelectionDropdown from '../components/projectCreate/UserSelectionDropdown';
-
 import useChecklist from '../hooks/useChecklist';
 import useUsers from '../hooks/useUsers';
-import { createProject,createChecklist } from '../utils/api/project/projectApi.js';
+import { getProjectDetail, getProjectUsers, updateProject } from '../utils/api/project/projectApi';
+import { createChecklist } from '../utils/api/checklist/checklistApi';
 
-const CreateProjectPage = () => {
+export const EditProjectPage = () => {
     const navigate = useNavigate();
+    const { projectId } = useParams();
     
     // 커스텀 훅 사용
     const {
@@ -50,10 +50,100 @@ const CreateProjectPage = () => {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [memo, setMemo] = useState('');
+    const [coverImage, setCoverImage] = useState(null);
+    
+    // 이미지 업로드 관련 상태
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
+    
+    // 모달 상태
     const [isChecklistModalOpen, setIsChecklistModalOpen] = useState(false);
     const [checklistSearchTerm, setChecklistSearchTerm] = useState('');
-    const [projectImage, setProjectImage] = useState(null); // 추가
-    const [imagePreview, setImagePreview] = useState(null); // 추가
+    
+    // 로딩 상태
+    const [isLoading, setIsLoading] = useState(true);
+
+    // 컴포넌트 마운트 시 프로젝트 데이터 불러오기
+    useEffect(() => {
+        if (projectId) {
+            loadProjectData();
+        }
+    }, [projectId]);
+
+    // 프로젝트 데이터 불러오기
+    const loadProjectData = async () => {
+        try {
+            setIsLoading(true);
+
+            // 1. 기본 프로젝트 정보 가져오기
+            const projectData = await getProjectDetail(projectId);
+            setProjectName(projectData.name);
+            setStage(projectData.stage);
+            setCoverImage(projectData.coverImage);
+            
+            // 기존 이미지가 있으면 미리보기 설정
+            if (projectData.coverImage) {
+                setImagePreview(projectData.coverImage);
+            }
+
+            // 2. 개발사 목록 가져오기
+            const developerList = await getProjectUsers(projectId, 'DEVELOPER');
+            setSelectedDevelopers(developerList);
+
+            // 3. 고객사 목록 가져오기
+            const customerList = await getProjectUsers(projectId, 'CUSTOMER');
+            setSelectedClients(customerList);
+
+            console.log('프로젝트 전체 데이터:', projectData);
+        console.log('커버 이미지:', projectData.coverImage);
+            // TODO: 시작일, 종료일, 메모, 체크리스트 정보도 API에서 가져오도록 추가 필요
+            // setStartDate(projectData.startDate);
+            // setEndDate(projectData.endDate);
+            // setMemo(projectData.memo);
+
+        } catch (error) {
+            console.error('프로젝트 데이터 로딩 실패:', error);
+            alert('프로젝트 정보를 불러오는데 실패했습니다.');
+            navigate('/');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // 이미지 파일 선택 핸들러
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        
+        if (file) {
+            // 파일 크기 검증 (4MB)
+            if (file.size > 4 * 1024 * 1024) {
+                alert('파일 크기는 4MB를 초과할 수 없습니다.');
+                return;
+            }
+            
+            // 파일 타입 검증
+            if (!file.type.startsWith('image/')) {
+                alert('이미지 파일만 업로드 가능합니다.');
+                return;
+            }
+            
+            setSelectedImage(file);
+            
+            // 미리보기 생성
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    // 이미지 제거 핸들러
+    const handleRemoveImage = () => {
+        setSelectedImage(null);
+        setImagePreview(null);
+        setCoverImage(null);
+    };
 
     // 모달 열기
     const openChecklistModal = () => {
@@ -68,29 +158,8 @@ const CreateProjectPage = () => {
         setChecklistSearchTerm('');
     };
 
-    // 이미지 파일 선택 처리
-    const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            
-            // 이미지 파일 검사
-            if (!file.type.startsWith('image/')) {
-                alert('이미지 파일만 업로드 가능합니다.');
-                return;
-            }
-            setProjectImage(file);
-            setImagePreview(URL.createObjectURL(file));
-        }
-    };
-
-    // 이미지 삭제
-    const handleImageRemove = () => {
-        setProjectImage(null);
-        setImagePreview(null);
-    };
-
-    // 프로젝트 생성
-    const handleCreateProject = async () => {
+    // 프로젝트 수정
+    const handleUpdateProject = async () => {
         // 유효성 검사
         if (!projectName.trim()) {
             alert('프로젝트 이름을 입력해주세요.');
@@ -128,8 +197,7 @@ const CreateProjectPage = () => {
                 try {
                     const response = await createChecklist(item.text);
                     if (response.success && response.response) {
-                        console.log("저장된 체크리스트 Id : ", response.response.checkListId)
-                        savedNewChecklists.push(response.response.checkListId);
+                        savedNewChecklists.push(response.response.id);
                     }
                 } catch (error) {
                     console.error('체크리스트 저장 실패:', error);
@@ -144,43 +212,54 @@ const CreateProjectPage = () => {
             // 3. 모든 체크리스트 ID 합치기
             const selectedChecklistIds = [...existingChecklistIds, ...savedNewChecklists];
 
-            // 4. 프로젝트 생성 요청
+            // 4. 프로젝트 수정 요청 데이터 준비
             const projectData = {
-                projectName,
-                startDate,
-                endDate,
-                stage,
-                memo,
+                projectName: projectName,
+                startDate: startDate,
+                endDate: endDate,
                 members: selectedDevelopers.map(dev => dev.userId),
-                selectedChecklistIds,
+                selectedChecklistIds: selectedChecklistIds,
                 companyId: selectedClients[0]?.companyId || null,
-                projectImage // 이미지 파일 추가
+                memo: memo,
+                stage: stage,
+                projectImage: selectedImage // File 객체 또는 null
             };
 
-            console.log('프로젝트 생성 요청');
+            console.log('프로젝트 수정 요청:', projectData);
 
-            const response = await createProject(projectData);
+            // 5. 프로젝트 수정 API 호출
+            const response = await updateProject(projectId, projectData);
             
             if (response.success) {
-                alert('프로젝트가 생성되었습니다.');
-                navigate('/');
+                alert('프로젝트가 수정되었습니다.');
+                navigate('/'); // 홈으로 이동 (필요시 경로 변경)
             }
         } catch (error) {
-            console.error('프로젝트 생성 실패:', error);
-            alert('프로젝트 생성에 실패했습니다.');
+            console.error('프로젝트 수정 실패:', error);
+            alert('프로젝트 수정에 실패했습니다.');
         }
     };
+
     // 취소 버튼
     const handleCancel = () => {
-        if (confirm('작성 중인 내용이 저장되지 않습니다. 취소하시겠습니까?')) {
+        if (confirm('수정 중인 내용이 저장되지 않습니다. 취소하시겠습니까?')) {
             navigate(-1);
         }
     };
 
+    // 로딩 중일 때 표시
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-gray-50 py-10 px-5 flex items-center justify-center">
+                <div className="text-xl text-gray-600">프로젝트 정보를 불러오는 중...</div>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen bg-gray-50 py-10 px-5">
             <div className="max-w-6xl mx-auto bg-white rounded-lg shadow-md p-8">
-                <h1 className="text-3xl font-bold mb-8 text-gray-800">프로젝트 생성</h1>
+                <h1 className="text-3xl font-bold mb-8 text-gray-800">프로젝트 수정</h1>
 
                 {/* 프로젝트 이름 */}
                 <div className="mb-6">
@@ -256,7 +335,7 @@ const CreateProjectPage = () => {
                 {/* 프로젝트 단계 */}
                 <div className="mb-6">
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        프로젝트 시작 단계
+                        프로젝트 단계
                     </label>
                     <select
                         value={stage}
@@ -276,44 +355,48 @@ const CreateProjectPage = () => {
                 </div>
 
                 {/* 프로젝트 이미지 */}
-                {/* 프로젝트 이미지 */}
                 <div className="mb-6">
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
                         프로젝트 이미지
                     </label>
-                    <div className="flex items-center gap-4">
-                        <label className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors cursor-pointer">
-                            파일 선택
+                    <div className="flex items-start gap-4">
+                        <div className="flex-1">
                             <input
                                 type="file"
+                                id="project-image"
                                 accept="image/*"
                                 onChange={handleImageChange}
                                 className="hidden"
                             />
-                        </label>
-                        {projectImage && (
-                            <span className="text-sm text-gray-600">{projectImage.name}</span>
+                            <label
+                                htmlFor="project-image"
+                                className="inline-block px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors cursor-pointer"
+                            >
+                                파일 선택
+                            </label>
+                            {selectedImage && (
+                                <span className="ml-3 text-sm text-gray-600">
+                                    {selectedImage.name}
+                                </span>
+                            )}
+                        </div>
+                        {imagePreview && (
+                            <div className="relative">
+                                <img
+                                    src={imagePreview}
+                                    alt="미리보기"
+                                    className="w-32 h-32 object-cover rounded-lg border border-gray-300"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={handleRemoveImage}
+                                    className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm"
+                                >
+                                    ×
+                                </button>
+                            </div>
                         )}
                     </div>
-                    
-                    {/* 이미지 미리보기 */}
-                    {imagePreview && (
-                        <div className="mt-3 relative inline-block">
-                            <img
-                                src={imagePreview}
-                                alt="미리보기"
-                                className="w-32 h-32 object-cover rounded-lg border border-gray-300"
-                            />
-                            <button
-                                type="button"
-                                onClick={handleImageRemove}
-                                className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full text-sm"
-                            >
-                                ×
-                            </button>
-                        </div>
-                    )}
-                    
                 </div>
 
                 {/* 메모 */}
@@ -391,10 +474,10 @@ const CreateProjectPage = () => {
                     </button>
                     <button
                         type="button"
-                        onClick={handleCreateProject}
+                        onClick={handleUpdateProject}
                         className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold transition-colors"
                     >
-                        프로젝트 생성
+                        프로젝트 수정
                     </button>
                 </div>
             </div>
@@ -402,4 +485,4 @@ const CreateProjectPage = () => {
     );
 };
 
-export default CreateProjectPage;
+export default EditProjectPage;

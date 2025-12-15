@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getProjects } from "../utils/api/project/projectApi";
+import { deleteProject, getProjects } from "../utils/api/project/projectApi";
 
 /**
  * ProjectsPage - 프로젝트 목록 페이지
@@ -147,11 +147,30 @@ export default function ProjectsPage() {
     navigate(`/project/${projectId}`);
   };
 
-  const handleDeleteProject = (projectId, projectName) => {
-    if (window.confirm(`"${projectName}" 프로젝트를 삭제하시겠습니까?`)) {
-      // TODO: 실제 삭제 API 호출
-      alert("프로젝트가 삭제되었습니다.");
+  const handleDeleteProject = async (projectId, projectName) => {
+    if (!window.confirm(`"${projectName}" 프로젝트를 삭제하시겠습니까?`)) {
+    return;
+  }
+
+  try {
+    await deleteProject(projectId)
+    
+    alert("프로젝트가 삭제되었습니다.");
+
+    // 프로젝트 목록 새로고침
+    await loadProjects()
+
+    // 현재 페이지에 데이터가 없으면 이전 페이지로 이동
+    const newTotalPages = Math.ceil((filteredProjects.length - 1) / itemsPerPage);
+    if (currentPage > newTotalPages && newTotalPages > 0) {
+      setCurrentPage(newTotalPages);
     }
+
+  } catch (error) {
+    console.error('프로젝트 삭제 실패:', error);
+    alert(`프로젝트 삭제에 실패했습니다: ${error.message}`);
+  }
+
   };
 
   // ============================================

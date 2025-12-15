@@ -27,6 +27,8 @@ import CustomerDashboardPage from "./pages/customer/CustomerDashboardPage";
 import DeveloperDashboardPage from "./pages/developer/DeveloperDashboardPage";
 import DeveloperSidebarHeaderLayout from "./components/layout/developer/DeveloperSidebarHeaderLayout";
 import CustomerSidebarHeaderLayout from "./components/layout/customer/CustomerSidebarHeaderLayout copy";
+import { EditProjectPage } from "./pages/EditProjectPage";
+import ProjectMainPage from "./pages/ProjectMainPage";
 
 function App() {
   return (
@@ -52,8 +54,8 @@ function App() {
         <Route path="posts/:postId" element={<PostDetailPage/>} />
         <Route path="create-user" element={<CreateUserPage />} />
         <Route path="edit-user/:userId" element={<CreateUserPage />} />
-        <Route path="proect-trash" element={<ProjectTrashPage/>}/>
-
+        <Route path="edit-project/:projectId" element={<EditProjectPage/>}/>
+        <Route path="project/:projectId" element={<ProjectMainPage/>} />
       </Route>
 
       {/* ========== 개발사 전용 페이지 ========== */}
@@ -63,7 +65,7 @@ function App() {
         </ProtectedRoute>
       }>
         <Route path="dashboard" element={<DeveloperDashboardPage/>} />
-        <Route path="project/:projectId" element={<ProjectPage />} />
+        <Route path="project/:projectId" element={<ProjectMainPage />} />
         <Route path="board" element={<BoardPage />} />
         <Route path="board/history/:boardId" element={<PostHistoryPage />} />
         <Route path="project-history/:projectId" element={<ProjectHistoryPage />} />
@@ -79,7 +81,7 @@ function App() {
         }>
           <Route path="change-password" element={<ChangePasswordPage />} />
           <Route path="dashboard" element={<CustomerDashboardPage/>} />
-          <Route path="project/:projectId" element={<ProjectPage />} />
+          <Route path="project/:projectId" element={<ProjectMainPage />} />
           <Route path="board" element={<BoardPage />} />
           <Route path="board/history/:boardId" element={<PostHistoryPage />} />
           <Route path="notification" element={<NotificationPage />} />

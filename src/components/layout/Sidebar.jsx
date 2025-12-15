@@ -48,7 +48,7 @@ export default function Sidebar() {
   ];
 
   const settingItems = [
-    { icon: "settings", label: "비밀번호 변경", path: "/change-password" },
+    { icon: "settings", label: "비밀번호 변경", path: "/user-management" },
     { icon: "log-out", label: "로그아웃", path: "/login" },
   ];
 
