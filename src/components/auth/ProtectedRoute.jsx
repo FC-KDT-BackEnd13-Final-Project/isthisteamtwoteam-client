@@ -9,9 +9,7 @@ export default function ProtectedRoute({children, allowedRoles}){
         return <div>로딩 중...</div>;
     }
 
-    if (!user) {
-        return <Navigate to="/login" replace />;
-    }
+
 
     if (allowedRoles && !allowedRoles.includes(user.role)) {
         return <div>접근 권한이 없습니다.</div>;

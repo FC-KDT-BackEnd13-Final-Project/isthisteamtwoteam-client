@@ -8,9 +8,9 @@ const api = axios.create({
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401 && !error.config?.skipAuthRedirect) {
-      window.location.href = '/login';
-    }
+    // if (error.response?.status === 401 && !error.config?.skipAuthRedirect) {
+    //   window.location.href = '/login';
+    // }
     return Promise.reject(error);
   }
 );
