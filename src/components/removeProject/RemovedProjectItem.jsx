@@ -30,14 +30,14 @@ const RemovedProjectItem = ({
   onDelete,
 }) => {
   // 프로젝트 로고 표시 (이미지가 있으면 이미지, 없으면 이름의 첫 2글자)
-  const logo = project.imageUrl ? (
+  const logo = project.projectImageUrl ? (
     <img
-      src={project.imageUrl}
-      alt={project.name}
+      src={project.projectImageUrl}
+      alt={project.projectName}
       className="w-full h-full object-cover rounded-lg"
     />
   ) : (
-    project.name.substring(0, 2)
+    project.projectName.substring(0, 2)
   );
 
   return (
@@ -47,7 +47,7 @@ const RemovedProjectItem = ({
         <input
           type="checkbox"
           checked={isSelected}
-          onChange={() => onToggle(project.id)}
+          onChange={() => onToggle(project.projectId)}
           className="w-[18px] h-[18px] cursor-pointer"
         />
       </div>
@@ -62,26 +62,26 @@ const RemovedProjectItem = ({
         {/* 프로젝트 ID 및 이름 */}
         <div className="min-w-0">
           <div className="text-[13px] font-medium text-[#5a9aeb] mb-1">
-            {project.id}
+            {project.projectId}
           </div>
           <div className="text-[14px] text-[#333] overflow-hidden text-ellipsis whitespace-nowrap">
-            {project.name}
+            {project.projectName}
           </div>
         </div>
 
         {/* 클라이언트명 */}
-        <div className="text-[13px] text-[#666]">{project.client}</div>
+        <div className="text-[13px] text-[#666]">{project.stageName}</div>
 
         {/* 생성일 */}
         <div className="flex flex-col gap-0.5">
-          <span className="text-[12px] text-[#999]">생성일</span>
-          <span className="text-[13px] text-[#333]">{project.createdDate}</span>
+          <span className="text-[12px] text-[#999]">시작일</span>
+          <span className="text-[13px] text-[#333]">{project.startDate}</span>
         </div>
 
         {/* 삭제일 */}
         <div className="flex flex-col gap-0.5">
-          <span className="text-[12px] text-[#999]">삭제일</span>
-          <span className="text-[13px] text-[#333]">{project.deletedDate}</span>
+          <span className="text-[12px] text-[#999]">종료일</span>
+          <span className="text-[13px] text-[#333]">{project.endDate}</span>
         </div>
       </div>
 

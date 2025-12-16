@@ -151,3 +151,20 @@ export const createChecklist = async (content) => {
         throw error;
     }
 };
+
+/**
+ * 삭제된 프로젝트 목록 조회
+ */
+export const getDeletedProjects = async () => {
+  try {
+    const response = await api.get('/admin/projects', {
+      params: {
+        isDeleted: true  // 삭제된 프로젝트만 조회
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('삭제된 프로젝트 조회 실패:', error);
+    throw error;
+  }
+};

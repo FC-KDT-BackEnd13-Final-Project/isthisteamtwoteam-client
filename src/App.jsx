@@ -29,6 +29,7 @@ import DeveloperSidebarHeaderLayout from "./components/layout/developer/Develope
 import CustomerSidebarHeaderLayout from "./components/layout/customer/CustomerSidebarHeaderLayout copy";
 import { EditProjectPage } from "./pages/EditProjectPage";
 import ProjectMainPage from "./pages/ProjectMainPage";
+import EditPostDetailPage from "./pages/EditPostDetailPage";
 
 function App() {
   return (
@@ -36,12 +37,21 @@ function App() {
       {/* 로그인 페이지 */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/find-password" element={<FindPasswordPage />} />
+      <Route path="post/:postId" element={<PostDetailPage/>} />
+      <Route path="/" element={
+          <SidebarLayout />
+      }>
+
+        <Route path="project/:projectId" element={<ProjectMainPage/>} />
+        <Route path="post/edit/:postId" element={<EditPostDetailPage/>} />
+      </Route>
 
       {/* ========== 관리자 전용 페이지 ========== */}
       <Route path="/" element={
         <ProtectedRoute allowedRoles={['ADMIN']}>
           <SidebarLayout />
         </ProtectedRoute>
+
       }>
         <Route index element={<DashboardPage />} />
         <Route path="notification" element={<NotificationPage />} />
@@ -51,11 +61,10 @@ function App() {
         <Route path="remove-projects" element={<RemoveProjectPage />} />
         <Route path="create-project" element={<CreateProjectPage />} /> 
         <Route path="projects" element={<ProjectPage/>}/>
-        <Route path="posts/:postId" element={<PostDetailPage/>} />
         <Route path="create-user" element={<CreateUserPage />} />
         <Route path="edit-user/:userId" element={<CreateUserPage />} />
         <Route path="edit-project/:projectId" element={<EditProjectPage/>}/>
-        <Route path="project/:projectId" element={<ProjectMainPage/>} />
+        
       </Route>
 
       {/* ========== 개발사 전용 페이지 ========== */}

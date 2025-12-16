@@ -105,7 +105,9 @@ export default function PostDetailPage() {
               </div>
             </div>
             <div className="flex gap-2">
-              <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-[13px] text-gray-600 transition-colors hover:bg-gray-50">
+              <button className="rounded-md border border-gray-300 bg-white px-4 py-2 text-[13px] text-gray-600 transition-colors hover:bg-gray-50"
+                onClick={()=> {navigate(`/post/edit/${postId}`)}}
+              >
                 수정하기
               </button>
             </div>
@@ -133,7 +135,7 @@ export default function PostDetailPage() {
                       <svg className="h-5 w-5 fill-gray-600" viewBox="0 0 24 24">
                         <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
                       </svg>
-                      <span className="text-[13px] text-gray-900">{file.fileName}</span>
+                      <span className="text-[13px] text-gray-900">{file.fileOriginalFileName}</span>
                       <span className="text-[12px] text-gray-500">({(file.fileSize / 1024).toFixed(1)}KB)</span>
                     </div>
                     <a

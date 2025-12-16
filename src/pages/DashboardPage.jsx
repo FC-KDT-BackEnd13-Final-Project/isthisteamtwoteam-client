@@ -52,7 +52,7 @@ export default function DashboardPage() {
   };
 
   const handleViewBoard = (postId) => {
-    navigate(`/posts/${postId}`);
+    navigate(`/post/${postId}`);
   };
 
   const handleCreateProject = () => {

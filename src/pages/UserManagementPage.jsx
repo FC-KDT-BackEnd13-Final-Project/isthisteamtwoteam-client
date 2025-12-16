@@ -1,279 +1,347 @@
-import { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useState, useMemo, useEffect } from "react";
 
-export default function ProjectMainPage() {
-  const { projectId } = useParams();
-  const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('all');
-  const [currentStage, setCurrentStage] = useState('개발');
+// 설정 및 데이터 가져오기
+import { tabs as tabsConfig, tableConfig } from "../utils/config/tableConfig";
 
-  const tabs = [
-    { id: 'all', label: '전체', count: 14 },
-    { id: 'requirements', label: '요구사항 정의', count: 1 },
-    { id: 'design', label: '화면 설계', count: 0 },
-    { id: 'designPub', label: '디자인, 퍼블리싱', count: 2 },
-    { id: 'development', label: '개발', count: 4 },
-    { id: 'inspection', label: '검수', count: 0 },
-    { id: 'maintenance', label: '유지보수', count: 0 },
-    { id: 'uploadedFile', label: '업로드된 파일 목록', count: 0 }
+// 컴포넌트 가져오기
+import TabButton from "../components/common/TabButton/TabButton";
+import SearchBar from "../components/common/SearchBar/SearchBar";
+import UserTable from "../components/common/Table/UserTable";
+import Pagination from "../components/common/Pagination/Pagination";
+import UserFormModal from "../userManagement/UserFormModal";
+import CompanyCreateModal from "../userManagement/CompanyCreateModal";
+import { getUsers, createUser, updateUser, createCompany,deleteUser } from "../utils/api/usersApi";
+
+export default function UserManagementPage() {
+  const [activeTab, setActiveTab] = useState("developer");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [users, setUsers] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [modalState, setModalState] = useState({
+    isOpen: false,
+    mode: "create",
+    userData: null,
+  });
+  const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getUsers();
+        console.log("API 응답:", response);
+        setUsers(response);
+        setLoading(false);
+      } catch (error) {
+        console.error("유저 데이터 불러오기 실패:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const itemsPerPage = 10;
+
+  const usersByType = users
+    ? {
+        developer: users.developers?.items || [],
+        customer: users.customers?.items || [],
+        company: users.companies?.items || [],
+      }
+    : { developer: [], customer: [], company: [] };
+
+  const columns = tableConfig?.[activeTab] || [];
+
+  const allUsers = [
+    ...(usersByType.developer || []).map((user) => ({
+      ...user,
+      id: user.userId,
+      type: "developer",
+    })),
+    ...(usersByType.customer || []).map((user) => ({
+      ...user,
+      id: user.userId,
+      type: "customer",
+    })),
+    ...(usersByType.company || []).map((user) => ({ ...user, type: "company" })),
   ];
 
-  const stages = ['전체', '진행 전', '진행 중단', '요구사항 정의', '화면 설계', '디자인/퍼블리싱', '개발', '검수', '유지보수', '완료'];
+  const tabs = tabsConfig.map((tab) => ({
+    ...tab,
+    count: users
+      ? tab.id === "developer"
+        ? users.developers?.total || 0
+        : tab.id === "customer"
+          ? users.customers?.total || 0
+          : users.companies?.total || 0
+      : 0,
+  }));
 
-  const posts = [
-    {
-      id: 1,
-      number: '번호',
-      title: '게시글제목',
-      author: '담당자성함',
-      date: '날짜',
-      status: '완료여부(상태)',
-      content: '[re] 원하시는 요청에 대한 부가적인 자료입니다',
-      attachments: 0
-    },
-    {
-      id: 2,
-      content: '[re] 부가자료 다시 보냅니다!!',
-      attachments: 0
-    },
-    {
-      id: 3,
-      number: '권호',
-      title: '게시글제목',
-      author: '담당자성함',
-      date: '날짜',
-      status: '완료여부(상태)',
-      attachments: 3
+  const filteredUsers = useMemo(() => {
+    let filtered = usersByType[activeTab] || [];
+
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter((u) => {
+        if (activeTab === "developer") {
+          return (
+            u.name?.toLowerCase().includes(query) ||
+            u.email?.toLowerCase().includes(query) ||
+            u.phone?.toLowerCase().includes(query)
+          );
+        } else if (activeTab === "customer") {
+          return (
+            u.name?.toLowerCase().includes(query) ||
+            u.email?.toLowerCase().includes(query) ||
+            u.phone?.toLowerCase().includes(query) ||
+            u.companyName?.toLowerCase().includes(query)
+          );
+        } else {
+          return (
+            u.id?.toString().includes(query) ||
+            u.companyName?.toLowerCase().includes(query) ||
+            u.address?.toLowerCase().includes(query) ||
+            u.manager?.toLowerCase().includes(query) ||
+            u.userPhone?.toLowerCase().includes(query)
+          );
+        }
+      });
     }
-  ];
+
+    return filtered.map((user) => {
+      if (activeTab === "developer" || activeTab === "customer") {
+        return { ...user, id: user.userId };
+      }
+      return user;
+    });
+  }, [activeTab, searchQuery, usersByType]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredUsers.length / itemsPerPage));
+
+  const paginatedUsers = filteredUsers.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">로딩 중...</div>
+    );
+  }
+
+  if (!users) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        데이터를 불러올 수 없습니다.
+      </div>
+    );
+  }
+
+  const handleCreateUser = () => {
+    setModalState({
+      isOpen: true,
+      mode: "create",
+      userData: null,
+    });
+  };
+
+  const handleCreateCompany = () => {
+    setIsCompanyModalOpen(true);
+  };
+
+  const handleEditUser = (userId) => {
+    console.log("=== 수정 시작 ===");
+    console.log("전달받은 userId:", userId);
+    console.log("allUsers:", allUsers);
+
+    const user = allUsers.find((u) => u.id === userId);
+    console.log("찾은 user:", user);
+
+    if (!user) {
+      alert("유저를 찾을 수 없습니다.");
+      return;
+    }
+
+    setModalState({
+      isOpen: true,
+      mode: "edit",
+      userData: user,
+    });
+  };
+
+  // 👇 handleDelete 수정 - 회사 삭제 방지 + 통합 엔드포인트
+  const handleDelete = async (userId) => {
+    // 회사 탭에서는 삭제 불가
+    if (activeTab === 'company') {
+      alert('회사는 삭제할 수 없습니다.');
+      return;
+    }
+
+    if (!window.confirm("정말 삭제하시겠습니까?")) {
+      return;
+    }
+
+    try {
+      console.log("=== 삭제 시작 ===");
+      console.log("삭제할 userId:", userId);
+      console.log("현재 activeTab:", activeTab);
+
+      // API 호출 (통합 엔드포인트)
+      await deleteUser(userId, activeTab);
+      
+      alert("회원이 삭제되었습니다.");
+
+      // 데이터 새로고침
+      const updatedData = await getUsers();
+      setUsers(updatedData);
+      
+      // 선택된 ID 목록에서 제거
+      setSelectedIds((prev) => prev.filter((id) => id !== userId));
+      
+    } catch (error) {
+      console.error("삭제 실패:", error);
+      alert(`삭제에 실패했습니다: ${error.message}`);
+    }
+  };
+
+  const handleSelectAll = (checked) => {
+    if (checked) {
+      setSelectedIds(paginatedUsers.map((u) => u.id));
+    } else {
+      setSelectedIds([]);
+    }
+  };
+
+  const handleSelectOne = (id, checked) => {
+    if (checked) {
+      setSelectedIds((prev) => [...prev, id]);
+    } else {
+      setSelectedIds((prev) => prev.filter((i) => i !== id));
+    }
+  };
+
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+    setCurrentPage(1);
+    setSelectedIds([]);
+  };
+
+  const handleModalSubmit = async (data) => {
+    try {
+      console.log("modalState:", modalState);
+      console.log("userData:", modalState.userData);
+      console.log("userId:", modalState.userData?.id);
+
+      if (modalState.mode === "create") {
+        await createUser(data, activeTab);
+        alert("회원이 생성되었습니다.");
+      } else {
+        if (!modalState.userData?.id) {
+          alert("유저 ID가 없습니다.");
+          return;
+        }
+        await updateUser(modalState.userData.id, data, activeTab);
+        alert("회원 정보가 수정되었습니다.");
+      }
+
+      const updatedData = await getUsers();
+      setUsers(updatedData);
+      setModalState({ isOpen: false, mode: "create", userData: null });
+    } catch (error) {
+      console.error("작업 실패:", error);
+      alert(`작업에 실패했습니다: ${error.message}`);
+    }
+  };
+
+  const handleCompanySubmit = async (data) => {
+    try {
+      await createCompany(data);
+      alert("회사가 생성되었습니다.");
+      
+      const updatedData = await getUsers();
+      setUsers(updatedData);
+      setIsCompanyModalOpen(false);
+    } catch (error) {
+      console.error("회사 생성 실패:", error);
+      alert(`회사 생성에 실패했습니다: ${error.message}`);
+    }
+  };
+
+  const handleModalClose = () => {
+    setModalState({ isOpen: false, mode: "create", userData: null });
+  };
+
+  const handleCompanyModalClose = () => {
+    setIsCompanyModalOpen(false);
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 font-sans">
-      <div className="mx-auto max-w-[1400px] px-4 py-5">
-        {/* 페이지 제목 */}
-        <div className="mb-5">
-          <h1 className="text-[22px] font-semibold text-[#1a1a1a]">
-            프로젝트명
-          </h1>
+      <div className="mx-auto max-w-[1400px]">
+        <div className="mb-0 py-8">
+          <h1 className="mb-3 text-3xl font-bold text-gray-900">회원관리</h1>
         </div>
 
-        <div className="flex gap-6">
-          {/* 메인 콘텐츠 */}
-          <main className="flex-1">
-            {/* 프로젝트 헤더 */}
-            <div className="bg-white rounded-lg p-6 mb-6 shadow-sm">
-              <div className="flex items-center gap-3">
-                <span className="text-lg font-semibold text-gray-900">프로젝트명</span>
-                <div className="flex gap-2 flex-wrap">
-                  {stages.map((stage) => (
-                    <span
-                      key={stage}
-                      className={`px-3 py-1.5 text-xs font-medium rounded-md ${
-                        stage === currentStage
-                          ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                          : 'bg-gray-50 text-gray-600 border border-gray-200'
-                      }`}
-                    >
-                      {stage}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
+        <div className="overflow-hidden rounded-xl bg-white">
+          <div className="flex border-b border-gray-200 bg-gray-50 px-8">
+            {tabs.map((tab) => (
+              <TabButton
+                key={tab.id}
+                tab={tab}
+                isActive={activeTab === tab.id}
+                onClick={() => handleTabChange(tab.id)}
+              />
+            ))}
+          </div>
 
-            {/* 체크리스트 섹션 */}
-            <div className="bg-white rounded-lg p-6 mb-6 shadow-sm">
-              <h2 className="text-xl font-semibold mb-5">checklist</h2>
-              
-              {/* 프로젝트 개요서류 */}
-              <div className="border border-gray-200 rounded-lg p-5 mb-4 bg-gray-50">
-                <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
-                  프로젝트 개요서류 제출해주세요.
-                  <span className="text-lg">□</span>
-                </h3>
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-xs font-medium mb-1 text-gray-600">담번</label>
-                    <input 
-                      type="text" 
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                      placeholder="project_개요.pdf" 
-                      readOnly 
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium mb-1 text-gray-600">참고자료 입니다.</label>
-                    <input 
-                      type="text" 
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                      value="https://www.youtube.com/" 
-                      readOnly 
-                    />
-                  </div>
-                </div>
-              </div>
+          <div className="p-8">
+            <SearchBar
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onCreateUser={handleCreateUser}
+              activeTab={activeTab}
+              onCreateCompany={handleCreateCompany}
+            />
 
-              {/* 일정표 */}
-              <div className="border border-gray-200 rounded-lg p-5 bg-gray-50">
-                <h3 className="text-sm font-semibold mb-4">프로젝트 일정표를 제출해주세요.</h3>
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-xs font-medium mb-1 text-gray-600">담번</label>
-                    <input 
-                      type="text" 
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                      placeholder="일정표.pdf" 
-                      readOnly 
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium mb-1 text-gray-600">참고자료 입니다.</label>
-                    <input 
-                      type="text" 
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                      value="https://www.youtube.com/" 
-                      readOnly 
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
+            <UserTable
+              columns={columns}
+              users={paginatedUsers}
+              selectedIds={selectedIds}
+              onSelectAll={handleSelectAll}
+              onSelectOne={handleSelectOne}
+              onEdit={handleEditUser}
+              onDelete={handleDelete}
+            />
 
-            {/* 게시글 섹션 */}
-            <div className="bg-white rounded-lg shadow-sm mb-6">
-              {/* 탭 메뉴 */}
-              <div className="flex border-b border-gray-200 bg-gray-50 px-8">
-                {tabs.map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`relative px-6 py-4 text-sm font-medium transition-colors whitespace-nowrap ${
-                      activeTab === tab.id
-                        ? 'text-blue-600 border-b-2 border-blue-600'
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                  >
-                    {tab.label} ({tab.count})
-                  </button>
-                ))}
-              </div>
-
-              {/* 콘텐츠 영역 */}
-              <div className="p-8">
-                {/* 검색바와 버튼 */}
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex-1 max-w-md">
-                    <div className="relative">
-                      <input
-                        type="text"
-                        placeholder="검색어를 입력하세요"
-                        className="w-full px-4 py-2.5 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                      <svg className="absolute left-3 top-3 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                      </svg>
-                    </div>
-                  </div>
-                  <button className="ml-4 px-6 py-2.5 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors flex items-center gap-2">
-                    <span>+</span>
-                    <span>게시글 생성</span>
-                  </button>
-                </div>
-
-                {/* 테이블 */}
-                <div className="border border-gray-200 rounded-lg overflow-hidden">
-                  <table className="w-full">
-                    <thead className="bg-gray-50 border-b border-gray-200">
-                      <tr>
-                        <th className="w-12 px-6 py-4">
-                          <input type="checkbox" className="w-4 h-4 rounded border-gray-300" />
-                        </th>
-                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">제목</th>
-                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">단계</th>
-                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">승인 여부</th>
-                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">생성 시간</th>
-                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">작성자</th>
-                        <th className="px-6 py-4"></th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200 bg-white">
-                      {posts.map((post) => (
-                        <tr key={post.id} className="hover:bg-gray-50">
-                          <td className="px-6 py-4">
-                            <input type="checkbox" className="w-4 h-4 rounded border-gray-300" />
-                          </td>
-                          <td className="px-6 py-4 text-sm text-gray-900">{post.title || post.content}</td>
-                          <td className="px-6 py-4 text-sm text-gray-600">{post.status || '-'}</td>
-                          <td className="px-6 py-4 text-sm text-gray-600">-</td>
-                          <td className="px-6 py-4 text-sm text-gray-600">{post.date || '-'}</td>
-                          <td className="px-6 py-4 text-sm text-gray-600">{post.author || '-'}</td>
-                          <td className="px-6 py-4">
-                            <div className="flex gap-2">
-                              <button className="px-4 py-1.5 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition-colors">
-                                수정
-                              </button>
-                              <button className="px-4 py-1.5 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition-colors">
-                                삭제
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-
-                {/* 페이지네이션 */}
-                <div className="flex items-center justify-center mt-6">
-                  <div className="text-sm text-gray-600 mr-auto">
-                    1 - {posts.length} of {posts.length} items
-                  </div>
-                  <button className="px-4 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors">
-                    1
-                  </button>
-                </div>
-              </div>
-            </div>
-          </main>
-
-          {/* 우측 프로필 카드 */}
-          <aside className="w-80">
-            <div className="bg-white rounded-lg p-5 shadow-sm sticky top-5">
-              <div className="space-y-4">
-                <button className="w-full py-10 border border-gray-300 rounded-full bg-blue-50 font-semibold text-base text-blue-600 hover:bg-blue-100 transition-colors">
-                  사진
-                </button>
-                
-                <div className="flex gap-2">
-                  <button className="flex-1 px-4 py-2 border border-gray-300 rounded-md bg-blue-500 text-white font-medium text-sm hover:bg-blue-600 transition-colors">
-                    전체
-                  </button>
-                  <button className="flex-1 px-4 py-2 border border-gray-300 rounded-md bg-white font-medium text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                    개인
-                  </button>
-                </div>
-                
-                <div className="p-4 border border-gray-200 rounded-lg bg-gray-50">
-                  <p className="text-sm leading-relaxed mb-2 font-semibold text-gray-900">
-                    김동균 이메일 : kimdong3021
-                  </p>
-                  <p className="text-sm leading-relaxed mb-2 font-semibold text-gray-900">
-                    비상연락망 : 101123213
-                  </p>
-                  <p className="text-sm leading-relaxed mb-2 text-gray-700">
-                    디자인 단계입니다.
-                  </p>
-                  <p className="text-sm leading-relaxed mb-2 text-gray-700">
-                    아래 링크에서 디자인 확인 가능합니다.
-                  </p>
-                  <p className="text-sm leading-relaxed text-blue-600 underline cursor-pointer hover:text-blue-800">
-                    www.main.......design
-                  </p>
-                </div>
-              </div>
-            </div>
-          </aside>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              itemsPerPage={itemsPerPage}
+              totalItems={filteredUsers.length}
+              onPageChange={setCurrentPage}
+            />
+          </div>
         </div>
+
+        {modalState.isOpen && (
+          <UserFormModal
+            key={`${activeTab}-${modalState.userData?.id || "new"}`}
+            mode={modalState.mode}
+            initialData={modalState.userData}
+            activeTab={activeTab}
+            onClose={handleModalClose}
+            onSubmit={handleModalSubmit}
+          />
+        )}
+
+        {isCompanyModalOpen && (
+          <CompanyCreateModal
+            onClose={handleCompanyModalClose}
+            onSubmit={handleCompanySubmit}
+          />
+        )}
       </div>
     </div>
   );
