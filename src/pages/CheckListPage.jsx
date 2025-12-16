@@ -17,7 +17,14 @@ export default function CheckListPage() {
     const fetchData = async () => {
       try {
         const response = await getChecklists(currentPage, 10);
-        setChecklists(response.content);
+        
+        // ✅ checkListId를 id로 변환
+        const normalizedData = response.content.map(item => ({
+          id: item.checkListId,
+          content: item.content
+        }));
+        
+        setChecklists(normalizedData);
         setPageInfo(response.pageInfo);
         setLoading(false);
       } catch (error) {
@@ -55,7 +62,7 @@ export default function CheckListPage() {
         setChecklists((prev) =>
           prev.map((item) =>
             item.id === editingId
-              ? { id: newChecklist.id, content: editingText.trim() }
+              ? { id: newChecklist.checkListId, content: editingText.trim() }  // ✅ 여기도 수정
               : item
           )
         );

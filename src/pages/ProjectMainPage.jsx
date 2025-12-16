@@ -1,11 +1,39 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { getProjectChecklist } from '../utils/api/checklist/checklistApi';
+import { Link2, Paperclip, ExternalLink, Download, ChevronDown, ChevronUp } from 'lucide-react';
 
 export default function ProjectMainPage() {
   const { projectId } = useParams();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('all');
   const [currentStage, setCurrentStage] = useState('개발');
+  const [checklists, setChecklists] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [expandedChecklists, setExpandedChecklists] = useState({});
+  
+  useEffect(()=>{
+    fetchChecklists();
+  },[projectId])
+
+  const fetchChecklists = async()=>{
+    try {
+      const data = await getProjectChecklist(projectId);
+      setChecklists(data.response);    
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const toggleChecklist = (checklistId) => {
+    setExpandedChecklists(prev => ({
+      ...prev,
+      [checklistId]: !prev[checklistId]
+    }));
+  };
 
   const tabs = [
     { id: 'all', label: '전체', count: 14 },
@@ -86,57 +114,127 @@ export default function ProjectMainPage() {
               <h2 className="text-xl font-semibold mb-5">checklist</h2>
               
               {/* 프로젝트 개요서류 */}
-              <div className="border border-gray-200 rounded-lg p-5 mb-4 bg-gray-50">
-                <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
-                  프로젝트 개요서류 제출해주세요.
-                  <span className="text-lg">□</span>
-                </h3>
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-xs font-medium mb-1 text-gray-600">담번</label>
-                    <input 
-                      type="text" 
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                      placeholder="project_개요.pdf" 
-                      readOnly 
-                    />
+              {checklists.map((checklist) => (
+                <div key={checklist.id} className="border border-gray-200 rounded-lg mb-4 bg-white hover:shadow-md transition-shadow">
+                  {/* 체크리스트 헤더 (클릭 가능) */}
+                  <div 
+                    className="flex items-center justify-between p-3 cursor-pointer hover:bg-gray-50 transition-colors"
+                    onClick={() => toggleChecklist(checklist.id)}
+                  >
+                    <div className="flex items-center gap-3 flex-2">
+                        <div onClick={(e) => e.stopPropagation()}>
+                            <input 
+                            type="checkbox" 
+                            checked={checklist.checked}
+                            onChange={async (e) => {
+                                e.stopPropagation();
+                                
+                                try {
+                                setChecklists(prev => 
+                                    prev.map(item => 
+                                    item.id === checklist.id 
+                                        ? { ...item, checked: e.target.checked }
+                                        : item
+                                    )
+                                );
+                                } catch (error) {
+                                console.error('체크리스트 업데이트 실패:', error);
+                                }
+                            }}
+                            className="w-5 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                            />
+                        </div>
+                        <h3 className="text-sm font-semibold text-gray-900">
+                            {checklist.checkListContent}
+                        </h3>
+                        <div className="flex items-center gap-2 ml-3">
+                            {checklist.links.length > 0 && (
+                            <span className="flex items-center gap-1 text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+                                <Link2 className="w-3 h-3" />
+                                {checklist.links.length}
+                            </span>
+                            )}
+                            {checklist.files.length > 0 && (
+                            <span className="flex items-center gap-1 text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
+                                <Paperclip className="w-3 h-3" />
+                                {checklist.files.length}
+                            </span>
+                            )}
+                        </div>
+                        </div>
+                    {(checklist.links.length > 0 || checklist.files.length > 0) && (
+                      <div className="ml-3">
+                        {expandedChecklists[checklist.id] ? (
+                          <ChevronUp className="w-5 h-5 text-gray-500" />
+                        ) : (
+                          <ChevronDown className="w-5 h-5 text-gray-500" />
+                        )}
+                      </div>
+                    )}
                   </div>
-                  <div>
-                    <label className="block text-xs font-medium mb-1 text-gray-600">참고자료 입니다.</label>
-                    <input 
-                      type="text" 
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                      value="https://www.youtube.com/" 
-                      readOnly 
-                    />
-                  </div>
-                </div>
-              </div>
 
-              {/* 일정표 */}
-              <div className="border border-gray-200 rounded-lg p-5 bg-gray-50">
-                <h3 className="text-sm font-semibold mb-4">프로젝트 일정표를 제출해주세요.</h3>
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-xs font-medium mb-1 text-gray-600">담번</label>
-                    <input 
-                      type="text" 
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                      placeholder="일정표.pdf" 
-                      readOnly 
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium mb-1 text-gray-600">참고자료 입니다.</label>
-                    <input 
-                      type="text" 
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                      value="https://www.youtube.com/" 
-                      readOnly 
-                    />
-                  </div>
+                  {/* 드롭다운 컨텐츠 */}
+                  {expandedChecklists[checklist.id] && (
+                    <div className="px-5 pb-5 border-t border-gray-100">
+                      {/* 링크 섹션 */}
+                      {checklist.links.length > 0 && (
+                        <div className="mt-4 mb-4">
+                          <div className="flex items-center gap-2 mb-3">
+                            <Link2 className="w-4 h-4 text-blue-600" />
+                            <span className="text-sm font-semibold text-gray-700">링크</span>
+                            <span className="text-xs text-gray-500">({checklist.links.length})</span>
+                          </div>
+                          <div className="space-y-2">
+                            {checklist.links.map((link, i) => (
+                              <a
+                                key={i}
+                                href={link.linkUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="group flex items-center gap-2 p-3 bg-white hover:bg-gray-50 rounded-lg border border-blue-200 transition-all"
+                              >
+                                <ExternalLink className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                                <span className="text-sm text-blue-700 group-hover:text-blue-800 truncate flex-1">
+                                  {link.linkUrl}
+                                </span>
+                              </a>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* 파일 섹션 */}
+                      {checklist.files.length > 0 && (
+                        <div className="mt-4">
+                          <div className="flex items-center gap-2 mb-3">
+                            <Paperclip className="w-4 h-4 text-gray-600" />
+                            <span className="text-sm font-semibold text-gray-700">첨부파일</span>
+                            <span className="text-xs text-gray-500">({checklist.files.length})</span>
+                          </div>
+                          <div className="space-y-2">
+                            {checklist.files.map((file) => (
+                              <alert
+                                key={file.fileId}
+                                href={file.fileUrl}
+                                download
+                                className="group flex items-center justify-between gap-3 p-3 bg-white hover:bg-gray-50 rounded-lg border border-gray-300 transition-all"
+                              >
+                                <div className="flex items-center gap-2 flex-1 min-w-0">
+                                  <Paperclip className="w-4 h-4 text-gray-600 flex-shrink-0" />
+                                  <span className="text-sm text-gray-700 group-hover:text-gray-900 truncate">
+                                    {decodeURIComponent(file.fileName)}
+                                  </span>
+                                </div>
+                                <Download className="w-4 h-4 text-gray-600 group-hover:text-gray-900 flex-shrink-0" />
+                              </alert>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
-              </div>
+              ))}
             </div>
 
             {/* 게시글 섹션 */}

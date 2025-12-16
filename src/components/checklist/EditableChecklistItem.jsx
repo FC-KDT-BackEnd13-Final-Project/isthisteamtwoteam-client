@@ -12,6 +12,8 @@ const EditableChecklistItem = ({
 }) => {
   const inputRef = useRef(null);
 
+  console.log(`EditableChecklistItem - id: ${item.id}, isEditing: ${isEditing}`);
+
   useEffect(() => {
     if (isEditing && inputRef.current) {
       inputRef.current.focus();

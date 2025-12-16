@@ -8,13 +8,6 @@ export const getPostDetail = async (postId) => {
   return response.data;
 };
 
-/**
- * 게시글 수정
- */
-export const updatePost = async (postId, postData) => {
-  const response = await api.put(`/users/projects/posts/${postId}`, postData);
-  return response.data;
-};
 
 /**
  * 게시글 삭제
@@ -31,3 +24,28 @@ export const completePost = async (postId) => {
   const response = await api.patch(`/users/projects/posts/${postId}/complete`);
   return response.data;
 };
+
+// postApi.js 파일에 추가
+
+/**
+ * 게시글 수정
+ * @param {number} projectId - 프로젝트 ID
+ * @param {number} postId - 게시글 ID
+ * @param {Object} data - 수정할 데이터
+ * @returns {Promise}
+ */
+export const updatePost = async (projectId, postId, data) => {
+  try {
+    const response = await api.patch(
+      `/users/projects/posts/${postId}`,
+      data
+    );
+        console.log('게시글 업데이트 결과' , response.response)
+
+    return response.data;
+  } catch (error) {
+    console.error('게시글 수정 실패:', error);
+    throw error;
+  }
+};
+

@@ -1,4 +1,4 @@
-import api from "./axios.js";
+import api from "../axios.js";
 
 /**
  * 임시 파일 업로드
@@ -6,13 +6,13 @@ import api from "./axios.js";
  * @param {number} projectId 
  * @returns {Promise} - 업로드된 파일 정보
  */
-export const uploadTempFile = async (file, projectId ) => {
+export const uploadTempFile = async (file, projectId) => {
   try {
     const formData = new FormData();
     formData.append('files', file);
 
     const response = await api.post(
-      `/api/v1/users/projects/${projectId}/posts/files/temp`, 
+      `/users/projects/${projectId}/posts/files/temp`, 
       formData, 
       {
         headers: {
@@ -37,7 +37,7 @@ export const uploadTempFile = async (file, projectId ) => {
 export const deleteTempFile = async (projectId, fileIds) => {
   try {
     const response = await api.delete(
-      `/api/v1/users/projects/${projectId}/files/temp`,
+      `/users/projects/${projectId}/files/temp`,
       {
         data: {
           fileIds: fileIds
@@ -45,6 +45,19 @@ export const deleteTempFile = async (projectId, fileIds) => {
       }
     );
 
+    return response.data;
+  } catch (error) {
+    console.error('임시 파일 삭제 실패:', error);
+    throw error;
+  }
+};
+
+
+export const deleteTempFiles = async (projectId, fileIds) => {
+  try {
+    const response = await api.delete(`/users/projects/${projectId}/files/temp`, {
+      data: { fileIds }
+    });
     return response.data;
   } catch (error) {
     console.error('임시 파일 삭제 실패:', error);

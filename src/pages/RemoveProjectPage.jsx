@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // 데이터 가져오기
-import { initialRemovedProjects } from "../utils/data/mockRemovedProjects";
 
 // 컴포넌트 가져오기
-import ProjectItem from "../components/removeProject/RemovedProjectItem";
 import EmptyState from "../components/common/EmptyState/EmptyState";
 import { EmptyTrashIcon } from "../components/common/icons/RemoveProjectIcon";
 import ControlBar from "../components/removeProject/ControlBar";
+import RemovedProjectItem from "../components/removeProject/RemovedProjectItem";
+
+import { getDeletedProjects } from "../utils/api/project/projectApi";
 
 /**
  * 삭제된 프로젝트 관리 페이지 (휴지통)
@@ -26,31 +27,56 @@ export default function RemoveProjectPage() {
   // 1. 상태(State) 관리
   // ========================================
 
-  const [projects, setProjects] = useState(initialRemovedProjects); // 삭제된 프로젝트 목록
+  const [projects, setProjects] = useState([]); // 빈 배열로 초기화 (mock 데이터 제거)
   const [selectedIds, setSelectedIds] = useState(new Set()); // 선택된 프로젝트 ID 목록 (Set 사용)
   const [searchQuery, setSearchQuery] = useState(""); // 검색어
+  const [loading, setLoading] = useState(true); // 로딩 상태 추가
+  const [error, setError] = useState(null); // 에러 상태 추가
 
   // ========================================
   // 2. 데이터 처리
   // ========================================
+  useEffect(() => {
+  const fetchDeletedProjects = async () => {
+    try {
+      setLoading(true);
+      const response = await getDeletedProjects();
+      
+      if (response.success) {
+        setProjects(response.response.content);
+      } else {
+        setError(response.message || '프로젝트를 불러오는데 실패했습니다.');
+      }
+    } catch (err) {
+      console.error('삭제된 프로젝트 조회 실패:', err);
+      setError('프로젝트를 불러오는데 실패했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchDeletedProjects();
+}, []);
+
+
 
   /**
    * 검색어로 프로젝트 필터링
    * 프로젝트 ID, 이름, 클라이언트명에서 검색
    */
   const filteredProjects = projects.filter((project) => {
-    const query = searchQuery.toLowerCase();
-    return (
-      project.id.toLowerCase().includes(query) ||
-      project.name.toLowerCase().includes(query) ||
-      project.client.toLowerCase().includes(query)
-    );
-  });
+  const query = searchQuery.toLowerCase();
+  return (
+    project.projectId.toString().includes(query) ||
+    project.projectName.toLowerCase().includes(query)
+  );
+});
+
 
   // 전체 선택 상태 확인
   const isAllSelected =
     filteredProjects.length > 0 &&
-    filteredProjects.every((p) => selectedIds.has(p.id));
+    filteredProjects.every((p) => selectedIds.has(p.projectId));
 
   // 선택된 항목이 있는지 확인
   const hasSelection = selectedIds.size > 0;
@@ -202,10 +228,10 @@ export default function RemoveProjectPage() {
           ) : (
             // 프로젝트 목록 표시
             filteredProjects.map((project) => (
-              <ProjectItem
-                key={project.id}
+              <RemovedProjectItem
+                key={project.projectId}
                 project={project}
-                isSelected={selectedIds.has(project.id)}
+                isSelected={selectedIds.has(project.projectId)}
                 onToggle={handleToggle}
                 onRestore={handleRestore}
                 onDelete={handlePermanentDelete}
