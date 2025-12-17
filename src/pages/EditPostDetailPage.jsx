@@ -41,13 +41,14 @@ export default function EditPostDetailPage() {
       try {
         setLoading(true);
         const response = await getPostDetail(postId);
+        console.log(response.response)
         
         if (response.success) {
           const data = response.response;
           setPostData(data);
           setTitle(data.title);
           setContent(data.content);
-          setStage(data.stage);
+          setStage(data.stageName);
           setFiles(data.files || []);
           setLinks(data.links || []);
           setProjectId(data.projectId)

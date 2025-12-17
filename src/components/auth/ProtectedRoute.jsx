@@ -9,7 +9,6 @@ export default function ProtectedRoute({ children, allowedRoles }) {
     return <div>로딩 중...</div>;
   }
 
-  // ✅ 로그인 안 된 경우 → /login 리다이렉트
   if (!user || !user.role) {
     return (
       <Navigate
@@ -20,7 +19,6 @@ export default function ProtectedRoute({ children, allowedRoles }) {
     );
   }
 
-  // ✅ 권한이 없는 경우
   if (allowedRoles && !allowedRoles.includes(user.role)) {
     return <div>접근 권한이 없습니다.</div>;
   }
