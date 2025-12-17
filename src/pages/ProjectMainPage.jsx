@@ -49,30 +49,7 @@ export default function ProjectMainPage() {
   const stages = ['전체', '진행 전', '진행 중단', '요구사항 정의', '화면 설계', '디자인/퍼블리싱', '개발', '검수', '유지보수', '완료'];
 
   const posts = [
-    {
-      id: 1,
-      number: '번호',
-      title: '게시글제목',
-      author: '담당자성함',
-      date: '날짜',
-      status: '완료여부(상태)',
-      content: '[re] 원하시는 요청에 대한 부가적인 자료입니다',
-      attachments: 0
-    },
-    {
-      id: 2,
-      content: '[re] 부가자료 다시 보냅니다!!',
-      attachments: 0
-    },
-    {
-      id: 3,
-      number: '권호',
-      title: '게시글제목',
-      author: '담당자성함',
-      date: '날짜',
-      status: '완료여부(상태)',
-      attachments: 3
-    }
+
   ];
 
   return (
