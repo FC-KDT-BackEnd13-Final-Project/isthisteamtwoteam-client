@@ -24,7 +24,7 @@ export default function ForgotPasswordPage() {
     setLoading(true);
 
     try {
-      await api.post("/api/v1/password/find", { email });
+      await api.post("/password/find", { email });
       setSuccess("인증 코드가 이메일로 발송되었습니다.");
       setStep(2);
     } catch (err) {
@@ -44,14 +44,14 @@ export default function ForgotPasswordPage() {
     setLoading(true);
 
     try {
-      await api.post("/api/v1/password/reset", {
+      await api.post("/password/reset", {
         email,
         code,
         newPassword,
       });
 
       setSuccess("비밀번호가 성공적으로 변경되었습니다.");
-      setTimeout(() => navigate("/login"), 1500);
+      navigate("/login");
     } catch (err) {
       setError(err.response?.data?.message || "비밀번호 재설정 실패");
     } finally {

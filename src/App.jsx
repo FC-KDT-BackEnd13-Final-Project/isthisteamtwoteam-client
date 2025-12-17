@@ -7,7 +7,7 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 // Pages
 import BoardPage from "./pages/BoardPage";
-import ChangePasswordPage from "./pages/ChangePasswordPage";
+// import ChangePasswordPage from "./pages/ChangePasswordPage";
 import CheckListPage from "./pages/CheckListPage";
 import DashboardPage from "./pages/DashboardPage";
 import FindPasswordPage from "./pages/FindPasswordPage";
@@ -30,12 +30,14 @@ import CustomerSidebarHeaderLayout from "./components/layout/customer/CustomerSi
 import { EditProjectPage } from "./pages/EditProjectPage";
 import ProjectMainPage from "./pages/ProjectMainPage";
 import EditPostDetailPage from "./pages/EditPostDetailPage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 
 function App() {
   return (
     <Routes>
       {/* 로그인 페이지 */}
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/login/reset" element={<ForgotPasswordPage/>}/>
       <Route path="/find-password" element={<FindPasswordPage />} />
       <Route path="post/:postId" element={<PostDetailPage/>} />
       <Route path="/" element={
@@ -79,7 +81,7 @@ function App() {
         <Route path="board/history/:boardId" element={<PostHistoryPage />} />
         <Route path="project-history/:projectId" element={<ProjectHistoryPage />} />
         <Route path="notification" element={<NotificationPage />} />
-        <Route path="change-password" element={<ChangePasswordPage/>} />
+        {/* <Route path="change-password" element={<ChangePasswordPage/>} /> */}
       </Route>
 
       {/* ========== 고객사 전용 페이지 ========== */}
@@ -88,13 +90,13 @@ function App() {
             <CustomerSidebarHeaderLayout />
           </ProtectedRoute>
         }>
-          <Route path="change-password" element={<ChangePasswordPage />} />
+          {/* <Route path="change-password" element={<ChangePasswordPage />} /> */}
           <Route path="dashboard" element={<CustomerDashboardPage/>} />
           <Route path="project/:projectId" element={<ProjectMainPage />} />
           <Route path="board" element={<BoardPage />} />
           <Route path="board/history/:boardId" element={<PostHistoryPage />} />
           <Route path="notification" element={<NotificationPage />} />
-          <Route path="change-password" element={<ChangePasswordPage />} />
+          {/* <Route path="change-password" element={<ChangePasswordPage />} /> */}
         </Route>
     </Routes>
   );

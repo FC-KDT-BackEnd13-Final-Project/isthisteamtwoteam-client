@@ -142,23 +142,30 @@ export const createCompany = async (data) => {
   }
 };
 
-export const changePassword = async (passwordData) => {
-  try {
-    const response = await api.put(
-      '/users/password',
-      {
-        currentPassword: passwordData.currentPassword,
-        newPassword: passwordData.newPassword,
-        confirmPassword: passwordData.confirmPassword,
-      },
-      { skipAuthRedirect: true }
-    );
-    return response.data;
-  } catch (error) {
-    if (error.response?.data?.code === 'A005') {
-      throw new Error(error.response.data.message);
-    }
-    throw error;
-  }
-};
+// export const changePassword = async (passwordData) => {
+//   try {
+//     console.log("비밀번호 수정 메서드 호출됨 , " , passwordData)
+//     const response = await api.put(
+//       '/users/password',
+//       {
+//         currentPassword: passwordData.currentPassword,
+//         newPassword: passwordData.newPassword,
+//         confirmPassword: passwordData.confirmPassword,
+//       },
+//       { skipAuthRedirect: true }
+//     );
+//     return response.data;
+//   } catch (error) {
+//     if (error.response?.data?.code === 'A005') {
+//       throw new Error(error.response.data.message);
+//     }
+//     throw error;
+//   }
+// };
 
+
+export const logout = async () => {
+  return api.post("/logout", {}, {
+    withCredentials: true, // 세션/쿠키 쓰는 경우 중요
+  });
+};

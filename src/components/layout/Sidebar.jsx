@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Icon from "../common/icons/Icon";
+import { logout } from "../../utils/api/usersApi";
 
 export default function Sidebar() {
   let navigate = useNavigate();
@@ -52,9 +53,21 @@ export default function Sidebar() {
     { icon: "log-out", label: "로그아웃", path: "/login" },
   ];
 
+
   const handleClick = (path) => {
     navigate(path);
   };
+  const handleLogout = async () => {
+  try {
+
+    await logout();
+    navigate("/login"); // 로그인 페이지 이동
+  
+  } catch (error) {
+    console.error("로그아웃 실패:", error);
+    alert("로그아웃에 실패했습니다.");
+  }
+};
 
   // URL 경로가 변경될 때마다 활성 메뉴 업데이트
   useEffect(() => {
@@ -123,6 +136,11 @@ export default function Sidebar() {
               <div
                 key={item.label}
                 onClick={() => {
+
+                  if (item.label === "로그아웃") {
+                    handleLogout();
+                    return;
+                  }
                   setActiveMenu(item.label);
                   handleClick(item.path);
                 }}
