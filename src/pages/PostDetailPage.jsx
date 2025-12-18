@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getPostDetail, completePost } from "../utils/api/post/postApi";
 import CommentItem from "../components/post/CommentItem";
+import LoadingState from "../components/common/LoadingState/LoadingState";
 
 export default function PostDetailPage() {
   const { postId } = useParams();
@@ -42,10 +43,8 @@ export default function PostDetailPage() {
   // 로딩 중
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-100">
-        <div className="text-center">
-          <p className="text-[16px] text-gray-500">게시글을 불러오는 중...</p>
-        </div>
+      <div className="min-h-screen bg-gray-100">
+        <LoadingState message="게시글을 불러오는 중..." size="large" />
       </div>
     );
   }

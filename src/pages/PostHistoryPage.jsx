@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import HistoryAccordion from "../components/postHistory/HistoryAccordion";
+import PageHeader from "../components/common/PageHeader/PageHeader";
 
 export default function PostHistoryPage() {
   const { boardId } = useParams();
-  const navigate = useNavigate();
   // Mock 데이터
   const [historyData] = useState({
     histories: [
@@ -73,29 +73,14 @@ export default function PostHistoryPage() {
     ],
   });
 
-  const handleGoBack = () => {
-    navigate(-1);
-  };
-
   return (
     <div className="min-h-screen bg-[#ffffff] p-5 font-[-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,'Helvetica_Neue',Arial,sans-serif]">
       <div className="mx-auto max-w-[900px]">
-        <div className="mb-6">
-          <div className="mb-2 flex items-center justify-between">
-            <h1 className="text-[28px] font-semibold text-[#1a1a1a]">
-              게시글 히스토리
-            </h1>
-            <button
-              onClick={handleGoBack}
-              className="cursor-pointer rounded-[6px] border border-[#d0d0d0] bg-white px-4 py-2 text-[13px] text-[#666] transition-all duration-200 hover:bg-[#f5f5f5]"
-            >
-              ← 돌아가기
-            </button>
-          </div>
-          <p className="text-[14px] text-[#666]">
-            게시글, 첨부 파일, 댓글의 변경사항을 시간순으로 확인할 수 있습니다.
-          </p>
-        </div>
+        <PageHeader
+          title="게시글 히스토리"
+          description="게시글, 첨부 파일, 댓글의 변경사항을 시간순으로 확인할 수 있습니다."
+          showBackButton={true}
+        />
         <HistoryAccordion histories={historyData.histories} />
       </div>
     </div>

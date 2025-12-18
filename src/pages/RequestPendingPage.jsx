@@ -3,6 +3,7 @@ import {
   CheckCircleIcon,
   XCircleIcon,
 } from "../components/common/icons/RequestPendingIcon";
+import LoadingState from "../components/common/LoadingState/LoadingState";
 import StatCard from "../components/requestPending/RequestStatCard";
 import Section from "../components/requestPending/RequestSection";
 import { useEffect, useState } from "react";
@@ -48,7 +49,13 @@ export default function RequestPendingPage() {
     fetchData();
   }, []);
 
-  if (!requestPendingPosts) return <div>Loading...</div>;
+  if (!requestPendingPosts) {
+    return (
+      <div className="min-h-screen bg-gray-100">
+        <LoadingState message="로딩 중..." size="large" />
+      </div>
+    );
+  }
 
   const handleViewDetail = (id) => {
     alert(`게시글 ${id} 상세 페이지로 이동합니다.`);
