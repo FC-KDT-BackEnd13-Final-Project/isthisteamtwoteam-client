@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 
 // 컴포넌트 가져오기
 import EmptyState from "../components/common/EmptyState/EmptyState";
+import LoadingState from "../components/common/LoadingState/LoadingState";
+import PageHeader from "../components/common/PageHeader/PageHeader";
 import { EmptyTrashIcon } from "../components/common/icons/RemoveProjectIcon";
 import ControlBar from "../components/removeProject/ControlBar";
 import RemovedProjectItem from "../components/removeProject/RemovedProjectItem";
@@ -193,17 +195,22 @@ export default function RemoveProjectPage() {
   // 4. 화면 그리기 (렌더링)
   // ========================================
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <LoadingState message="로딩 중..." size="large" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-white p-5 font-[-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,'Helvetica_Neue',Arial,sans-serif]">
       <div className="mx-auto max-w-[1200px] rounded-[12px] bg-white p-8">
         {/* 페이지 헤더 */}
-        <div className="mb-8 border-b-2 border-[#f0f0f0] pb-6">
-          <h1 className="mb-2 text-[24px] text-[#1a1a1a]">삭제된 프로젝트</h1>
-          <p className="text-[14px] text-[#999]">
-            삭제된 프로젝트는 30일 동안 보관되며, 필요한 프로젝트는 복원할 수
-            있습니다.
-          </p>
-        </div>
+        <PageHeader
+          title="삭제된 프로젝트"
+          description="삭제된 프로젝트는 30일 동안 보관되며, 필요한 프로젝트는 복원할 수 있습니다."
+        />
 
         {/* 컨트롤 바: 전체 선택, 일괄 작업 버튼, 검색 */}
         <ControlBar

@@ -8,6 +8,7 @@ import TabButton from "../components/common/TabButton/TabButton";
 import SearchBar from "../components/common/SearchBar/SearchBar";
 import UserTable from "../components/common/Table/UserTable";
 import Pagination from "../components/common/Pagination/Pagination";
+import LoadingState from "../components/common/LoadingState/LoadingState";
 import UserFormModal from "../userManagement/UserFormModal";
 import CompanyCreateModal from "../userManagement/CompanyCreateModal";
 import { getUsers, createUser, updateUser, createCompany,deleteUser } from "../utils/api/usersApi";
@@ -127,7 +128,9 @@ export default function UserManagementPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">로딩 중...</div>
+      <div className="min-h-screen bg-gray-100">
+        <LoadingState message="로딩 중..." size="large" />
+      </div>
     );
   }
 
@@ -300,9 +303,50 @@ export default function UserManagementPage() {
             <SearchBar
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              onCreateUser={handleCreateUser}
-              activeTab={activeTab}
-              onCreateCompany={handleCreateCompany}
+              placeholder="검색어를 입력하세요"
+              rightContent={
+                activeTab === "company" ? (
+                  <button
+                    onClick={handleCreateCompany}
+                    className="flex items-center gap-2 px-6 py-3 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 transition"
+                  >
+                    <svg
+                      className="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 4v16m8-8H4"
+                      />
+                    </svg>
+                    회사 생성
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleCreateUser}
+                    className="flex items-center gap-2 rounded-lg bg-blue-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-600"
+                  >
+                    <svg
+                      className="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 4v16m8-8H4"
+                      />
+                    </svg>
+                    계정 생성
+                  </button>
+                )
+              }
             />
 
             <UserTable

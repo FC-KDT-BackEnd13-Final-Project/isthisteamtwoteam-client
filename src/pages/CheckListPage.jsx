@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import EditableChecklistItem from "../components/checklist/EditableChecklistItem";
 import EmptyState from "../components/common/EmptyState/EmptyState";
+import LoadingState from "../components/common/LoadingState/LoadingState";
 import { ClipboardIcon } from "../components/common/icons/ChecklistIcon";
 import { getChecklists, updateChecklist, createChecklist, deleteChecklist } from "../utils/api/checklist/checklistApi";
 
@@ -117,7 +118,11 @@ export default function CheckListPage() {
   };
 
   if (loading) {
-    return <div className="flex justify-center items-center min-h-screen">로딩 중...</div>;
+    return (
+      <div className="min-h-screen bg-gray-100">
+        <LoadingState message="로딩 중..." size="large" />
+      </div>
+    );
   }
 
   return (

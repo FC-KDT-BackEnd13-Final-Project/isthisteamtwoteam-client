@@ -1,12 +1,27 @@
-export default function SearchBar({ value, onChange, onCreateUser, activeTab, onCreateCompany }) {
+/**
+ * 공통 검색 바 컴포넌트
+ * 
+ * @param {string} value - 검색어 값
+ * @param {function} onChange - 검색어 변경 핸들러
+ * @param {string} placeholder - 플레이스홀더 (기본값: "검색어를 입력하세요")
+ * @param {React.ReactNode} rightContent - 우측에 표시할 추가 컨텐츠 (선택)
+ * @param {string} className - 추가 클래스명 (선택)
+ */
+export default function SearchBar({ 
+  value, 
+  onChange, 
+  placeholder = "검색어를 입력하세요",
+  rightContent,
+  className = "",
+}) {
   return (
-    <div className="mb-6 flex items-center justify-between gap-4">
+    <div className={`mb-6 flex items-center justify-between gap-4 ${className}`}>
       <div className="relative flex-1">
         <input
           type="text"
           value={value}
           onChange={onChange}
-          placeholder="검색어를 입력하세요"
+          placeholder={placeholder}
           className="w-full rounded-lg border border-gray-200 py-3 pl-11 pr-4 text-sm outline-none transition focus:border-blue-500"
         />
         <svg
@@ -23,48 +38,7 @@ export default function SearchBar({ value, onChange, onCreateUser, activeTab, on
           />
         </svg>
       </div>
-      
-      {activeTab === "company" ? (
-        <button
-          onClick={onCreateCompany}
-          className="flex items-center gap-2 px-6 py-3 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 transition"
-        >
-          <svg
-            className="h-4 w-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 4v16m8-8H4"
-            />
-          </svg>
-          회사 생성
-        </button>
-      ) : (
-        <button
-          onClick={onCreateUser}
-          className="flex items-center gap-2 rounded-lg bg-blue-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-600"
-        >
-          <svg
-            className="h-4 w-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 4v16m8-8H4"
-            />
-          </svg>
-          계정 생성
-        </button>
-      )}
+      {rightContent}
     </div>
   );
 }

@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardStats from "../components/dashboard/DashboardStats";
-
 import FilteredList from "../components/dashboard/FilteredList";
 import ProjectList from "../components/dashboard/ProjectList";
+import LoadingState from "../components/common/LoadingState/LoadingState";
 import { getDashboardData,getDashboardAllProjects } from "../utils/api/dashboardApi";
 
 
@@ -33,11 +33,19 @@ export default function DashboardPage() {
   }, []);
 
   if (loading) {
-    return <div className="flex justify-center items-center min-h-screen">로딩 중...</div>;
+    return (
+      <div className="min-h-screen bg-gray-100">
+        <LoadingState message="로딩 중..." size="large" />
+      </div>
+    );
   }
 
   if (!dashboardData) {
-    return <div className="flex justify-center items-center min-h-screen">데이터를 불러올 수 없습니다.</div>;
+    return (
+      <div className="min-h-screen bg-gray-100">
+        <LoadingState message="데이터를 불러올 수 없습니다." size="large" />
+      </div>
+    );
   }
 
   // 필터 변경 핸들러

@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { deleteProject, getProjects } from "../utils/api/project/projectApi";
+import SearchBar from "../components/common/SearchBar/SearchBar";
+import Pagination from "../components/common/Pagination/Pagination";
+import LoadingState from "../components/common/LoadingState/LoadingState";
+import EmptyState from "../components/common/EmptyState/EmptyState";
+import ProjectListItem from "../components/project/ProjectListItem";
 
 /**
  * ProjectsPage - 프로젝트 목록 페이지
@@ -212,8 +217,11 @@ export default function ProjectsPage() {
           </div>
 
           {/* 컨트롤 영역 */}
-          <div className="mb-6 flex items-center justify-between">
-            <div className="flex items-center gap-3">
+          <SearchBar
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="프로젝트 검색..."
+            rightContent={
               <button
                 type="button"
                 onClick={handleCreateProject}
@@ -224,158 +232,49 @@ export default function ProjectsPage() {
                 </svg>
                 프로젝트 생성
               </button>
-            </div>
-
-            {/* 검색 박스 */}
-            <div className="flex w-[300px] items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5">
-              <svg className="h-[18px] w-[18px] fill-gray-400" viewBox="0 0 24 24">
-                <path d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" />
-              </svg>
-              <input
-                type="text"
-                placeholder="프로젝트 검색..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="flex-1 border-none text-sm text-gray-900 outline-none placeholder:text-gray-400"
-              />
-            </div>
-          </div>
+            }
+          />
 
           {/* 프로젝트 리스트 */}
           <div className="mb-6 flex-grow overflow-hidden rounded-lg border border-gray-200">
             {loading ? (
-              <div className="py-20 text-center text-gray-500">
-                <p>프로젝트를 불러오는 중...</p>
-              </div>
+              <LoadingState message="프로젝트를 불러오는 중..." />
             ) : currentProjects.length === 0 ? (
-              <div className="py-20 text-center text-gray-500">
-                <svg
-                  className="mx-auto mb-4 h-16 w-16 fill-gray-300 opacity-30"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M19,19H5V5H19V19Z" />
-                </svg>
-                <p className="mb-2 text-[15px]">프로젝트가 없습니다.</p>
-                <p className="text-[13px] text-gray-400">
-                  새로운 프로젝트를 생성해보세요.
-                </p>
-              </div>
+              <EmptyState
+                icon={
+                  <svg
+                    className="mx-auto mb-4 h-16 w-16 fill-gray-300 opacity-30"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M19,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M19,19H5V5H19V19Z" />
+                  </svg>
+                }
+                message="프로젝트가 없습니다."
+                subMessage="새로운 프로젝트를 생성해보세요."
+              />
             ) : (
               currentProjects.map((project, index) => (
-                <div
+                <ProjectListItem
                   key={project.projectId}
-                  className={`flex items-center px-5 py-4 transition-colors hover:bg-gray-50 ${
-                    index !== currentProjects.length - 1
-                      ? "border-b border-gray-200"
-                      : ""
-                  }`}
-                >
-                  {/* 프로젝트 아이콘 */}
-                  <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-lg bg-blue-50 text-base font-semibold text-blue-500">
-                    {project.projectImageUrl ? (
-                                <img 
-                                  // src={project.project_image_url} 
-                                  src={project.projectImageUrl} 
-                                  alt={project.projectName}
-                                  className="h-full w-full object-cover"
-                                />
-                              ) : (
-                                project.projectName?.substring(0, 2) || "프"
-                              )}
-
-                  </div>
-
-                  {/* 프로젝트 정보 그리드 */}
-                  <div className="grid flex-1 grid-cols-[minmax(250px,3fr)_minmax(120px,1fr)_minmax(120px,1fr)_minmax(120px,1fr)_minmax(100px,120px)] items-center gap-8">
-                    {/* 프로젝트 ID & 이름 */}
-                    <div className="min-w-0">
-                      <div className="mb-1 text-[13px] font-medium text-blue-500">
-                        PRJ-{String(project.projectId).padStart(3, "0")}
-                      </div>
-                      <div className="overflow-hidden text-ellipsis whitespace-nowrap text-sm text-gray-900">
-                        {project.projectName}
-                      </div>
-                    </div>
-
-                    {/* 멤버 수 */}
-                    <div className="text-[13px] text-gray-600">
-                      멤버 {project.members?.length || 0}명
-                    </div>
-
-                    {/* 시작일 */}
-                    <div className="flex flex-col gap-0.5">
-                      <span className="text-xs text-gray-400">시작일</span>
-                      <span className="text-[13px] text-gray-900">
-                        {project.startDate || "-"}
-                      </span>
-                    </div>
-
-                    {/* 종료일 */}
-                    <div className="flex flex-col gap-0.5">
-                      <span className="text-xs text-gray-400">종료일</span>
-                      <span className="text-[13px] text-gray-900">
-                        {project.endDate || "-"}
-                      </span>
-                    </div>
-
-                    {/* 단계 뱃지 */}
-                    <div className="flex justify-center">
-                      <span
-                        className={`inline-flex items-center justify-center whitespace-nowrap rounded-xl px-3 py-1.5 text-xs font-medium ${getStageBadgeClass(project.stageId)}`}
-                      >
-                        {project.stageName}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* 액션 버튼 */}
-                  <div className="ml-4 flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => handleEditProject(project.projectId)}
-                      className="flex items-center gap-1 rounded border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-blue-500 transition-colors hover:border-blue-500 hover:bg-blue-50"
-                    >
-                      <svg className="h-3.5 w-3.5 fill-current" viewBox="0 0 24 24">
-                        <path d="M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z" />
-                      </svg>
-                      수정
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleDeleteProject(project.projectId, project.projectName)
-                      }
-                      className="flex items-center gap-1 rounded border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-red-500 transition-colors hover:border-red-500 hover:bg-red-50"
-                    >
-                      <svg className="h-3.5 w-3.5 fill-current" viewBox="0 0 24 24">
-                        <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
-                      </svg>
-                      삭제
-                    </button>
-                  </div>
-                </div>
+                  project={project}
+                  getStageBadgeClass={getStageBadgeClass}
+                  onEdit={handleEditProject}
+                  onDelete={handleDeleteProject}
+                  isLast={index === currentProjects.length - 1}
+                />
               ))
             )}
           </div>
 
-          {/* 페이지네이션 - 하단 중앙 고정 */}
+          {/* 페이지네이션 */}
           {totalPages > 1 && (
-            <div className="mt-auto flex justify-center gap-2 pt-4">
-              {Array.from({ length: totalPages }, (_, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={() => setCurrentPage(i + 1)}
-                  className={`h-10 w-10 rounded ${
-                    currentPage === i + 1
-                      ? "bg-blue-500 text-white"
-                      : "border border-gray-200 text-gray-700 hover:bg-gray-50"
-                  }`}
-                >
-                  {i + 1}
-                </button>
-              ))}
-            </div>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              itemsPerPage={itemsPerPage}
+              totalItems={filteredProjects.length}
+              onPageChange={setCurrentPage}
+            />
           )}
         </div>
       </div>
