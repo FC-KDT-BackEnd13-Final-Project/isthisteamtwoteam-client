@@ -8,10 +8,12 @@ import StatCard from "../components/requestPending/RequestStatCard";
 import Section from "../components/requestPending/RequestSection";
 import { useEffect, useState } from "react";
 import { getRequestPendingPosts } from "../utils/api/getRequestPendingPostsApi";
+import { useNavigate } from "react-router-dom";
 
 export default function RequestPendingPage() {
   const [requestPendingPosts, setRequestPendingPosts] = useState(null);
   const [error, setError] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -58,7 +60,7 @@ export default function RequestPendingPage() {
   }
 
   const handleViewDetail = (id) => {
-    alert(`게시글 ${id} 상세 페이지로 이동합니다.`);
+    navigate(`/post/${id}`);
   };
 
   return (
