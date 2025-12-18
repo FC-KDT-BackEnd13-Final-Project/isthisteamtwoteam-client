@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Download } from 'lucide-react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 export default function PostSection({ 
   postsData, 
@@ -9,7 +10,8 @@ export default function PostSection({
 }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage] = useState(10);
-
+  const navigate = useNavigate();
+  const {projectId} = useParams();
   // 탭 배열 생성
   const tabs = [
     { 
@@ -175,7 +177,9 @@ export default function PostSection({
               </svg>
             </div>
           </div>
-          <button className="px-6 py-2.5 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors flex items-center gap-2 whitespace-nowrap">
+          <button 
+          className="px-6 py-2.5 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition-colors flex items-center gap-2 whitespace-nowrap"
+          onClick={()=> navigate(`/project/${projectId}/post/create`)}>
             <span>+</span>
             <span>게시글 생성</span>
           </button>

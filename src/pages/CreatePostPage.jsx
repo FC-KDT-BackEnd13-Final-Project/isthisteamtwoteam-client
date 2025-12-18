@@ -1,26 +1,20 @@
-import { useState, useEffect, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { uploadTempFile,deleteTempFiles } from "../utils/api/file/fileApi";
-import { getPostDetail, updatePost } from "../utils/api/post/postApi";
-// import { getPostDetail, uploadTempFile, updatePost } from "../utils/api/post/postApi";
+import { useState, useRef,useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { createPost } from "../utils/api/post/postApi";
+import { deleteTempFiles, uploadTempFile } from "../utils/api/file/fileApi";
 
-export default function EditPostDetailPage() {
-  const { postId } = useParams();
+export default function CreatePostPage() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
+  const { projectId } = useParams();
+  const uploadedTempFileIdsRef = useRef([]);
 
-  // 상태 관리
-  const [postData, setPostData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [projectId, setProjectId] = useState("")
   // 폼 데이터 상태
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [stage, setStage] = useState("");
   const [files, setFiles] = useState([]);
   const [links, setLinks] = useState([]);
-  
 
   // 드롭다운 토글 상태
   const [isFileOpen, setIsFileOpen] = useState(false);
@@ -30,43 +24,7 @@ export default function EditPostDetailPage() {
   const [linkInput, setLinkInput] = useState("");
   const [isAddingLink, setIsAddingLink] = useState(false);
 
-  // 파일 업로드 관련 상태
-  const [addFileIds, setAddFileIds] = useState([]);
-  const [removeFileIds, setRemoveFileIds] = useState([]);
-  const uploadedTempFileIdsRef = useRef([]);
-
-  // 데이터 가져오기
-  useEffect(() => {
-    const fetchPostDetail = async () => {
-      try {
-        setLoading(true);
-        const response = await getPostDetail(postId);
-        console.log(response.response)
-        
-        if (response.success) {
-          const data = response.response;
-          setPostData(data);
-          setTitle(data.title);
-          setContent(data.content);
-          setStage(data.stageName);
-          setFiles(data.files || []);
-          setLinks(data.links || []);
-          setProjectId(data.projectId)
-        }
-      } catch (err) {
-        console.error('게시글 조회 실패:', err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (postId) {
-      fetchPostDetail();
-    }
-  }, [postId]);
-
-  // 페이지 이탈 시 임시 파일 정리
+    // 페이지 이탈 시 임시 파일 정리
     useEffect(() => {
     return () => {
         // 컴포넌트 unmount 시 업로드된 임시 파일 삭제
@@ -78,7 +36,67 @@ export default function EditPostDetailPage() {
     };
     }, [projectId]);
 
-    // 취소 버튼 핸들러 (업로드된 임시 파일 삭제)
+
+    // 파일 삭제
+    const handleFileDelete = (index) => {
+    const fileToDelete = files[index];
+    
+    // 업로드된 임시 파일 ID 목록에서 제거
+    uploadedTempFileIdsRef.current = uploadedTempFileIdsRef.current.filter(
+        id => id !== fileToDelete.fileId
+    );
+    
+    setFiles(prev => prev.filter((_, i) => i !== index));
+    };
+
+    // 게시글 작성 핸들러
+    // 게시글 작성 핸들러
+    const handleCreatePost = async () => {
+    try {
+        if (!title.trim()) {
+        alert('제목을 입력해주세요.');
+        return;
+        }
+        
+        if (!content.trim()) {
+        alert('내용을 입력해주세요.');
+        return;
+        }
+
+        if (!stage) {
+        alert('진행단계를 선택해주세요.');
+        return;
+        }
+
+        const requestData = {
+        title: title.trim(),
+        content: content.trim(),
+        stage: stage,
+        parentId: 0,
+        requestApproval: false,
+        fileIds: files.map(file => file.fileId),
+        linkUrls: links.map(link => link.linkUrl)
+        };
+
+        console.log('작성 요청 데이터:', requestData);
+        
+        const response = await createPost(projectId, requestData);
+
+        if (response.success) {
+        // 작성 성공 시 임시 파일 추적 목록 초기화 (삭제하지 않음)
+        uploadedTempFileIdsRef.current = [];
+        alert('게시글이 작성되었습니다.');
+        navigate(`/project/${projectId}`); // 또는 적절한 페이지로 이동
+        } else {
+        alert(response.response.message);
+        }
+    } catch (error) {
+        console.error('게시글 작성 에러:', error);
+        alert('게시글 작성에 실패했습니다.');
+    }
+    };
+
+  // 취소 버튼 핸들러
     const handleCancel = async () => {
     // 업로드된 임시 파일이 있으면 삭제
     if (uploadedTempFileIdsRef.current.length > 0) {
@@ -93,56 +111,12 @@ export default function EditPostDetailPage() {
     navigate(-1);
     };
 
-  // 게시글 수정 핸들러
-  const handleUpdatePost = async () => {
-    try {
-      if (!title.trim()) {
-        alert('제목을 입력해주세요.');
-        return;
-      }
-      
-      if (!content.trim()) {
-        alert('내용을 입력해주세요.');
-        return;
-      }
-  
-      if (!stage) {
-        alert('진행단계를 선택해주세요.');
-        return;
-      }
-
-      const requestData = {
-        title: title.trim(),
-        content: content.trim(),
-        stage: stage,
-        parentId: postData.parentId || 0,
-        requestApproval: false,
-        addFileIds: addFileIds,
-        removeFileIds: removeFileIds,
-        linkUrls: links.map(link => link.linkUrl)
-      };
-  
-      console.log('수정 요청 데이터:', requestData);
-      
-      const response = await updatePost(projectId, postId, requestData);
-      
-  
-      if (response.success) {
-        // 수정 성공 시 임시 파일 추적 목록 초기화 (삭제하지 않음)
-        uploadedTempFileIdsRef.current = [];
-        alert('게시글이 수정되었습니다.');
-        navigate(`/post/${postId}`);
-      } else {
-        alert(response.response.message);
-      } 
-    } catch (error) {
-      console.error('게시글 수정 에러:', error);
-      alert('게시글 수정에 실패했습니다.');
-    }
+  // 파일 추가 버튼 클릭
+  const handleFileAddClick = () => {
+    fileInputRef.current?.click();
   };
 
-  // 파일 선택 핸들러
-  // 파일 선택 핸들러
+    // 파일 선택 핸들러
     const handleFileChange = async (e) => {
     const selectedFiles = Array.from(e.target.files);
     
@@ -151,8 +125,7 @@ export default function EditPostDetailPage() {
         const tempFile = {
             fileName: file.name,
             fileSize: file.size,
-            isUploading: true,
-            isNew: true
+            isUploading: true
         };
         
         setFiles(prev => [...prev, tempFile]);
@@ -161,6 +134,7 @@ export default function EditPostDetailPage() {
         
         if (response.success) {
             const uploadedFile = response.response[0];
+            console.log("파일 업로드 : " + uploadedFile.fileSiz );
             
             // 업로드된 임시 파일 ID를 ref에 추가 (나중에 삭제용)
             uploadedTempFileIdsRef.current.push(uploadedFile.fileId);
@@ -173,14 +147,11 @@ export default function EditPostDetailPage() {
                     fileName: uploadedFile.fileOriginalFileName,
                     fileSize: uploadedFile.fileSize,
                     fileUrl: uploadedFile.fileUrl,
-                    isUploading: false,
-                    isNew: true
+                    isUploading: falsefileSize
                     }
                 : f
             )
             );
-            
-            setAddFileIds(prev => [...prev, uploadedFile.fileId]);
         } else {
             throw new Error('파일 업로드 실패');
         }
@@ -195,18 +166,7 @@ export default function EditPostDetailPage() {
     e.target.value = '';
     };
 
-  // 파일 삭제
-  const handleFileDelete = (index) => {
-    const fileToDelete = files[index];
-
-    setRemoveFileIds(prev => [...prev, fileToDelete.fileId]);
-
-    if (fileToDelete.isNew) {
-      setAddFileIds(prev => prev.filter(id => id !== fileToDelete.fileId));
-    }
-
-    setFiles(prev => prev.filter((_, i) => i !== index));
-  };
+    // 파일 삭제
 
   // 링크 추가 버튼 클릭
   const handleLinkAddClick = () => {
@@ -217,7 +177,7 @@ export default function EditPostDetailPage() {
   // 링크 추가 확인
   const handleLinkAdd = () => {
     if (linkInput.trim()) {
-      setLinks(prev => [...prev, { linkUrl: linkInput.trim(), isNew: true }]);
+      setLinks(prev => [...prev, { linkUrl: linkInput.trim() }]);
       setLinkInput("");
       setIsAddingLink(false);
     }
@@ -234,54 +194,11 @@ export default function EditPostDetailPage() {
     setLinks(prev => prev.filter((_, i) => i !== index));
   };
 
-  const handleFileAddClick = () => {
-  fileInputRef.current?.click();
-};
-
-  // 로딩 중
-  if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-100">
-        <div className="text-center">
-          <p className="text-[16px] text-gray-500">게시글을 불러오는 중...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // 에러 발생
-  if (error) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-100">
-        <div className="text-center">
-          <p className="text-[16px] text-red-500">게시글을 불러올 수 없습니다.</p>
-          <p className="mt-2 text-[14px] text-gray-500">{error}</p>
-          <button
-            onClick={() => navigate(-1)}
-            className="mt-4 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-          >
-            돌아가기
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // 데이터 없음
-  if (!postData) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-100">
-        <div className="text-center">
-          <p className="text-[16px] text-gray-500">게시글을 찾을 수 없습니다.</p>
-        </div>
-      </div>
-    );
-  }
-
+  
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="mx-auto max-w-[1400px]">
-            <h1 className="mb-4 text-[24px] font-bold text-gray-900">게시글 수정</h1>
+            <h1 className="mb-4 text-[24px] font-bold text-gray-900">게시글 작성</h1>
         <div className="rounded-lg bg-white p-8 shadow-sm">
           
           {/* 제목 */}
@@ -296,14 +213,6 @@ export default function EditPostDetailPage() {
               className="w-full rounded-lg border border-gray-300 px-4 py-3 text-[16px] focus:border-blue-500 focus:outline-none"
               placeholder="제목을 입력하세요"
             />
-          </div>
-
-          {/* 헤더 정보 */}
-          <div className="mb-8 border-b-2 border-gray-100 pb-6">
-            <div className="flex items-center gap-4 text-[13px] text-gray-500">
-              <span>작성자: {postData.authorName}</span>
-              <span>작성일: {new Date(postData.createdAt).toLocaleDateString('ko-KR')}</span>
-            </div>
           </div>
 
           {/* 진행단계 */}
@@ -358,43 +267,38 @@ export default function EditPostDetailPage() {
                   {/* 파일 목록 렌더링 */}
                   {files.length > 0 ? (
                     files.map((file, index) => (
-                      <div key={index} className="flex items-center justify-between gap-3 rounded-md border border-gray-200 bg-gray-50 px-3 py-2.5">
+                        <div key={index} className="flex items-center justify-between gap-3 rounded-md border border-gray-200 bg-gray-50 px-3 py-2.5">
                         <div className="flex min-w-0 flex-1 items-center gap-2">
-                          <svg className="h-5 w-5 flex-shrink-0 fill-gray-600" viewBox="0 0 24 24">
+                            <svg className="h-5 w-5 flex-shrink-0 fill-gray-600" viewBox="0 0 24 24">
                             <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
-                          </svg>
-                          <span className="truncate text-[13px] text-gray-900" title={file.fileName}>
-                            {file.fileName} <span className="text-[12px] text-gray-500">({(file.fileSize / 1024).toFixed(1)}KB)</span>
-                          </span>
-                          {file.isUploading && (
+                            </svg>
+                            <span className="truncate text-[13px] text-gray-900" title={file.fileName}>
+                            {file.fileName} {file.fileSize && <span className="text-[12px] text-gray-500">{file.fileSize}</span>}
+                            </span>
+                            {file.isUploading && (
                             <span className="flex-shrink-0 flex items-center gap-1 text-[11px] text-blue-600">
-                              <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24">
+                                <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24">
                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                              </svg>
-                              업로드 중...
+                                </svg>
+                                업로드 중...
                             </span>
-                          )}
-                          {file.isNew && !file.isUploading && (
-                            <span className="flex-shrink-0 rounded bg-green-100 px-2 py-0.5 text-[11px] text-green-600">
-                              NEW
-                            </span>
-                          )}
+                            )}
                         </div>
                         <button
-                          onClick={() => handleFileDelete(index)}
-                          disabled={file.isUploading}
-                          className={`flex-shrink-0 rounded border px-3 py-1 text-[12px] transition-colors ${
+                            onClick={() => handleFileDelete(index)}
+                            disabled={file.isUploading}
+                            className={`flex-shrink-0 rounded border px-3 py-1 text-[12px] transition-colors ${
                             file.isUploading 
-                              ? 'border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed' 
-                              : 'border-red-300 bg-white text-red-600 hover:bg-red-50'
-                          }`}
+                                ? 'border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed' 
+                                : 'border-red-300 bg-white text-red-600 hover:bg-red-50'
+                            }`}
                         >
-                          삭제
+                            삭제
                         </button>
-                      </div>
+                        </div>
                     ))
-                  ) : (
+                    ) : (
                     <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
                       <p className="text-[13px] text-gray-400">첨부된 파일이 없습니다.</p>
                     </div>
@@ -453,11 +357,6 @@ export default function EditPostDetailPage() {
                           <span className="truncate break-all text-[14px] text-gray-700" title={link.linkUrl}>
                             {link.linkUrl}
                           </span>
-                          {link.isNew && (
-                            <span className="flex-shrink-0 rounded bg-green-100 px-2 py-0.5 text-[11px] text-green-600">
-                              NEW
-                            </span>
-                          )}
                         </div>
                         <button
                           onClick={() => handleLinkDelete(index)}
@@ -528,16 +427,16 @@ export default function EditPostDetailPage() {
           {/* 하단 버튼 */}
           <div className="mt-8 flex justify-end gap-3 border-t border-gray-100 pt-6">
             <button
-              onClick={() => handleCancel}
+              onClick={handleCancel}
               className="rounded-lg border border-gray-300 bg-white px-8 py-3 text-[14px] font-medium text-gray-600 transition-colors hover:bg-gray-50"
             >
               취소
             </button>
             <button 
-              onClick={handleUpdatePost}
+              onClick={handleCreatePost}
               className="rounded-lg bg-blue-500 px-8 py-3 text-[14px] font-medium text-white transition-colors hover:bg-blue-600"
             >
-              수정 완료
+              작성 완료
             </button>
           </div>
         </div>

@@ -31,6 +31,7 @@ import { EditProjectPage } from "./pages/EditProjectPage";
 import ProjectMainPage from "./pages/ProjectMainPage";
 import EditPostDetailPage from "./pages/EditPostDetailPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import CreatePostPage from "./pages/CreatePostPage";
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
       <Route path="/login/reset" element={<ForgotPasswordPage/>}/>
       <Route path="/find-password" element={<FindPasswordPage />} />
       <Route path="post/:postId" element={<PostDetailPage/>} />
+      <Route path="/project/:projectId/post/create" element={<CreatePostPage />} />
       <Route path="/" element={
           <SidebarLayout />
       }>
