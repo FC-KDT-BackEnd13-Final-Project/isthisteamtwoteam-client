@@ -67,3 +67,21 @@ export const getProjectPosts = async (projectId, filter = 'all') => {
     throw error;
   }
 };
+
+
+// utils/api/post/postApi.js 에 추가
+
+// 게시글 작성
+// 게시글 작성
+export const createPost = async (projectId, postData) => {
+  try {
+    const response = await api.post(
+      `/users/projects/${projectId}/posts`,
+      postData
+    );
+    return response.data;
+  } catch (error) {
+    console.error('게시글 작성 실패:', error);
+    throw error;
+  }
+};

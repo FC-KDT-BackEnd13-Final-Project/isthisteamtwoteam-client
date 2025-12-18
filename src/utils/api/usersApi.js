@@ -1,4 +1,3 @@
-import api from './axios'
 
 // 유저 목록 조회
 export const getUsers = async() => {
