@@ -49,3 +49,21 @@ export const updatePost = async (projectId, postId, data) => {
   }
 };
 
+/**
+ * 프로젝트 게시글 목록 조회
+ * @param {number} projectId - 프로젝트 ID
+ * @param {string} filter - 필터 (all, finished, unfinished.)
+ * @returns {Promise}
+ */
+export const getProjectPosts = async (projectId, filter = 'all') => {
+  try {
+    const response = await api.get(
+      `/users/projects/${projectId}/posts?filter=${filter}`
+    );
+    console.log('게시글 목록 조회 결과:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('게시글 목록 조회 실패:', error);
+    throw error;
+  }
+};
