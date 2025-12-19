@@ -3,7 +3,8 @@ import api from "../axios"
 export const getProjects = async (page = 0, size = 10) =>{
     try {
         const response = await api.get('/admin/projects')
-        return response.data.response    
+        console.log("프로젝트 조회" , response.data.response.content)
+        return response.data.response.content    
     } catch (error) {
         console.log('프로젝트 조회 실패 : ', error)
         throw error
@@ -30,41 +31,45 @@ export const deleteProject = async (projectId) => {
   }
 };
 
-export const createProject = async (projectData) => {
+export const createProject = async (projectData, imageFile) => {
+    console.log("프로젝트 생성 요청 시작", projectData);
+    console.log("이미지 파일:", imageFile);
+    
     try {
-        const {
-            projectName,
-            startDate,
-            endDate,
-            stage,
-            memo,
-            members,
-            selectedChecklistIds,
-            companyId,
-            projectImage
-        } = projectData;
-
         const formData = new FormData();
         
-        // JSON 데이터를 Blob으로 변환하여 'data' 파트로 추가
+        // ✅ JSON 데이터를 'request' 키로 Blob 형태로 추가 (서버가 기대하는 이름)
         const jsonData = {
-            projectName,
-            startDate,
-            endDate,
-            stage,
-            memo: memo || '',
-            members,
-            selectedChecklistIds,
-            companyId: companyId || null
+            projectName: projectData.projectName,
+            startDate: projectData.startDate,
+            endDate: projectData.endDate,
+            stage: projectData.stage,
+            memo: projectData.memo || '',
+            members: projectData.members,
+            selectedChecklistIds: projectData.selectedChecklistIds,
+            companyId: projectData.companyId || null
         };
         
-        formData.append('data', new Blob([JSON.stringify(jsonData)], {
-            type: 'application/json'
-        }));
+        formData.append(
+            'request',  // ✅ 'data'에서 'request'로 변경
+            new Blob([JSON.stringify(jsonData)], { type: 'application/json' })
+        );
         
-        // 이미지 파일을 'image' 파트로 추가
-        if (projectImage) {
-            formData.append('image', projectImage);
+        // ✅ 이미지 파일을 'image' 파트로 추가 (선택사항)
+        if (imageFile) {
+            formData.append('image', imageFile);
+        }
+
+        // 디버깅: FormData 내용 확인
+        console.log('=== FormData 전송 내용 ===');
+        for (let [key, value] of formData.entries()) {
+            if (value instanceof Blob) {
+                console.log(key, '(Blob)');
+            } else if (value instanceof File) {
+                console.log(key, '(File):', value.name);
+            } else {
+                console.log(key, value);
+            }
         }
 
         const response = await api.post('/admin/projects', formData, {

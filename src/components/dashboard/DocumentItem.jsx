@@ -31,6 +31,7 @@ export default function DocumentItem({
   status, // 상태 텍스트 (예: "승인대기", "반려")
   statusClass, // 상태 배지 스타일 (예: "bg-[#ffe6e6] text-[#ff3b30]")
   onView, // 클릭했을 때 실행할 함수
+  projectId
 }) {
   const location = useLocation();
 

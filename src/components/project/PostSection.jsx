@@ -228,83 +228,63 @@ export default function PostSection({
                 </tr>
               ) : (
                 currentPosts.map((post) => (
-                  <tr key={post.postId} className="hover:bg-gray-50">
-                    <td className="px-6 py-4">
+                  <tr 
+                    key={post.postId} 
+                    onClick={() => navigate(`/project/${projectId}/post/${post.postId}`)}
+                    className="hover:bg-gray-50 cursor-pointer"
+                  >
+                    <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
                       <input type="checkbox" className="w-4 h-4 rounded border-gray-300" />
                     </td>
                     
-                    {activeTab === 'uploadedFile' ? (
-                      <>
-                        <td className="px-6 py-4 text-sm text-gray-900">
-                          {post.title}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-gray-600">
-                          {post.content}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-gray-600">
-                          {post.createdAt}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-gray-600">
-                          {post.authorName || '-'}
-                        </td>
-                        <td className="px-6 py-4">
-                          <a
-                            href={post.filePath}
-                            download
-                            className="inline-flex items-center gap-2 px-3 py-2 bg-green-500 text-white text-xs rounded hover:bg-green-600 transition-colors"
-                          >
-                            <Download className="w-2 h-2" />
-                            다운로드
-                          </a>
-                        </td>
-                      </>
-                    ) : (
-                      <>
-                        <td className="px-6 py-4 text-sm text-gray-900">
-                          {post.title || post.content}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-gray-600">
-                          {post.stageName || '-'}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-gray-600">
-                          {post.isCompleted ? (
-                            <span className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-700">
-                              승인 완료
-                            </span>
-                          ) : (
-                            <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-700">
-                              승인 대기
-                            </span>
-                          )}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-gray-600">
-                          {post.createdAt}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-gray-600">
-                          {post.authorName || '-'}
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex gap-2">
-                            <button 
-                              onClick={() => {
-                                console.log('수정:', post.postId);
-                              }}
-                              className="px-4 py-1.5 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition-colors"
-                            >
-                              수정
-                            </button>
-                            <button 
-                              onClick={() => {
-                                console.log('삭제:', post.postId);
-                              }}
-                              className="px-4 py-1.5 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition-colors"
-                            >
-                              삭제
-                            </button>
-                          </div>
-                        </td>
-                      </>
-                    )}
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      {post.title || post.content}
+                    </td>
+                    
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {post.stageName || '-'}
+                    </td>
+                    
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {post.isCompleted ? (
+                        <span className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-700">
+                          승인 완료
+                        </span>
+                      ) : (
+                        <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-700">
+                          승인 대기
+                        </span>
+                      )}
+                    </td>
+                    
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {post.createdAt}
+                    </td>
+                    
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {post.authorName || '-'}
+                    </td>
+                    
+                    <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex gap-2">
+                        <button 
+                          onClick={() => {
+                            console.log('수정:', post.postId);
+                          }}
+                          className="px-4 py-1.5 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition-colors"
+                        >
+                          수정
+                        </button>
+                        <button 
+                          onClick={() => {
+                            console.log('삭제:', post.postId);
+                          }}
+                          className="px-4 py-1.5 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition-colors"
+                        >
+                          삭제
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))
               )}

@@ -35,10 +35,9 @@ export default function ProjectsPage() {
     try {
       setLoading(true);
       const data = await getProjects();
-      
       // API 응답이 { success, response, message } 형태인 경우
       if (data.success && data.response) {
-        setProjects(data.response);
+        setProjects(data.content);
       } else if (Array.isArray(data)) {
         setProjects(data);
       } else {

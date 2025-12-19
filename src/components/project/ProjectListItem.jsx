@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import ActionButton from "../common/ActionButton/ActionButton";
 
 /**
@@ -16,9 +17,16 @@ export default function ProjectListItem({
   onDelete,
   isLast = false,
 }) {
-  return (
+
+  const navigate = useNavigate();
+  const handleProjectClick = () => {
+        navigate(`/project/${project.projectId}`);
+
+  }
+    return (
     <div
-      className={`flex items-center px-5 py-4 transition-colors hover:bg-gray-50 ${
+      onClick={handleProjectClick}  // ✅ 클릭 이벤트 추가
+      className={`flex items-center px-5 py-4 transition-colors hover:bg-gray-50 cursor-pointer ${  // ✅ cursor-pointer 추가
         !isLast ? "border-b border-gray-200" : ""
       }`}
     >
@@ -79,7 +87,10 @@ export default function ProjectListItem({
       </div>
 
       {/* 액션 버튼 */}
-      <div className="ml-4 flex gap-2">
+      <div 
+        className="ml-4 flex gap-2"
+        onClick={(e) => e.stopPropagation()}  // ✅ 이벤트 전파 차단
+      >
         <ActionButton
           variant="edit"
           label="수정"
@@ -94,4 +105,3 @@ export default function ProjectListItem({
     </div>
   );
 }
-

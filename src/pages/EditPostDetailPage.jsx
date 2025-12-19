@@ -279,7 +279,7 @@ export default function EditPostDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-gray-100 p-10">
       <div className="mx-auto max-w-[1400px]">
             <h1 className="mb-4 text-[24px] font-bold text-gray-900">게시글 수정</h1>
         <div className="rounded-lg bg-white p-8 shadow-sm">

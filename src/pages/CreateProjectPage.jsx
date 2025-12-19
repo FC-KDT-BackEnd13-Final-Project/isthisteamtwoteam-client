@@ -153,11 +153,11 @@ const CreateProjectPage = () => {
                 memo,
                 members: selectedDevelopers.map(dev => dev.userId),
                 selectedChecklistIds,
-                companyId: selectedClients[0]?.companyId || null,
-                projectImage // 이미지 파일 추가
+                companyId: selectedClients[0]?.companyId || null, // 회사이름으로 넣을게ㅐ
+                // projectImage // 이미지 파일 추가
             };
 
-            console.log('프로젝트 생성 요청');
+            console.log('프로젝트 생성 요청'+ projectData);
 
             const response = await createProject(projectData);
             
