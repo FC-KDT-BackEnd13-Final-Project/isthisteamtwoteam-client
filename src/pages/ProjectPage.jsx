@@ -22,6 +22,7 @@ export default function ProjectsPage() {
   const [activeTab, setActiveTab] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+
   const itemsPerPage = 10;
 
   // ============================================
@@ -50,6 +51,8 @@ export default function ProjectsPage() {
       setLoading(false);
     }
   };
+
+
 
   // ============================================
   // 단계별 탭 정의
@@ -148,8 +151,11 @@ export default function ProjectsPage() {
   };
 
   const handleEditProject = (projectId) => {
-    navigate(`/project/${projectId}`);
+    navigate(`/edit-project/${projectId}`);
   };
+  const handleRestoreProject = (projectId) =>{
+    api
+  }
 
   const handleDeleteProject = async (projectId, projectName) => {
     if (!window.confirm(`"${projectName}" 프로젝트를 삭제하시겠습니까?`)) {

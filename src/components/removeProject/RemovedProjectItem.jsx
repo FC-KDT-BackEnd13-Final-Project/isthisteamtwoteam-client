@@ -89,7 +89,7 @@ const RemovedProjectItem = ({
       <div className="flex gap-2 ml-4">
         {/* 복원 버튼 */}
         <button
-          onClick={() => onRestore(project.id)}
+          onClick={() => onRestore(project.projectId)}
           className="py-1.5 px-3 border border-[#5a9aeb] bg-white rounded-[6px] text-[12px] text-[#5a9aeb] cursor-pointer transition-all duration-200 flex items-center gap-1 hover:bg-[#f0f6ff]"
         >
           <RestoreIcon />
@@ -98,7 +98,7 @@ const RemovedProjectItem = ({
 
         {/* 영구삭제 버튼 */}
         <button
-          onClick={() => onDelete(project.id)}
+          onClick={() => onDelete(project.projectId)}
           className="py-1.5 px-3 border border-[#ff6b6b] bg-white rounded-[6px] text-[12px] text-[#ff6b6b] cursor-pointer transition-all duration-200 flex items-center gap-1 hover:bg-[#fff5f5]"
         >
           <TrashIcon />

@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 export default function PostSection({ 
   postsData, 
   activeTab, 
-  onTabChange, 
+  ongiTabChange, 
   isPostsLoading 
 }) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -206,6 +206,7 @@ export default function PostSection({
                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">제목</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">단계</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">승인 여부</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">완료 여부</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">생성 시간</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">작성자</th>
                     <th className="px-6 py-4"></th>
@@ -227,66 +228,76 @@ export default function PostSection({
                   </td>
                 </tr>
               ) : (
-                currentPosts.map((post) => (
-                  <tr 
-                    key={post.postId} 
-                    onClick={() => navigate(`/project/${projectId}/post/${post.postId}`)}
-                    className="hover:bg-gray-50 cursor-pointer"
-                  >
+                <>
+                {currentPosts.map((post) => {
+                  const commonCells = (
                     <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
                       <input type="checkbox" className="w-4 h-4 rounded border-gray-300" />
                     </td>
-                    
-                    <td className="px-6 py-4 text-sm text-gray-900">
-                      {post.title || post.content}
+                  );
+
+                  const fileCells = [
+                    <td key="title" className="px-6 py-4 text-sm text-gray-900">{post.title}</td>,
+                    <td key="content" className="px-6 py-4 text-sm text-gray-600">{post.content}</td>,
+                    <td key="createdAt" className="px-6 py-4 text-sm text-gray-600">{post.createdAt}</td>,
+                    <td key="author" className="px-6 py-4 text-sm text-gray-600">{post.authorName}</td>,
+                    <td key="download" className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
+                      <button className="px-4 py-1.5 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition-colors">
+                        <Download className="w-4 h-4" />
+                      </button>
                     </td>
-                    
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {post.stageName || '-'}
-                    </td>
-                    
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {post.isCompleted ? (
-                        <span className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-700">
-                          승인 완료
-                        </span>
+                  ];
+
+                  const postCells = [
+                    <td key="title" className="px-6 py-4 text-sm text-gray-900">{post.title || post.content}</td>,
+                    <td key="stage" className="px-6 py-4 text-sm text-gray-600">{post.stageName || '-'}</td>,
+                    <td key="approval" className="px-6 py-4 text-sm">
+                      {!post.approveStatus || post.approveStatus === '' ? (
+                        <span className="text-gray-400">-</span>
                       ) : (
-                        <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-700">
-                          승인 대기
+                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                          post.approveStatus === '승인' ? 'bg-green-100 text-green-700' :
+                          post.approveStatus === '대기' ? 'bg-amber-100 text-amber-700' :
+                          post.approveStatus === '거절' ? 'bg-red-100 text-red-700' :
+                          'bg-gray-100 text-gray-700'
+                        }`}>
+                          {post.approveStatus}
                         </span>
                       )}
-                    </td>
-                    
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {post.createdAt}
-                    </td>
-                    
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {post.authorName || '-'}
-                    </td>
-                    
-                    <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
+                    </td>,
+                    <td key="completed" className="px-6 py-4 text-sm">
+                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                        post.isCompleted ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'
+                      }`}>
+                        {post.isCompleted ? '완료' : '진행중'}
+                      </span>
+                    </td>,
+                    <td key="createdAt" className="px-6 py-4 text-sm text-gray-600">{post.createdAt}</td>,
+                    <td key="author" className="px-6 py-4 text-sm text-gray-600">{post.authorName || '-'}</td>,
+                    <td key="actions" className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
                       <div className="flex gap-2">
-                        <button 
-                          onClick={() => {
-                            console.log('수정:', post.postId);
-                          }}
-                          className="px-4 py-1.5 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition-colors"
-                        >
+                        <button className="px-4 py-1.5 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition-colors">
                           수정
                         </button>
-                        <button 
-                          onClick={() => {
-                            console.log('삭제:', post.postId);
-                          }}
-                          className="px-4 py-1.5 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition-colors"
-                        >
+                        <button className="px-4 py-1.5 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition-colors">
                           삭제
                         </button>
                       </div>
                     </td>
-                  </tr>
-                ))
+                  ];
+
+                  return (
+                    <tr 
+                      key={post.postId} 
+                      onClick={() => post.isFile ? null : navigate(`/project/${projectId}/post/${post.postId}`)}
+                      className={post.isFile ? "" : "hover:bg-gray-50 cursor-pointer"}
+                    >
+                      {commonCells}
+                      {activeTab === 'uploadedFile' ? fileCells : postCells}
+                    </tr>
+                  );
+                })}
+                </>
               )}
             </tbody>
           </table>

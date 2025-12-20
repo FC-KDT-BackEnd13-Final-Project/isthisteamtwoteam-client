@@ -9,8 +9,8 @@ import PageHeader from "../components/common/PageHeader/PageHeader";
 import { EmptyTrashIcon } from "../components/common/icons/RemoveProjectIcon";
 import ControlBar from "../components/removeProject/ControlBar";
 import RemovedProjectItem from "../components/removeProject/RemovedProjectItem";
+import { getDeletedProjects, restoreProjects,permanentDeleteProjects } from "../utils/api/project/projectApi";
 
-import { getDeletedProjects } from "../utils/api/project/projectApi";
 
 /**
  * 삭제된 프로젝트 관리 페이지 (휴지통)
@@ -93,7 +93,7 @@ export default function RemoveProjectPage() {
    */
   const handleSelectAll = (checked) => {
     if (checked) {
-      setSelectedIds(new Set(filteredProjects.map((p) => p.id)));
+      setSelectedIds(new Set(filteredProjects.map((p) => p.projectId)));
     } else {
       setSelectedIds(new Set());
     }
@@ -117,77 +117,134 @@ export default function RemoveProjectPage() {
    * 선택된 프로젝트 일괄 복원 핸들러
    * 선택된 모든 프로젝트를 복원 (목록에서 제거)
    */
-  const handleRestoreSelected = () => {
-    if (selectedIds.size === 0) return;
+const handleRestoreSelected = async () => {
+  if (selectedIds.size === 0) {
+    alert('복원할 프로젝트를 선택해주세요.');
+    return;
+  }
 
-    if (
-      window.confirm(
-        `선택한 ${selectedIds.size}개의 프로젝트를 복원하시겠습니까?`,
-      )
-    ) {
-      // 선택된 프로젝트를 목록에서 제거
-      setProjects((prev) => prev.filter((p) => !selectedIds.has(p.id)));
+  if (
+    window.confirm(
+      `선택한 ${selectedIds.size}개의 프로젝트를 복원하시겠습니까?`,
+    )
+  ) {
+    try {
+      // ✅ Set을 배열로 변환하여 API 호출
+      const projectIdsArray = Array.from(selectedIds);
+      await restoreProjects(projectIdsArray);
+
+      alert(`${selectedIds.size}개의 프로젝트가 복원되었습니다.`);
+
+      // 선택 초기화
       setSelectedIds(new Set());
-      alert("선택한 프로젝트가 복원되었습니다.");
+
+      // 프로젝트 목록 새로고침
+      const response = await getDeletedProjects();
+      if (response.success) {
+        setProjects(response.response.content);
+      }
+    } catch (error) {
+      console.error('프로젝트 복원 실패:', error);
+      alert('프로젝트 복원에 실패했습니다.');
     }
-  };
+  }
+};
 
   /**
    * 선택된 프로젝트 일괄 영구삭제 핸들러
    * 선택된 모든 프로젝트를 영구 삭제 (복구 불가능)
    */
-  const handleDeleteSelected = () => {
-    if (selectedIds.size === 0) return;
+  const handleDeleteSelected = async () => {
+    if (selectedIds.size === 0) {
+      alert('삭제할 프로젝트를 선택해주세요.');
+      return;
+    }
 
     if (
       window.confirm(
         `선택한 ${selectedIds.size}개의 프로젝트를 영구 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`,
       )
     ) {
-      // 선택된 프로젝트를 목록에서 제거
-      setProjects((prev) => prev.filter((p) => !selectedIds.has(p.id)));
-      setSelectedIds(new Set());
-      alert("선택한 프로젝트가 영구 삭제되었습니다.");
+      try {
+        // ✅ Set을 배열로 변환하여 API 호출
+        const projectIdsArray = Array.from(selectedIds);
+        await permanentDeleteProjects(projectIdsArray);
+
+        alert(`${selectedIds.size}개의 프로젝트가 영구 삭제되었습니다.`);
+
+        // 선택 초기화
+        setSelectedIds(new Set());
+
+        // 프로젝트 목록 새로고침
+        const response = await getDeletedProjects();
+        if (response.success) {
+          setProjects(response.response.content);
+        }
+      } catch (error) {
+        console.error('프로젝트 영구 삭제 실패:', error);
+        alert('프로젝트 영구 삭제에 실패했습니다.');
+      }
     }
   };
 
-  /**
-   * 개별 프로젝트 복원 핸들러
-   * 단일 프로젝트를 복원
-   */
-  const handleRestore = (id) => {
+  const handleRestore = async (id) => {
     if (window.confirm("이 프로젝트를 복원하시겠습니까?")) {
-      // 프로젝트를 목록에서 제거
-      setProjects((prev) => prev.filter((p) => p.id !== id));
-      // 선택 목록에서도 제거
-      setSelectedIds((prev) => {
-        const newSet = new Set(prev);
-        newSet.delete(id);
-        return newSet;
-      });
-      alert("프로젝트가 복원되었습니다.");
+      try {
+        // 단일 ID를 배열로 감싸서 API 호출
+        await restoreProjects([id]);
+
+        alert("프로젝트가 복원되었습니다.");
+
+        // 선택 목록에서 제거
+        setSelectedIds((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(id);
+          return newSet;
+        });
+
+        // 프로젝트 목록 새로고침
+        const response = await getDeletedProjects();
+        if (response.success) {
+          setProjects(response.response.content);
+        }
+      } catch (error) {
+        console.error('프로젝트 복원 실패:', error);
+        alert('프로젝트 복원에 실패했습니다.');
+      }
     }
-  };
+};
 
   /**
    * 개별 프로젝트 영구삭제 핸들러
    * 단일 프로젝트를 영구 삭제 (복구 불가능)
    */
-  const handlePermanentDelete = (id) => {
+  const handlePermanentDelete = async (id) => {
     if (
       window.confirm(
         "이 프로젝트를 영구 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.",
       )
     ) {
-      // 프로젝트를 목록에서 제거
-      setProjects((prev) => prev.filter((p) => p.id !== id));
-      // 선택 목록에서도 제거
-      setSelectedIds((prev) => {
-        const newSet = new Set(prev);
-        newSet.delete(id);
-        return newSet;
-      });
-      alert("프로젝트가 영구 삭제되었습니다.");
+      try {
+        await permanentDeleteProjects([id]);
+
+        alert("프로젝트가 영구 삭제되었습니다.");
+
+        // 선택 목록에서 제거
+        setSelectedIds((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(id);
+          return newSet;
+        });
+
+        // 프로젝트 목록 새로고침
+        const response = await getDeletedProjects();
+        if (response.success) {
+          setProjects(response.response.content);
+        }
+      } catch (error) {
+        console.error('프로젝트 영구 삭제 실패:', error);
+        alert('프로젝트 영구 삭제에 실패했습니다.');
+      }
     }
   };
 

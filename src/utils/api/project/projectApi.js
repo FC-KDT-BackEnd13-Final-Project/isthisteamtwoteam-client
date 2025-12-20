@@ -1,3 +1,4 @@
+import { ConstructionIcon } from "lucide-react"
 import api from "../axios"
 
 export const getProjects = async (page = 0, size = 10) =>{
@@ -170,6 +171,38 @@ export const getDeletedProjects = async () => {
     return response.data;
   } catch (error) {
     console.error('삭제된 프로젝트 조회 실패:', error);
+    throw error;
+  }
+};
+
+
+// 프로젝트 복원
+export const restoreProjects = async (projectIds) => {
+  try {
+    const response = await api.patch('/admin/projects/trash/restore', {
+      project_ids: projectIds
+    });
+    return response.data;
+  } catch (error) {
+    console.error('프로젝트 복원 실패:', error);
+    throw error;
+  }
+};
+
+
+
+// 프로젝트 영구 삭제
+export const permanentDeleteProjects = async (projectIds) => {
+  try {
+    console.log("삭제하려는 프로젝트 id 들 , " , projectIds)
+    const response = await api.delete('/admin/projects/trash', {
+      data: {
+        project_ids: projectIds
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('프로젝트 영구 삭제 실패:', error);
     throw error;
   }
 };

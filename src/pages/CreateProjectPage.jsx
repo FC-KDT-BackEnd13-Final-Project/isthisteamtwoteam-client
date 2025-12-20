@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from "../utils/api/axios.js";
 import ChecklistModal from '../components/projectCreate/ChecklistModal';
@@ -11,6 +11,8 @@ import { createProject,createChecklist } from '../utils/api/project/projectApi.j
 
 const CreateProjectPage = () => {
     const navigate = useNavigate();
+    const imageRef = useRef(null);
+
     
     // 커스텀 훅 사용
     const {
@@ -72,14 +74,14 @@ const CreateProjectPage = () => {
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            
             // 이미지 파일 검사
             if (!file.type.startsWith('image/')) {
                 alert('이미지 파일만 업로드 가능합니다.');
                 return;
             }
-            setProjectImage(file);
-            setImagePreview(URL.createObjectURL(file));
+            imageRef.current = file;  // ✅ ref에 저장
+            setProjectImage(file);     // ✅ state도 업데이트 (UI용)
+            setImagePreview(URL.createObjectURL(file));  // ✅ 미리보기
         }
     };
 
@@ -157,9 +159,11 @@ const CreateProjectPage = () => {
                 // projectImage // 이미지 파일 추가
             };
 
-            console.log('프로젝트 생성 요청'+ projectData);
 
-            const response = await createProject(projectData);
+            console.log('프로젝트 생성 요청:', projectData);
+            console.log('프로젝트 이미지:', projectImage);
+
+            const response = await createProject(projectData,projectImage);
             
             if (response.success) {
                 alert('프로젝트가 생성되었습니다.');
