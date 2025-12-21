@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-// import { getDashboardData,getDashboardAllProjects } from "../utils/api/dashboardApi";
+// import { getDashboardData,getDashboardAllProjects } from "../utils/config/api/dashboardApi";
 import DashboardStats from "../../components/dashboard/DashboardStats";
 import FilteredList from "../../components/dashboard/FilteredList";
 import ProjectList from "../../components/dashboard/ProjectList";
-import { getDashboardAllProjects,getDashboardData } from "../../utils/api/dashboardApi";
+import { getDashboardAllProjects,getDashboardData } from "../../utils/config/api/dashboardApi";
+import { getCustomerDashboardData } from "../../utils/config/customer/customerDashboardApi";
 
 
 export default function CustomerDashboardPage() {
@@ -19,7 +20,7 @@ export default function CustomerDashboardPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getDashboardData();
+        const data = await getCustomerDashboardData();
         const projectsData = await getDashboardAllProjects();
         setDashboardData(data);
         setLoading(false);

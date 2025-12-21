@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getProjectChecklist } from '../utils/api/checklist/checklistApi';
-import { getProjectPosts } from '../utils/api/post/postApi';
-import { getProjectDetail } from '../utils/api/project/projectApi';
-import { getProjectMembers } from '../utils/api/project/projectMemberApi';
+import { getProjectChecklist } from '../utils/config/api/checklist/checklistApi';
+import { getProjectPosts } from '../utils/config/api/post/postApi';
+import { getProjectDetail } from '../utils/config/api/project/projectApi';
+import { getProjectMembers } from '../utils/config/api/project/projectMemberApi';
 import ProjectHeader from '../components/project/ProjectHeader';
 import ChecklistSection from '../components/project/ChecklistSection';
 import PostSection from '../components/project/PostSection';
 import ProjectSidebar from '../components/project/ProjectSidebar';
-import { getProjectApprovalRequests } from '../utils/api/post/approvalApi';
+import { getProjectApprovalRequests } from '../utils/config/api/post/approvalApi';
 import ApprovalSection from '../components/post/ApprovalSection';
 
 export default function ProjectMainPage() {
@@ -135,10 +135,12 @@ export default function ProjectMainPage() {
           </main>
 
           {/* 우측 사이드바 */}
+        <aside className="sticky top-5 self-start">
           <ProjectSidebar 
             projectDetail={projectDetail}
             members={members}
           />
+        </aside>
         </div>
       </div>
     </div>

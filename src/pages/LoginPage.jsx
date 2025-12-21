@@ -2,7 +2,7 @@ import { useState } from "react";
 import Icon from "../components/common/icons/Icon";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthConext";
-import api from "../utils/api/axios";
+import api from "../utils/config/api/axios";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");

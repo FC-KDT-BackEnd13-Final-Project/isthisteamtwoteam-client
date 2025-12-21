@@ -9,7 +9,7 @@ import PageHeader from "../components/common/PageHeader/PageHeader";
 import { EmptyTrashIcon } from "../components/common/icons/RemoveProjectIcon";
 import ControlBar from "../components/removeProject/ControlBar";
 import RemovedProjectItem from "../components/removeProject/RemovedProjectItem";
-import { getDeletedProjects, restoreProjects,permanentDeleteProjects } from "../utils/api/project/projectApi";
+import { getDeletedProjects, restoreProjects,permanentDeleteProjects } from "../utils/config/api/project/projectApi";
 
 
 /**

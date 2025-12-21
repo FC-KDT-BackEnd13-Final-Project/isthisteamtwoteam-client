@@ -1,7 +1,7 @@
 import { useState, useRef,useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { createPost } from "../utils/api/post/postApi";
-import { deleteTempFiles, uploadTempFile } from "../utils/api/file/fileApi";
+import { createPost } from "../utils/config/api/post/postApi";
+import { deleteTempFiles, uploadTempFile } from "../utils/config/api/file/fileApi";
 
 export default function CreatePostPage() {
   const navigate = useNavigate();

@@ -1,9 +1,10 @@
 import { useAuth } from "../../context/AuthConext";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
 export default function ProtectedRoute({ children, allowedRoles }) {
   const { user, loading } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   if (loading) {
     return <div>로딩 중...</div>;
@@ -20,7 +21,8 @@ export default function ProtectedRoute({ children, allowedRoles }) {
   }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
-    return <div>접근 권한이 없습니다.</div>;
+    navigate("/login");
+
   }
 
   console.log("권한 :", user.role);

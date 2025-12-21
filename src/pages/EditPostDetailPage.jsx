@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { uploadTempFile,deleteTempFiles } from "../utils/api/file/fileApi";
-import { getPostDetail, updatePost } from "../utils/api/post/postApi";
-// import { getPostDetail, uploadTempFile, updatePost } from "../utils/api/post/postApi";
+import { uploadTempFile,deleteTempFiles } from "../utils/config/api/file/fileApi";
+import { getPostDetail, updatePost } from "../utils/config/api/post/postApi";
+// import { getPostDetail, uploadTempFile, updatePost } from "../utils/config/api/post/postApi";
 
 export default function EditPostDetailPage() {
   const { postId } = useParams();

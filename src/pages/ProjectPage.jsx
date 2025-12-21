@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { deleteProject, getProjects } from "../utils/api/project/projectApi";
+import { deleteProject, getProjects } from "../utils/config/api/project/projectApi";
 import SearchBar from "../components/common/SearchBar/SearchBar";
 import Pagination from "../components/common/Pagination/Pagination";
 import LoadingState from "../components/common/LoadingState/LoadingState";

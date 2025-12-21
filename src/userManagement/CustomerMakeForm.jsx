@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { getCompanies } from "../utils/api/dashboardApi";
+import { getCompanies } from "../utils/config/api/dashboardApi";
 
 export default function CustomerMakeForm({
   handleSubmit,

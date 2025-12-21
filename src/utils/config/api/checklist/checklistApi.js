@@ -24,10 +24,12 @@ export const updateChecklist = async (checklistId, content) =>{
 }
 
 
-export const createChecklist = async() => {
+export const createChecklist = async(content) => {
  
     try {
-        const response = await api.post('/admin/checklists')
+        const response = await api.post('/admin/checklists',{
+            content:content
+        })
         return response.data.response
     } catch (error) {
         console.log("체크리스트 저장에 실패했습니다.")

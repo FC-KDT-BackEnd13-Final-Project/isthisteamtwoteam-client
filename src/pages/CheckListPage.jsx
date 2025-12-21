@@ -3,7 +3,7 @@ import EditableChecklistItem from "../components/checklist/EditableChecklistItem
 import EmptyState from "../components/common/EmptyState/EmptyState";
 import LoadingState from "../components/common/LoadingState/LoadingState";
 import { ClipboardIcon } from "../components/common/icons/ChecklistIcon";
-import { getChecklists, updateChecklist, createChecklist, deleteChecklist } from "../utils/api/checklist/checklistApi";
+import { getChecklists, updateChecklist, createChecklist, deleteChecklist } from "../utils/config/api/checklist/checklistApi";
 
 export default function CheckListPage() {
   const [checklists, setChecklists] = useState([]);

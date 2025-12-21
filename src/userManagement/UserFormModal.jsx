@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import CompanyMakeForm from "./CompanyMakeForm";
-import DeveloperMakeForm from "./developerMakeForm";
+import DeveloperMakeForm from "./DeveloperMakeForm";
 import CustomerMakeForm from "./CustomerMakeForm";
 
 export default function UserFormModal({ mode, initialData, activeTab, onClose, onSubmit }) {

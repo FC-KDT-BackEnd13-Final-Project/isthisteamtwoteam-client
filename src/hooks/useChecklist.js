@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import api from '../utils/api/axios';
+import api from '../utils/config/api/axios';
 
 const useChecklist = () => {
     const [checklistItems, setChecklistItems] = useState([{
