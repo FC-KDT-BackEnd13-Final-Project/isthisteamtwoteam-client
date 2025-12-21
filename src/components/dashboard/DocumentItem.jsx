@@ -31,6 +31,7 @@ export default function DocumentItem({
   status, // 상태 텍스트 (예: "승인대기", "반려")
   statusClass, // 상태 배지 스타일 (예: "bg-[#ffe6e6] text-[#ff3b30]")
   onView, // 클릭했을 때 실행할 함수
+  projectId
 }) {
   const location = useLocation();
 
@@ -59,7 +60,7 @@ export default function DocumentItem({
       className="flex flex-col gap-2 p-3 border border-[#b0b0b0] rounded-[10px] transition-all duration-200 hover:bg-[#f8f9fa] hover:border-[#a0a0a0] cursor-pointer"
       onClick={(e) => {
         e.stopPropagation(); // 다른 요소의 클릭 이벤트가 실행되지 않도록 방지
-        onView(id); // 게시글 ID를 전달하여 상세 페이지로 이동
+        onView(id, projectId); 
       }}
     >
       {/* 상단: 제목과 상태 배지 */}

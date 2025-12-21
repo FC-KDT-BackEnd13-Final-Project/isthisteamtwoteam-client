@@ -40,12 +40,12 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/login/reset" element={<ForgotPasswordPage/>}/>
       <Route path="/find-password" element={<FindPasswordPage />} />
-      <Route path="post/:postId" element={<PostDetailPage/>} />
-      <Route path="/project/:projectId/post/create" element={<CreatePostPage />} />
       <Route path="/" element={
           <SidebarLayout />
       }>
-
+        <Route path="/project/:projectId/post/:postId" element={<PostDetailPage/>} />
+        <Route path="/project/:projectId/post/create" element={<CreatePostPage />} />
+      
         <Route path="project/:projectId" element={<ProjectMainPage/>} />
         <Route path="post/edit/:postId" element={<EditPostDetailPage/>} />
       </Route>

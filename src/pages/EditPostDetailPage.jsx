@@ -33,6 +33,9 @@ export default function EditPostDetailPage() {
   // 파일 업로드 관련 상태
   const [addFileIds, setAddFileIds] = useState([]);
   const [removeFileIds, setRemoveFileIds] = useState([]);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  
   const uploadedTempFileIdsRef = useRef([]);
 
   // 데이터 가져오기
@@ -45,6 +48,7 @@ export default function EditPostDetailPage() {
         
         if (response.success) {
           const data = response.response;
+          console.log(data)
           setPostData(data);
           setTitle(data.title);
           setContent(data.content);
@@ -52,6 +56,8 @@ export default function EditPostDetailPage() {
           setFiles(data.files || []);
           setLinks(data.links || []);
           setProjectId(data.projectId)
+          setStartDate(data.startDate || "");  
+          setEndDate(data.endDate || "");      
         }
       } catch (err) {
         console.error('게시글 조회 실패:', err);
@@ -119,6 +125,8 @@ export default function EditPostDetailPage() {
         requestApproval: false,
         addFileIds: addFileIds,
         removeFileIds: removeFileIds,
+        startDate: startDate,       
+        endDate: endDate,            
         linkUrls: links.map(link => link.linkUrl)
       };
   
@@ -279,7 +287,7 @@ export default function EditPostDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-gray-100 p-10">
       <div className="mx-auto max-w-[1400px]">
             <h1 className="mb-4 text-[24px] font-bold text-gray-900">게시글 수정</h1>
         <div className="rounded-lg bg-white p-8 shadow-sm">
@@ -329,6 +337,30 @@ export default function EditPostDetailPage() {
             </select>
           </div>
 
+          <div className="mb-6 grid grid-cols-2 gap-4">
+            <div>
+              <label className="mb-2 block text-[14px] font-semibold text-gray-900">
+                시작일
+              </label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-[14px] focus:border-blue-500 focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="mb-2 block text-[14px] font-semibold text-gray-900">
+                종료일
+              </label>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-[14px] focus:border-blue-500 focus:outline-none"
+              />
+            </div>
+          </div>
           {/* 파일 첨부 - 드롭다운 */}
           <div className="mb-6">
             <button

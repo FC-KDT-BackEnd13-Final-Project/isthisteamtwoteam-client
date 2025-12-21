@@ -83,6 +83,7 @@ export default function FilteredList({
                   status={statusText}
                   statusClass={statusClass}
                   onView={onViewBoard}
+                  projectId={item.projectId}
                 />
               );
             }

@@ -8,6 +8,8 @@ import ProjectHeader from '../components/project/ProjectHeader';
 import ChecklistSection from '../components/project/ChecklistSection';
 import PostSection from '../components/project/PostSection';
 import ProjectSidebar from '../components/project/ProjectSidebar';
+import { getProjectApprovalRequests } from '../utils/api/post/approvalApi';
+import ApprovalSection from '../components/post/ApprovalSection';
 
 export default function ProjectMainPage() {
   const { projectId } = useParams();
@@ -21,12 +23,31 @@ export default function ProjectMainPage() {
   const [isPostsLoading, setIsPostsLoading] = useState(false);
 
   const [members, setMembers] = useState([]);
+  const [approvalRequests, setApprovalRequests] = useState(null);  
+  const [isApprovalLoading, setIsApprovalLoading] = useState(false); 
+
   useEffect(() => {
     fetchChecklists();
     fetchPosts();
     fetchProjectDetail(); 
     fetchProjectMembers();
+    fetchApprovalRequests();  
+
   }, [projectId]);
+
+  const fetchApprovalRequests = async () => {
+    setIsApprovalLoading(true);
+    try {
+      const data = await getProjectApprovalRequests(projectId);
+      setApprovalRequests(data.response);
+      console.log('승인 요청:', data.response);
+    } catch (error) {
+      console.error('승인 요청 조회 실패:', error);
+    } finally {
+      setIsApprovalLoading(false);
+    }
+  };
+
 
   const fetchProjectMembers = async () => {
     try {
@@ -82,7 +103,7 @@ export default function ProjectMainPage() {
 
   return (
     <div className="min-h-screen bg-gray-100 font-sans">
-      <div className="mx-auto max-w-[1400px] px-4 py-5">
+      <div className="mx-auto max-w-[1500px] px-4 py-5">
         {/* 페이지 제목 */}
         <div className="mb-5">
           <h1 className="text-[22px] font-semibold text-[#1a1a1a]">
@@ -98,6 +119,13 @@ export default function ProjectMainPage() {
               checklists={checklists} 
               setChecklists={setChecklists} 
             />
+
+            <ApprovalSection 
+              approvalRequests={approvalRequests}
+              isLoading={isApprovalLoading}
+              projectId={projectId}
+            />
+
             <PostSection 
               postsData={postsData}
               activeTab={activeTab}

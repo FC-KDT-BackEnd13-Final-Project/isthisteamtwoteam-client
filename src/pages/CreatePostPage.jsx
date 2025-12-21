@@ -15,6 +15,8 @@ export default function CreatePostPage() {
   const [stage, setStage] = useState("");
   const [files, setFiles] = useState([]);
   const [links, setLinks] = useState([]);
+  const [requestApproval, setRequestApproval] = useState(false);
+
 
   // 드롭다운 토글 상태
   const [isFileOpen, setIsFileOpen] = useState(false);
@@ -71,9 +73,9 @@ export default function CreatePostPage() {
         const requestData = {
         title: title.trim(),
         content: content.trim(),
-        stage: stage,
-        parentId: 0,
-        requestApproval: false,
+        stageName: stage,
+        parentId: null,
+        requestApproval: requestApproval,
         fileIds: files.map(file => file.fileId),
         linkUrls: links.map(link => link.linkUrl)
         };
@@ -83,10 +85,9 @@ export default function CreatePostPage() {
         const response = await createPost(projectId, requestData);
 
         if (response.success) {
-        // 작성 성공 시 임시 파일 추적 목록 초기화 (삭제하지 않음)
         uploadedTempFileIdsRef.current = [];
         alert('게시글이 작성되었습니다.');
-        navigate(`/project/${projectId}`); // 또는 적절한 페이지로 이동
+        navigate(`/project/${projectId}`);
         } else {
         alert(response.response.message);
         }
@@ -147,7 +148,7 @@ export default function CreatePostPage() {
                     fileName: uploadedFile.fileOriginalFileName,
                     fileSize: uploadedFile.fileSize,
                     fileUrl: uploadedFile.fileUrl,
-                    isUploading: falsefileSize
+                    isUploading: false
                     }
                 : f
             )
@@ -237,6 +238,33 @@ export default function CreatePostPage() {
               <option value="완료">완료</option>
             </select>
           </div>
+          <div className="mb-6">
+
+        {/* 승인 요청 토글 */}
+        <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
+            <div>
+            <label className="block text-[14px] font-semibold text-gray-900">
+                승인 요청
+            </label>
+            <p className="mt-1 text-[12px] text-gray-500">
+                고객사의 승인을 요청합니다.
+            </p>
+            </div>
+            <button
+            type="button"
+            onClick={() => setRequestApproval(!requestApproval)}
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                requestApproval ? 'bg-blue-500' : 'bg-gray-300'
+            }`}
+            >
+            <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                requestApproval ? 'translate-x-6' : 'translate-x-1'
+                }`}
+            />
+            </button>
+        </div>
+        </div>
 
           {/* 파일 첨부 - 드롭다운 */}
           <div className="mb-6">
