@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import DashboardStats from "../../components/dashboard/DashboardStats";
 import FilteredList from "../../components/dashboard/FilteredList";
 import ProjectList from "../../components/dashboard/ProjectList";
-import { getDashboardAllProjects,getDashboardData } from "../../utils/api/dashboardApi";
+import { getDashboardAllProjects,getDashboardData } from "../../utils/config/api/dashboardApi";
 
 
 export default function DeveloperDashboardPage() {

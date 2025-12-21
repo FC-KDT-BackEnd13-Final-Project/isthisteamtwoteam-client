@@ -5,8 +5,8 @@ import ChecklistItem from '../components/projectCreate/ChecklistItem';
 import UserSelectionDropdown from '../components/projectCreate/UserSelectionDropdown';
 import useChecklist from '../hooks/useChecklist';
 import useUsers from '../hooks/useUsers';
-import { getProjectDetail, getProjectUsers, updateProject } from '../utils/api/project/projectApi';
-import { createChecklist } from '../utils/api/checklist/checklistApi';
+import { getProjectDetail, getProjectUsers, updateProject } from '../utils/config/api/project/projectApi';
+import { createChecklist } from '../utils/config/api/checklist/checklistApi';
 
 export const EditProjectPage = () => {
     const navigate = useNavigate();

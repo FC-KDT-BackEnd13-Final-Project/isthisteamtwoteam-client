@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Icon from "../common/icons/Icon";
-import { logout } from "../../utils/api/usersApi";
+import { logout } from "../../utils/config/api/usersApi";
 
 export default function Sidebar() {
   let navigate = useNavigate();

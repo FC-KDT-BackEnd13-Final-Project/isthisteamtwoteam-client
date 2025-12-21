@@ -11,7 +11,7 @@ import Pagination from "../components/common/Pagination/Pagination";
 import LoadingState from "../components/common/LoadingState/LoadingState";
 import UserFormModal from "../userManagement/UserFormModal";
 import CompanyCreateModal from "../userManagement/CompanyCreateModal";
-import { getUsers, createUser, updateUser, createCompany,deleteUser } from "../utils/api/usersApi";
+import { getUsers,createUser, updateUser, createCompany,deleteUser } from "../utils/config/api/usersApi";
 
 export default function UserManagementPage() {
   const [activeTab, setActiveTab] = useState("developer");

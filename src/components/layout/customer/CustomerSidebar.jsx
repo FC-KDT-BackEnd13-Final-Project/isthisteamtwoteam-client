@@ -1,6 +1,7 @@
 import Icon from "../../common/icons/Icon";
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { logout } from "../../../utils/config/api/usersApi";
 
 export default function CustomerSidebar() {
   let navigate = useNavigate();
@@ -34,7 +35,6 @@ export default function CustomerSidebar() {
       label: "체크리스트",
       path: "/customer/checklist",
     },
-
   ];
 
   const settingItems = [
@@ -44,6 +44,16 @@ export default function CustomerSidebar() {
 
   const handleClick = (path) => {
     navigate(path);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/login"); // 로그인 페이지 이동
+    } catch (error) {
+      console.error("로그아웃 실패:", error);
+      alert("로그아웃에 실패했습니다.");
+    }
   };
 
   // URL 경로가 변경될 때마다 활성 메뉴 업데이트
@@ -113,6 +123,10 @@ export default function CustomerSidebar() {
               <div
                 key={item.label}
                 onClick={() => {
+                  if (item.label === "로그아웃") {
+                    handleLogout();
+                    return;
+                  }
                   setActiveMenu(item.label);
                   handleClick(item.path);
                 }}

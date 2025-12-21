@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { createNewMember, getUserDetail, updateUser } from "../utils/api/usersApi";
+import { createNewMember, getUserDetail, updateUser } from "../utils/config/api/usersApi";
 
 export default function CreateUserPage() {
   const { userId } = useParams();

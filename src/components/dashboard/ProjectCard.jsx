@@ -6,6 +6,8 @@
 */
 
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthConext";
+
 
 const ProjectCard = ({
     project,
@@ -13,8 +15,10 @@ const ProjectCard = ({
 
   }) => {
   const navigate = useNavigate()
-
-  // 날짜 포맷팅 함수 (YYYY-MM-DD)
+  const userRole = useAuth();
+  const hasAdminPermission = userRole ==="ADMIN"
+  console.log(hasAdminPermission)
+  // 날짜 포맷팅 함수 (YYYY-MM-DD)\
   const formatDate = (dateString) => {
     if (!dateString) return '-';
     return dateString.split('T')[0]; // ISO 형식에서 날짜 부분만 추출
@@ -28,6 +32,7 @@ const ProjectCard = ({
       onClick={() => onView(project.project_id)}
       className="group relative cursor-pointer rounded-[12px] border border-[#e0e0e0] bg-white p-[18px] transition-all duration-200 hover:border-[#007bff] hover:shadow-[0_2px_8px_rgba(0,123,255,0.1)]"
     >
+      {hasAdminPermission &&(
       <button
         onClick={(e) => {
           e.stopPropagation();
@@ -38,7 +43,7 @@ const ProjectCard = ({
       >
         설정
       </button>
-
+      )}
       <div className="mb-4 flex items-start gap-[14px] border-b border-[#f0f0f0] pb-[14px]">
         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[10px] border-2 border-[#e8f4ff] bg-[#f8f9fa] text-[16px] font-bold text-[#007bff] overflow-hidden">
           {project.project_image_url ? (

@@ -8,48 +8,53 @@ import StatCard from "../components/requestPending/RequestStatCard";
 import Section from "../components/requestPending/RequestSection";
 import { useEffect, useState } from "react";
 import { getRequestPendingPosts } from "../utils/config/api/getRequestPendingPostsApi";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
-export default function RequestPendingPage() {
-  const [requestPendingPosts, setRequestPendingPosts] = useState(null);
+export default function ProjectRequestPendingPage() {
+  const { projectId } = useParams();  // ✅ projectId 받기
+  const location = useLocation();     // ✅ location에서 state 받기
+  const [requestPendingPosts, setRequestPendingPosts] = useState(
+    location.state?.approvalRequests || null  // ✅ 전달받은 데이터 사용
+  );
   const [error, setError] = useState(false);
+ 
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await getRequestPendingPosts();
-        setRequestPendingPosts(response);
-      } catch (err) {
-        console.error("데이터 불러오기 실패:", err);
-        setError(true);
+    // ✅ 데이터가 없을 때만 API 호출
+    if (!requestPendingPosts && projectId) {
+      const fetchData = async () => {
+        try {
+          const response = await getRequestPendingPosts(projectId);  // projectId 전달
+          setRequestPendingPosts(response);
+        } catch (err) {
+          console.error("데이터 불러오기 실패:", err);
+          setError(true);
 
-        setRequestPendingPosts({
-          statusCount: {
-            pendingCnt: 0,
-            approvedCnt: 0,
-            rejectedCnt: 0,
-          },
-          stageCount: {
-            requirementsCnt: 0,
-            screenDesignCnt: 0,
-            designPublishingCnt: 0,
-            developmentCnt: 0,
-            qaCnt: 0,
-            maintenanceCnt: 0,
-          },
-          requirements: [],
-          screenDesign: [],
-          designPublishing: [],
-          development: [],
-          qa: [],
-          maintenance: [],
-        });
-      }
-    };
+          setRequestPendingPosts({
+            statusCount: { pendingCnt: 0, approvedCnt: 0, rejectedCnt: 0 },
+            stageCount: {
+              requirementsCnt: 0,
+              screenDesignCnt: 0,
+              designPublishingCnt: 0,
+              developmentCnt: 0,
+              qaCnt: 0,
+              maintenanceCnt: 0,
+            },
+            requirements: [],
+            screenDesign: [],
+            designPublishing: [],
+            development: [],
+            qa: [],
+            maintenance: [],
+          });
+        }
+      };
 
-    fetchData();
-  }, []);
+      fetchData();
+    }
+  }, [projectId, requestPendingPosts]);
+
 
   if (!requestPendingPosts) {
     return (
@@ -59,13 +64,20 @@ export default function RequestPendingPage() {
     );
   }
 
-  const handleViewDetail = (id) => {
-    navigate(`/post/${id}`);
+  const handleViewDetail = (postId) => {
+    navigate(`/project/${projectId}/post/${postId}`);  
   };
+
 
   return (
     <div className="min-h-screen bg-gray-100 font-sans py-5">
       <div className="mx-auto max-w-[1350px]">
+        <button
+          onClick={() => navigate(`/project/${projectId}`)}
+          className="mb-4 text-sm text-gray-600 hover:text-gray-900 flex items-center gap-1"
+        >
+          ← 프로젝트로 돌아가기
+        </button>
         <div className="mb-6">
           <h1 className="mb-1.5 text-[22px] font-semibold text-[#1a1a1a]">
             승인 요청

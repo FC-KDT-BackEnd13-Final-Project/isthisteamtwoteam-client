@@ -1,3 +1,4 @@
+import api from "./axios";
 
 // 유저 목록 조회
 export const getUsers = async() => {
@@ -140,6 +141,7 @@ export const createCompany = async (data) => {
     throw error;
   }
 };
+
 
 // export const changePassword = async (passwordData) => {
 //   try {

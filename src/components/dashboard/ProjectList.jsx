@@ -1,3 +1,4 @@
+import { useAuth } from "../../context/AuthConext";
 import ProjectCard from "./ProjectCard";
 import { useNavigate } from "react-router-dom";
 
@@ -8,8 +9,11 @@ export default function ProjectList({
   onCreateProject,
 }) {
 
+  const {user} = useAuth();
+  const userRole = user?.role
   const navigate = useNavigate();
-
+  const haveAdminPermission = userRole !== "CUSTOMER" && userRole !== "DEVELOPER";
+  
   return (
     <div className="rounded-[12px] bg-white p-[18px] shadow-[0_1px_3px_rgba(0,0,0,0.08)]">
       <div className="mb-[14px] flex items-center justify-between border-b border-[#e0e0e0] pb-[14px]">
@@ -17,7 +21,6 @@ export default function ProjectList({
           모든 프로젝트 리스트
         </h2>
         
-
         <div className="flex gap-2.5">
           <button
             onClick={() =>navigate("/projects")}
@@ -25,12 +28,15 @@ export default function ProjectList({
           >
             더보기
           </button>
-          <button
-            onClick={onCreateProject}
-            className="cursor-pointer rounded-[6px] border border-[#007bff] bg-[#007bff] px-[15px] py-2 text-[13px] font-semibold text-white transition-all duration-200 hover:border-[#0056b3] hover:bg-[#0056b3]"
-          >
-            프로젝트 생성
-          </button>
+          
+          {haveAdminPermission && (
+            <button
+              onClick={onCreateProject}
+              className="cursor-pointer rounded-[6px] border border-[#007bff] bg-[#007bff] px-[15px] py-2 text-[13px] font-semibold text-white transition-all duration-200 hover:border-[#0056b3] hover:bg-[#0056b3]"
+            >
+              프로젝트 생성
+            </button>
+          )}
         </div>
       </div>
 

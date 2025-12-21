@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from "../utils/api/axios.js";
+import api from "../utils/config/api/axios.js";
 import ChecklistModal from '../components/projectCreate/ChecklistModal';
 import ChecklistItem from '../components/projectCreate/ChecklistItem';
 import UserSelectionDropdown from '../components/projectCreate/UserSelectionDropdown';
 
 import useChecklist from '../hooks/useChecklist';
 import useUsers from '../hooks/useUsers';
-import { createProject,createChecklist } from '../utils/api/project/projectApi.js';
+import { createProject,createChecklist } from '../utils/config/api/project/projectApi.js';
 
 const CreateProjectPage = () => {
     const navigate = useNavigate();
