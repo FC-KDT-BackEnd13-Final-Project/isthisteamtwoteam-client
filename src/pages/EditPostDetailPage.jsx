@@ -139,7 +139,7 @@ export default function EditPostDetailPage() {
         // 수정 성공 시 임시 파일 추적 목록 초기화 (삭제하지 않음)
         uploadedTempFileIdsRef.current = [];
         alert('게시글이 수정되었습니다.');
-        navigate(`/post/${postId}`);
+        navigate(`/project/${projectId}/post/${postId}`);
       } else {
         alert(response.response.message);
       } 

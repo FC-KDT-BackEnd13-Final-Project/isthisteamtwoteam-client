@@ -83,7 +83,7 @@ function App() {
         path="/developer"
         element={
           <ProtectedRoute allowedRoles={["DEVELOPER"]}>
-            {/* <DeveloperSidebarHeaderLayout /> */}
+            <DeveloperSidebarHeaderLayout />
           </ProtectedRoute>
         }
       >
@@ -103,11 +103,11 @@ function App() {
         path="/customer"
         element={
           <ProtectedRoute allowedRoles={["CUSTOMER"]}>
-            {/* <CustomerSidebarHeaderLayout /> */}
+            <CustomerSidebarHeaderLayout />
           </ProtectedRoute>
         }
       >
-        <Route path="dashboard" element={<CustomerDashboardPage />} />
+        <Route path="dashboard" element={<CustomerDashboardPage/>} />
         <Route path="project/:projectId" element={<ProjectMainPage />} />
         <Route path="project/:projectId/post/:postId" element={<PostDetailPage />} />
         <Route path="project/:projectId/post/create" element={<CreatePostPage />} />
