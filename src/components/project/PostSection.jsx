@@ -6,7 +6,9 @@ export default function PostSection({
   postsData, 
   activeTab, 
   onTabChange,  // ✅ ongiTabChange -> onTabChange 오타 수정
-  isPostsLoading 
+  isPostsLoading,
+  handleDeletePost
+  
 }) {
   const [currentPage, setCurrentPage] = useState(1);
   const postsPerPage = 5;  // ✅ useState 제거하고 상수로 변경
@@ -123,6 +125,7 @@ export default function PostSection({
     onTabChange(tabId);
     setCurrentPage(1);
   };
+
 
   return (
   <div className="bg-white rounded-lg shadow-sm mb-6">
@@ -279,15 +282,23 @@ export default function PostSection({
                       <td key="author" className="px-6 py-4 text-sm text-gray-600">{post.authorName || '-'}</td>,
                       <td key="actions" className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
                         <div className="flex gap-2">
+                          
                           <button 
-                          className="px-4 py-1.5 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition-colors"
-                          onClick={()=>{navigate(`/post/edit/${post.postId}`)
-
-                          }}
+                            className="px-4 py-1.5 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition-colors"
+                            onClick={(e) => {          // ⭐ (e) 추가!
+                              e.stopPropagation();     // ⭐ 먼저 호출
+                              navigate(`/post/edit/${post.postId}`);
+                            }}
                           >
                             수정
                           </button>
-                          <button className="px-4 py-1.5 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition-colors">
+                                                  <button 
+                            className="px-4 py-1.5 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition-colors"
+                            onClick={(e) => {          // ⭐ (e) 추가!
+                              e.stopPropagation();     // ⭐ 먼저 호출
+                              handleDeletePost(post.postId);
+                            }}
+                          >
                             삭제
                           </button>
                         </div>
