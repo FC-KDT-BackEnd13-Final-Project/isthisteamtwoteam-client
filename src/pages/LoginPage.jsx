@@ -114,7 +114,7 @@ export default function LoginPage() {
 
           <div className="text-center">
             <a
-              href="#"
+              href="/login/reset"
               className="text-sm text-gray-500 no-underline transition-colors hover:text-gray-800 hover:underline"
             >
               Forgot password?
