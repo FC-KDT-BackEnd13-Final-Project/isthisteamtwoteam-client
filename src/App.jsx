@@ -5,8 +5,6 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 // Layouts
 import SidebarLayout from "./components/layout/SidebarLayout";
-import DeveloperSidebarHeaderLayout from "./components/layout/developer/DeveloperSidebarHeaderLayout";
-import CustomerSidebarHeaderLayout from "./components/layout/customer/CustomerSidebarHeaderLayout copy";
 
 // Pages - 공통 (권한별로 공유)
 import LoginPage from "./pages/LoginPage";
@@ -36,6 +34,9 @@ import { EditProjectPage } from "./pages/EditProjectPage";
 import CustomerDashboardPage from "./pages/customer/CustomerDashboardPage";
 import DeveloperDashboardPage from "./pages/developer/DeveloperDashboardPage";
 import ProjectRequestPendingPage from "./pages/ProjectRequestPendingPage";
+import ChangePasswordPage from "./pages/ChangePasswordPage";
+import DeveloperSidebarHeaderLayout from "./components/layout/developer/DeveloperSidebarHeaderLayout";
+import CustomerSidebarHeaderLayout from "./components/layout/customer/CustomerSidebarHeaderLayout copy";
 
 function App() {
   return (
@@ -52,8 +53,8 @@ function App() {
         <Route path="project/:projectId/post/create" element={<CreatePostPage />} />
         <Route path="post/edit/:postId" element={<EditPostDetailPage />} />
         <Route path="projects/:projectId/request-pending" element={<ProjectRequestPendingPage />} />
-        
 
+        <Route path="change-password" element={<ChangePasswordPage />} />
       </Route>
 
       {/* ========== 관리자 전용 페이지 ========== */}
@@ -83,7 +84,7 @@ function App() {
         path="/developer"
         element={
           <ProtectedRoute allowedRoles={["DEVELOPER"]}>
-            {/* <DeveloperSidebarHeaderLayout /> */}
+            <DeveloperSidebarHeaderLayout />
           </ProtectedRoute>
         }
       >
@@ -103,7 +104,7 @@ function App() {
         path="/customer"
         element={
           <ProtectedRoute allowedRoles={["CUSTOMER"]}>
-            {/* <CustomerSidebarHeaderLayout /> */}
+            <CustomerSidebarHeaderLayout />
           </ProtectedRoute>
         }
       >
