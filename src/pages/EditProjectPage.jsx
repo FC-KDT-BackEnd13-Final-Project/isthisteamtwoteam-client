@@ -94,13 +94,6 @@ export const EditProjectPage = () => {
             const customerList = await getProjectUsers(projectId, 'CUSTOMER');
             setSelectedClients(customerList);
 
-            console.log('프로젝트 전체 데이터:', projectData);
-        console.log('커버 이미지:', projectData.coverImage);
-            // TODO: 시작일, 종료일, 메모, 체크리스트 정보도 API에서 가져오도록 추가 필요
-            // setStartDate(projectData.startDate);
-            // setEndDate(projectData.endDate);
-            // setMemo(projectData.memo);
-
         } catch (error) {
             console.error('프로젝트 데이터 로딩 실패:', error);
             alert('프로젝트 정보를 불러오는데 실패했습니다.');

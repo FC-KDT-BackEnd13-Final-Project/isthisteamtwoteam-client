@@ -153,7 +153,10 @@ const CreateProjectPage = () => {
                 endDate,
                 stage,
                 memo,
-                members: selectedDevelopers.map(dev => dev.userId),
+                    members: [
+                        ...selectedDevelopers.map(dev => dev.userId),
+                        ...selectedClients.map(client => client.userId)
+                    ],
                 selectedChecklistIds,
                 companyId: selectedClients[0]?.companyId || null, // 회사이름으로 넣을게ㅐ
                 // projectImage // 이미지 파일 추가
@@ -379,7 +382,9 @@ const CreateProjectPage = () => {
                     checklists={predefinedChecklists}
                     selectedItems={selectedPredefinedItems}
                     onToggleItem={togglePredefinedChecklistItem}
-                    onSave={addSelectedChecklists}
+                    onSave={() => {
+                        const success = addSelectedChecklists(); 
+                        if (success) closeChecklistModal();}}
                     searchTerm={checklistSearchTerm}
                     setSearchTerm={setChecklistSearchTerm}
                 />

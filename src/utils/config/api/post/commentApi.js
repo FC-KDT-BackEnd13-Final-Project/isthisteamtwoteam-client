@@ -38,3 +38,13 @@ export const getComments = async (postId) => {
     throw error;
   }
 };
+
+export const updateComment = async (commentId, request) => {
+  try {
+    const response = await api.patch(`/users/projects/posts/comment/${commentId}`, request);
+    return response.data;
+  } catch (error) {
+    console.error('댓글 수정 실패:', error);
+    throw error;
+  }
+};
