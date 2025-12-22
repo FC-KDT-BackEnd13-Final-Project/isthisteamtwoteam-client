@@ -49,7 +49,9 @@ const useChecklist = () => {
     // 미리 정의된 체크리스트 로딩
     const loadPredefinedChecklists = async () => {
         try {
-            const response = await api.get('/admin/checklists?page=0&size=100');
+            const response = await api.get('/admin/checklists?page=0&size=100',{
+                 skipRolePath: true
+            });
             if (response.data.success && Array.isArray(response.data.response.content)) {
                 setPredefinedChecklists(response.data.response.content);
             }
@@ -59,10 +61,10 @@ const useChecklist = () => {
         }
     };
 
-    // 선택된 체크리스트 토글
+    //선택된 체크리스트 토글
     const togglePredefinedChecklistItem = (item) => {
-        if (selectedPredefinedItems.find(i => i.id === item.id)) {
-            setSelectedPredefinedItems(selectedPredefinedItems.filter(i => i.id !== item.id));
+        if (selectedPredefinedItems.some(i => i.checkListId === item.checkListId)) {
+            setSelectedPredefinedItems(selectedPredefinedItems.filter(i => i.checkListId !== item.checkListId));
         } else {
             setSelectedPredefinedItems([...selectedPredefinedItems, item]);
         }
@@ -72,31 +74,37 @@ const useChecklist = () => {
     const addSelectedChecklists = () => {
         if (selectedPredefinedItems.length === 0) {
             alert('체크리스트 항목을 선택해주세요.');
-            return;
+            return false;
         }
 
-        const existingTexts = new Set(checklistItems.map(item => item.text.trim()));
-        
+        const existingTexts = new Set(
+            checklistItems.map(item => item.text.trim())
+        );
+
         const newItems = selectedPredefinedItems
             .filter(item => !existingTexts.has(item.content))
             .map(item => ({
-                id: item.id,
+                id: item.checkListId, //
                 text: item.content,
                 checked: false,
                 isNew: false
             }));
-        
+
         if (newItems.length === 0) {
             alert('선택한 항목이 모두 이미 추가되어 있습니다.');
-            return;
+            return false;
         }
-        
-        const filteredItems = checklistItems.filter(item => item.text.trim() !== '');
+
+        const filteredItems = checklistItems.filter(
+            item => item.text.trim() !== ''
+        );
+
         setChecklistItems([...filteredItems, ...newItems]);
-        
         setSelectedPredefinedItems([]);
-        return true; // 성공 시 true 반환
+
+        return true; // ✅ 성공 시에만 true
     };
+
 
     return {
         checklistItems,

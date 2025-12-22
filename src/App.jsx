@@ -83,7 +83,7 @@ function App() {
         path="/developer"
         element={
           <ProtectedRoute allowedRoles={["DEVELOPER"]}>
-            <DeveloperSidebarHeaderLayout />
+            {/* <DeveloperSidebarHeaderLayout /> */}
           </ProtectedRoute>
         }
       >
@@ -103,7 +103,7 @@ function App() {
         path="/customer"
         element={
           <ProtectedRoute allowedRoles={["CUSTOMER"]}>
-            <CustomerSidebarHeaderLayout />
+            {/* <CustomerSidebarHeaderLayout /> */}
           </ProtectedRoute>
         }
       >

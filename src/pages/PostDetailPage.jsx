@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthConext";
 import CommentItem from "../components/post/CommentItem";
 import LoadingState from "../components/common/LoadingState/LoadingState";
 import { deleteTempFile,uploadTempFile } from "../utils/config/api/file/fileApi";
-import { createComment, getComments } from "../utils/config/api/post/commentApi";
+import { createComment, getComments, updateComment } from "../utils/config/api/post/commentApi";
 import { approvePost } from "../utils/config/api/post/approvalApi";
 import api from "../utils/config/api/axios";
 
@@ -14,7 +14,8 @@ export default function PostDetailPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const userRole = user?.role;
- 
+  const currentUserId = user?.id
+
   // 상태 관리
   const [postData, setPostData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -36,6 +37,186 @@ const [isAddingCommentLink, setIsAddingCommentLink] = useState(false);
 const commentFileInputRef = useRef(null);
 const uploadedCommentTempFileIdsRef = useRef([]);
 
+// 댓글 관련 상태 (기존 상태 아래에 추가)
+const [editingCommentId, setEditingCommentId] = useState(null);
+const [editCommentContent, setEditCommentContent] = useState("");
+const [editCommentFiles, setEditCommentFiles] = useState([]);
+const [editCommentLinks, setEditCommentLinks] = useState([]);
+const [editCommentLinkInput, setEditCommentLinkInput] = useState("");
+const [isAddingEditCommentLink, setIsAddingEditCommentLink] = useState(false);
+const editCommentFileInputRef = useRef(null);
+const uploadedEditCommentTempFileIdsRef = useRef([]);
+const [isUpdatingComment, setIsUpdatingComment] = useState(false);
+
+// 댓글 수정 시작
+const handleEditCommentStart = (comment) => {
+  setEditingCommentId(comment.commentId);
+  setEditCommentContent(comment.content);
+  
+  const formattedFiles = (comment.files || []).map(file => ({
+    fileId: file.fileId,
+    fileName: file.fileOriginalFileName,
+    fileSize: file.fileSize,
+    fileUrl: file.fileUrl,
+    isUploading: false
+  }));
+  
+  setEditCommentFiles(formattedFiles);
+  setEditCommentLinks(comment.links || []);
+  uploadedEditCommentTempFileIdsRef.current = (comment.files || []).map(f => f.fileId);
+};
+
+// 댓글 수정 취소
+const handleEditCommentCancel = () => {
+  // 새로 업로드한 임시 파일 삭제
+  const originalFileIds = comments
+    .find(c => c.commentId === editingCommentId)
+    ?.files?.map(f => f.fileId) || [];
+  
+  const newTempFileIds = uploadedEditCommentTempFileIdsRef.current.filter(
+    id => !originalFileIds.includes(id)
+  );
+  
+  if (newTempFileIds.length > 0 && postData?.projectId) {
+    deleteTempFile(postData.projectId, newTempFileIds);
+  }
+  
+  setEditingCommentId(null);
+  setEditCommentContent("");
+  setEditCommentFiles([]);
+  setEditCommentLinks([]);
+  setEditCommentLinkInput("");
+  setIsAddingEditCommentLink(false);
+  uploadedEditCommentTempFileIdsRef.current = [];
+};
+
+// 댓글 수정 파일 선택
+// 댓글 수정 파일 선택
+const handleEditCommentFileChange = async (e) => {
+  const selectedFiles = Array.from(e.target.files);
+  
+  for (const file of selectedFiles) {
+    try {
+      const tempFile = {
+        fileName: file.name,
+        fileSize: `${(file.size / 1024 / 1024).toFixed(1)}MB`,
+        isUploading: true
+      };
+      
+      setEditCommentFiles(prev => [...prev, tempFile]);
+      
+      const response = await uploadTempFile(file, postData.projectId);
+      
+      if (response.success) {
+        const uploadedFile = response.response[0];
+        console.log("임시 저장된 파일의 id: ", uploadedFile.fileId);
+        
+        uploadedEditCommentTempFileIdsRef.current.push(uploadedFile.fileId);
+        
+        setEditCommentFiles(prev => 
+          prev.map(f => 
+            f.fileName === file.name && f.isUploading
+              ? { 
+                  fileId: uploadedFile.fileId,
+                  fileName: uploadedFile.fileOriginalFileName,
+                  fileSize: uploadedFile.fileSize,
+                  fileUrl: uploadedFile.fileUrl,
+                  isUploading: false
+                }
+              : f
+          )
+        );
+      } else {
+        throw new Error('파일 업로드 실패');
+      }
+      
+    } catch (error) {
+      console.error('파일 업로드 에러:', error);
+      alert(`파일 업로드 실패: ${file.name}`);
+      setEditCommentFiles(prev => prev.filter(f => !(f.fileName === file.name && f.isUploading)));
+    }
+  }
+  
+  e.target.value = '';
+};
+
+// 댓글 수정 파일 삭제
+const handleEditCommentFileDelete = (index) => {
+  const fileToDelete = editCommentFiles[index];
+  
+  uploadedEditCommentTempFileIdsRef.current = uploadedEditCommentTempFileIdsRef.current.filter(
+    id => id !== fileToDelete.fileId
+  );
+  
+  setEditCommentFiles(prev => prev.filter((_, i) => i !== index));
+};
+
+// 댓글 수정 링크 추가
+const handleEditCommentLinkAddClick = () => {
+  setIsAddingEditCommentLink(true);
+  setEditCommentLinkInput("");
+};
+
+const handleEditCommentLinkAdd = () => {
+  if (editCommentLinkInput.trim()) {
+    setEditCommentLinks(prev => [...prev, { linkUrl: editCommentLinkInput.trim() }]);
+    setEditCommentLinkInput("");
+    setIsAddingEditCommentLink(false);
+  }
+};
+
+const handleEditCommentLinkCancel = () => {
+  setEditCommentLinkInput("");
+  setIsAddingEditCommentLink(false);
+};
+
+const handleEditCommentLinkDelete = (index) => {
+  setEditCommentLinks(prev => prev.filter((_, i) => i !== index));
+};
+
+// 댓글 수정 제출
+const handleUpdateComment = async () => {
+  if (!editCommentContent.trim()) {
+    alert('댓글 내용을 입력해주세요.');
+    return;
+  }
+
+  try {
+    setIsUpdatingComment(true);
+    
+    const originalComment = comments.find(c => c.commentId === editingCommentId);
+    const originalFileIds = (originalComment?.files || []).map(f => f.fileId);
+    const currentFileIds = editCommentFiles.map(f => f.fileId);
+    
+    const addFileIds = currentFileIds.filter(id => !originalFileIds.includes(id));
+    const removeFileIds = originalFileIds.filter(id => !currentFileIds.includes(id));
+    
+    const request = {
+      content: editCommentContent.trim(),
+      addFileIds: addFileIds,
+      removeFileIds: removeFileIds,
+      linkUrls: editCommentLinks.map(link => link.linkUrl)
+    };
+
+    const response = await updateComment(editingCommentId, request);
+
+    if (response.success) {
+      alert('댓글이 수정되었습니다.');
+      setEditingCommentId(null);
+      setEditCommentContent("");
+      setEditCommentFiles([]);
+      setEditCommentLinks([]);
+      uploadedEditCommentTempFileIdsRef.current = [];
+      
+      await fetchComments();
+    }
+  } catch (error) {
+    console.error('댓글 수정 에러:', error);
+    alert('댓글 수정에 실패했습니다.');
+  } finally {
+    setIsUpdatingComment(false);
+  }
+};
 // 댓글 목록 가져오기
   const fetchComments = async () => {
     try {
@@ -227,7 +408,7 @@ const handleCommentFileChange = async (e) => {
                   fileName: uploadedFile.fileOriginalFileName,
                   fileSize: uploadedFile.fileSize,
                   fileUrl: uploadedFile.fileUrl,
-                  isUploading: falseㄹ
+                  isUploading: false
                 }
               : f
           )
@@ -362,7 +543,7 @@ const handleApprove = async () => {
                 onClick={() => {navigate(`/post/edit/${postId}`)}}
                 disabled={postData.isCompleted}
                 className={`rounded-md border border-gray-300 px-4 py-2 text-[13px] transition-colors ${
-                  postData.isCompleted
+                  postData.isCompleted || postData.userId !== currentUserId 
                     ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                     : 'bg-white text-gray-600 hover:bg-gray-50'
                 }`}
@@ -382,6 +563,8 @@ const handleApprove = async () => {
             </span>
           </div>
           {/* 파일 첨부 */}
+          {/* 파일 첨부 */}
+          {/* 파일 첨부 */}
           <div className="mb-6">
             <label className="mb-2 block text-[14px] font-semibold text-gray-900">
               파일 첨부
@@ -389,23 +572,18 @@ const handleApprove = async () => {
             <div className="flex flex-col gap-2">
               {postData.files && postData.files.length > 0 ? (
                 postData.files.map((file) => (
-                  <div key={file.fileId} className="flex items-center justify-between rounded-md border border-gray-200 bg-gray-50 px-3 py-2.5">
-                    <div className="flex items-center gap-2">
-                      <svg className="h-5 w-5 fill-gray-600" viewBox="0 0 24 24">
-                        <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
-                      </svg>
-                      <span className="text-[13px] text-gray-900">{file.fileOriginalFileName}</span>
-                      <span className="text-[12px] text-gray-500">({(file.fileSize / 1024).toFixed(1)}KB)</span>
-                    </div>
-                    <a
-                      href={file.fileUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="rounded border border-gray-300 bg-white px-3 py-1 text-[12px] text-gray-600 transition-colors hover:bg-gray-50"
-                    >
-                      다운로드
-                    </a>
-                  </div>
+                  <a
+                    key={file.fileId}
+                    href={file.fileUrl}
+                    download={file.fileOriginalFileName}
+                    className="flex items-center gap-2 rounded-md border border-gray-200 bg-gray-50 px-3 py-2.5 cursor-pointer transition-colors hover:bg-blue-50 hover:border-blue-300"
+                  >
+                    <svg className="h-5 w-5 fill-gray-600" viewBox="0 0 24 24">
+                      <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                    </svg>
+                    <span className="text-[13px] text-gray-900 hover:text-blue-600 transition-colors">{file.fileOriginalFileName}</span>
+                    <span className="text-[12px] text-gray-500">({file.fileSize})</span>
+                  </a>
                 ))
               ) : (
                 <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
@@ -682,56 +860,203 @@ const handleApprove = async () => {
               {comments && comments.length > 0 ? (
                 comments.map((comment) => (
                   <div key={comment.commentId} className="rounded-lg border border-gray-200 bg-white p-4">
-                    <div className="mb-3 flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[14px] font-semibold text-gray-900">{comment.userName}</span>
-                        <span className="text-[12px] text-gray-500">
-                          {new Date(comment.createdAt).toLocaleString('ko-KR')}
-                        </span>
-                      </div>
-                    </div>
+                    {editingCommentId === comment.commentId ? (
+                      /* 수정 모드 */
+                      <>
+                        <textarea
+                          value={editCommentContent}
+                          onChange={(e) => setEditCommentContent(e.target.value)}
+                          className="min-h-[80px] w-full resize-vertical rounded-lg border border-gray-300 px-4 py-3 text-[14px] focus:border-blue-500 focus:outline-none mb-3"
+                          disabled={isUpdatingComment}
+                        />
+                        
+                        {editCommentFiles.length > 0 && (
+                          <div className="mb-2 flex flex-col gap-2">
+                            {editCommentFiles.map((file, index) => (
+                              <div key={index} className="flex items-center justify-between gap-3 rounded-md border border-gray-200 bg-gray-50 px-3 py-2">
+                                <div className="flex min-w-0 flex-1 items-center gap-2">
+                                  <svg className="h-4 w-4 flex-shrink-0 fill-gray-600" viewBox="0 0 24 24">
+                                    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                                  </svg>
+                                  <span className="truncate text-[12px] text-gray-900">
+                                    {file.fileName} {file.fileSize && <span className="text-gray-500">{file.fileSize}</span>}
+                                  </span>
+                                  {file.isUploading && (
+                                    <span className="flex-shrink-0 text-[11px] text-blue-600">업로드 중...</span>
+                                  )}
+                                </div>
+                                <button
+                                  onClick={() => handleEditCommentFileDelete(index)}
+                                  disabled={file.isUploading}
+                                  className="flex-shrink-0 rounded border border-red-300 bg-white px-2 py-1 text-[11px] text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                  삭제
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
 
-                    <p className="mb-3 text-[14px] text-gray-900 whitespace-pre-wrap">{comment.content}</p>
+                        {editCommentLinks.length > 0 && (
+                          <div className="mb-2 flex flex-col gap-2">
+                            {editCommentLinks.map((link, index) => (
+                              <div key={index} className="flex items-center justify-between gap-3 rounded-md border border-gray-200 bg-gray-50 px-3 py-2">
+                                <div className="flex min-w-0 flex-1 items-center gap-2">
+                                  <svg className="h-4 w-4 flex-shrink-0 fill-gray-600" viewBox="0 0 24 24">
+                                    <path d="M3.9,12C3.9,10.29 5.29,8.9 7,8.9H11V7H7A5,5 0 0,0 2,12A5,5 0 0,0 7,17H11V15.1H7C5.29,15.1 3.9,13.71 3.9,12M8,13H16V11H8V13M17,7H13V8.9H17C18.71,8.9 20.1,10.29 20.1,12C20.1,13.71 18.71,15.1 17,15.1H13V17H17A5,5 0 0,0 22,12A5,5 0 0,0 17,7Z" />
+                                  </svg>
+                                  <span className="truncate text-[12px] text-blue-600">{link.linkUrl}</span>
+                                </div>
+                                <button
+                                  onClick={() => handleEditCommentLinkDelete(index)}
+                                  className="flex-shrink-0 rounded border border-red-300 bg-white px-2 py-1 text-[11px] text-red-600 transition-colors hover:bg-red-50"
+                                >
+                                  삭제
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
 
-                    {comment.files && comment.files.length > 0 && (
-                      <div className="mb-3 flex flex-col gap-2">
-                        {comment.files.map((file) => (
-                          <div key={file.fileId} className="flex items-center justify-between rounded-md border border-gray-200 bg-gray-50 px-3 py-2">
-                            <div className="flex items-center gap-2">
-                              <svg className="h-4 w-4 fill-gray-600" viewBox="0 0 24 24">
-                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
-                              </svg>
-                              <span className="text-[12px] text-gray-900">{file.fileOriginalFileName}</span>
-                              <span className="text-[11px] text-gray-500">{file.fileSize}</span>
+                        {isAddingEditCommentLink && (
+                          <div className="mb-2 flex gap-2">
+                            <input
+                              type="url"
+                              value={editCommentLinkInput}
+                              onChange={(e) => setEditCommentLinkInput(e.target.value)}
+                              placeholder="링크 URL을 입력하세요 (https://...)"
+                              className="flex-1 rounded-md border border-gray-300 px-3 py-1.5 text-[12px] focus:border-blue-500 focus:outline-none"
+                              onKeyPress={(e) => e.key === 'Enter' && handleEditCommentLinkAdd()}
+                            />
+                            <button
+                              onClick={handleEditCommentLinkAdd}
+                              className="rounded-md bg-blue-500 px-3 py-1.5 text-[12px] text-white transition-colors hover:bg-blue-600"
+                            >
+                              추가
+                            </button>
+                            <button
+                              onClick={handleEditCommentLinkCancel}
+                              className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-[12px] text-gray-600 transition-colors hover:bg-gray-50"
+                            >
+                              취소
+                            </button>
+                          </div>
+                        )}
+
+                        <input
+                          ref={editCommentFileInputRef}
+                          type="file"
+                          multiple
+                          onChange={handleEditCommentFileChange}
+                          className="hidden"
+                        />
+
+                        <div className="flex justify-between items-center">
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => editCommentFileInputRef.current?.click()}
+                              disabled={isUpdatingComment}
+                              className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-[12px] text-gray-600 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                              파일 추가
+                            </button>
+                            <button
+                              onClick={handleEditCommentLinkAddClick}
+                              disabled={isUpdatingComment || isAddingEditCommentLink}
+                              className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-[12px] text-gray-600 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                              링크 추가
+                            </button>
+                          </div>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={handleEditCommentCancel}
+                              disabled={isUpdatingComment}
+                              className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-[12px] text-gray-600 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                              취소
+                            </button>
+                            <button
+                              onClick={handleUpdateComment}
+                              disabled={isUpdatingComment}
+                              className="rounded-md bg-blue-500 px-4 py-2 text-[13px] font-medium text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                              {isUpdatingComment ? '수정 중...' : '수정 완료'}
+                            </button>
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      /* 일반 모드 */
+                      <>
+                        <div className="mb-3 flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[14px] font-semibold text-gray-900">{comment.userName}</span>
+                            <span className="text-[12px] text-gray-500">
+                              {new Date(comment.createdAt).toLocaleString('ko-KR')}
+                            </span>
+                          </div>
+                          
+                          {comment.userId === currentUserId && (
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => handleEditCommentStart(comment)}
+                                className="rounded-md border border-gray-300 bg-white px-3 py-1 text-[12px] text-gray-600 transition-colors hover:bg-gray-50"
+                              >
+                                수정
+                              </button>
+                              <button
+                                onClick={() => {
+                                  if (window.confirm('댓글을 삭제하시겠습니까?')) {
+                                    console.log('댓글 삭제:', comment.commentId);
+                                  }
+                                }}
+                                className="rounded-md border border-red-300 bg-white px-3 py-1 text-[12px] text-red-600 transition-colors hover:bg-red-50"
+                              >
+                                삭제
+                              </button>
                             </div>
-                            <a
-                              href={file.fileUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="rounded border border-gray-300 bg-white px-2 py-1 text-[11px] text-gray-600 transition-colors hover:bg-gray-50"
-                            >
-                              다운로드
-                            </a>
+                          )}
+                        </div>
+
+                        <p className="mb-3 text-[14px] text-gray-900 whitespace-pre-wrap">{comment.content}</p>
+
+                        {comment.files && comment.files.length > 0 && (
+                          <div className="mb-3 flex flex-col gap-2">
+                            {comment.files.map((file) => (
+                              <a
+                                key={file.fileId}
+                                href={file.fileUrl}
+                                download={file.fileOriginalFileName}
+                                className="flex items-center gap-2 rounded-md border border-gray-200 bg-gray-50 px-3 py-2 cursor-pointer transition-colors hover:bg-blue-50 hover:border-blue-300"
+                              >
+                                <svg className="h-4 w-4 fill-gray-600" viewBox="0 0 24 24">
+                                  <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                                </svg>
+                                <span className="text-[12px] text-gray-900 hover:text-blue-600 transition-colors">{file.fileOriginalFileName}</span>
+                                <span className="text-[11px] text-gray-500">{file.fileSize}</span>
+                              </a>
+                            ))}
                           </div>
-                        ))}
-                      </div>
-                    )}
-                    
-                    {comment.links && comment.links.length > 0 && (
-                      <div className="flex flex-col gap-2">
-                        {comment.links.map((link, index) => (
-                          <div key={index} className="rounded-md border border-gray-200 bg-gray-50 px-3 py-2">
-                            <a
-                              href={link.linkUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="break-all text-[12px] text-blue-600 hover:underline"
-                            >
-                              {link.linkUrl}
-                            </a>
+                        )}
+                        
+                        {comment.links && comment.links.length > 0 && (
+                          <div className="flex flex-col gap-2">
+                            {comment.links.map((link, index) => (
+                              <div key={index} className="rounded-md border border-gray-200 bg-gray-50 px-3 py-2">
+                                <a
+                                  href={link.linkUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="break-all text-[12px] text-blue-600 hover:underline"
+                                >
+                                  {link.linkUrl}
+                                </a>
+                              </div>
+                            ))}
                           </div>
-                        ))}
-                      </div>
+                        )}
+                      </>
                     )}
                   </div>
                 ))
