@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getProjectChecklist } from '../utils/config/api/checklist/checklistApi';
-import { getProjectPosts } from '../utils/config/api/post/postApi';
+import { deletePost, getProjectPosts } from '../utils/config/api/post/postApi';
 import { getProjectDetail } from '../utils/config/api/project/projectApi';
 import { getProjectMembers } from '../utils/config/api/project/projectMemberApi';
 import ProjectHeader from '../components/project/ProjectHeader';
@@ -10,6 +10,7 @@ import PostSection from '../components/project/PostSection';
 import ProjectSidebar from '../components/project/ProjectSidebar';
 import { getProjectApprovalRequests } from '../utils/config/api/post/approvalApi';
 import ApprovalSection from '../components/post/ApprovalSection';
+
 
 export default function ProjectMainPage() {
   const { projectId } = useParams();
@@ -58,7 +59,22 @@ export default function ProjectMainPage() {
       setIsApprovalLoading(false);
     }
   };
-
+  // ✅ 올바른 코드
+  const handleDeletePost = async (postId) => {
+    if (window.confirm('정말로 삭제하시겠습니까?')) {
+      try {
+        const response = await deletePost(postId);
+        
+        if (response.success) {
+          alert('게시글이 삭제되었습니다.');
+          await fetchPosts(); // ✅ 목록 새로고침
+        }
+      } catch (error) {
+        console.error('게시글 삭제 실패:', error);
+        alert('게시글 삭제에 실패했습니다.');
+      }
+    }
+  };
   const fetchProjectMembers = async () => {
     if (!projectId) return; // 추가 안전장치
     
@@ -171,6 +187,7 @@ export default function ProjectMainPage() {
               activeTab={activeTab}
               onTabChange={handleTabChange}
               isPostsLoading={isPostsLoading}
+              handleDeletePost={handleDeletePost}
             />
           </main>
 
