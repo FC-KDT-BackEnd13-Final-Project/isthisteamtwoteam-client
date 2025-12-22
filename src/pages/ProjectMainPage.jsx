@@ -19,7 +19,7 @@ export default function ProjectMainPage() {
   const [error, setError] = useState(null);
   
   const [projectDetail, setProjectDetail] = useState(null);
-  const [postsData, setPostsData] = useState(null); // 전체 response 데이터 저장
+  const [postsData, setPostsData] = useState(null);
   const [isPostsLoading, setIsPostsLoading] = useState(false);
 
   const [members, setMembers] = useState([]);
@@ -27,6 +27,14 @@ export default function ProjectMainPage() {
   const [isApprovalLoading, setIsApprovalLoading] = useState(false); 
 
   useEffect(() => {
+    if (!projectId) {
+      console.log('projectId가 아직 없습니다');
+      return;
+    }
+
+    console.log('프로젝트 데이터 로딩 시작:', projectId);
+    
+    // 모든 데이터 fetch
     fetchChecklists();
     fetchPosts();
     fetchProjectDetail(); 
@@ -36,6 +44,8 @@ export default function ProjectMainPage() {
   }, [projectId]);
 
   const fetchApprovalRequests = async () => {
+    if (!projectId) return; // 추가 안전장치
+    
     setIsApprovalLoading(true);
     try {
       const data = await getProjectApprovalRequests(projectId);
@@ -43,27 +53,34 @@ export default function ProjectMainPage() {
       console.log('승인 요청:', data.response);
     } catch (error) {
       console.error('승인 요청 조회 실패:', error);
+      setError(error.message);
     } finally {
       setIsApprovalLoading(false);
     }
   };
 
-
   const fetchProjectMembers = async () => {
+    if (!projectId) return; // 추가 안전장치
+    
     try {
       const response = await getProjectMembers(projectId);
       setMembers(response);
       console.log('프로젝트 멤버:', response);
     } catch (error) {
       console.error('프로젝트 멤버 조회 실패:', error);
+      setError(error.message);
     }
   };
 
   const fetchChecklists = async () => {
+    if (!projectId) return; // 추가 안전장치
+    
+    setIsLoading(true);
     try {
       const data = await getProjectChecklist(projectId);
       setChecklists(data.response);    
     } catch (error) {
+      console.error('체크리스트 조회 실패:', error);
       setError(error.message);
     } finally {
       setIsLoading(false);
@@ -71,11 +88,13 @@ export default function ProjectMainPage() {
   };
 
   const fetchPosts = async () => {
+    if (!projectId) return; // 추가 안전장치
+    
     setIsPostsLoading(true);
     try {
       const data = await getProjectPosts(projectId, 'all');
       setPostsData(data.response);
-      console.log(data.response);
+      console.log('게시글:', data.response);
     } catch (error) {
       console.error('게시글 조회 실패:', error);
       setError(error.message);
@@ -85,6 +104,8 @@ export default function ProjectMainPage() {
   };
 
   const fetchProjectDetail = async () => {
+    if (!projectId) return; // 추가 안전장치
+    
     try {
       const data = await getProjectDetail(projectId);
       setProjectDetail(data);
@@ -99,7 +120,26 @@ export default function ProjectMainPage() {
     setActiveTab(tabId);
   };
 
+  // ⭐ 로딩 중이거나 projectId가 없을 때 처리
+  if (!projectId) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-gray-500">프로젝트 ID를 불러오는 중...</div>
+      </div>
+    );
+  }
 
+  // ⭐ 에러 처리
+  if (error && !projectDetail) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-red-500">
+          <p>프로젝트를 불러오는데 실패했습니다.</p>
+          <p className="text-sm mt-2">{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 font-sans">
@@ -135,15 +175,14 @@ export default function ProjectMainPage() {
           </main>
 
           {/* 우측 사이드바 */}
-        <aside className="sticky top-5 self-start">
-          <ProjectSidebar 
-            projectDetail={projectDetail}
-            members={members}
-          />
-        </aside>
+          <aside className="sticky top-5 self-start">
+            <ProjectSidebar 
+              projectDetail={projectDetail}
+              members={members}
+            />
+          </aside>
         </div>
       </div>
     </div>
   );
 }
-
