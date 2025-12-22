@@ -50,7 +50,9 @@ export const deleteChecklist = async(checklistId)=>{
 
 export const getProjectChecklist = async (projectId)=>{
     try {
-        const response = await api.get(`http://localhost:8080/api/v1/admin/projects/${projectId}/checklists`);
+        const response = await api.get(`http://localhost:8080/api/v1/admin/projects/${projectId}/checklists`,
+            {skipRolePath: true}
+        );
         console.log('체크리스트 조회 메서드 실행 : ', response.data)
         return response.data;
         

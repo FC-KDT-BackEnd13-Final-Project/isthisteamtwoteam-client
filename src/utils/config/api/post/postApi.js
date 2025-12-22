@@ -58,7 +58,8 @@ export const updatePost = async (projectId, postId, data) => {
 export const getProjectPosts = async (projectId, filter = 'all') => {
   try {
     const response = await api.get(
-      `/users/projects/${projectId}/posts?filter=${filter}`
+      `/users/projects/${projectId}/posts?filter=${filter}`,
+      {skipRolePath: true}
     );
     console.log('게시글 목록 조회 결과:', response.data);
     return response.data;

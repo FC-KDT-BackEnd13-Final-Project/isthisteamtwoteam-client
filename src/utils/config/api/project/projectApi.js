@@ -14,7 +14,9 @@ export const getProjects = async (page = 0, size = 10) =>{
 
 export const getProjectDetail = async (projectId) => {
     try {
-        const response = await api.get(`/admin/projects/${projectId}`);
+        const response = await api.get(`/admin/projects/${projectId}`,{
+          skipRolePath: true  
+        });
         return response.data.response;
     } catch (error) {
         console.error('프로젝트 조회 실패:', error);

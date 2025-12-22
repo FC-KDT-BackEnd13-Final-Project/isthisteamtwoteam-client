@@ -6,6 +6,8 @@ import CommentItem from "../components/post/CommentItem";
 import LoadingState from "../components/common/LoadingState/LoadingState";
 import { deleteTempFile,uploadTempFile } from "../utils/config/api/file/fileApi";
 import { createComment, getComments } from "../utils/config/api/post/commentApi";
+import { approvePost } from "../utils/config/api/post/approvalApi";
+import api from "../utils/config/api/axios";
 
 export default function PostDetailPage() {
   const { postId, projectId } = useParams();
@@ -53,13 +55,7 @@ const uploadedCommentTempFileIdsRef = useRef([]);
     navigate(`/project/${projectId}`);
   };
   
-  // 승인 처리
-  const handleApprove = async () => {
-    if (window.confirm('승인하시겠습니까?')) {
-      // TODO: API 연동
-      console.log('승인 처리');
-    }
-  };
+
   
   // 거절 버튼 클릭
   const handleRejectClick = () => {
@@ -67,17 +63,31 @@ const uploadedCommentTempFileIdsRef = useRef([]);
   };
   
   // 거절 확인
-  const handleRejectConfirm = async () => {
-    if (!rejectionReason.trim()) {
-      alert('반려 사유를 입력해주세요.');
-      return;
-    }
+// 거절 확인
+const handleRejectConfirm = async () => {
+  if (!rejectionReason.trim()) {
+    alert('반려 사유를 입력해주세요.');
+    return;
+  }
+  
+  try {
+    const response = await approvePost(postId, {
+      approverId: 1,  // TODO: 실제 사용자 ID로 변경
+      rejectReason: rejectionReason.trim()
+    });
     
-    // TODO: API 연동
-    console.log('거절 처리:', rejectionReason);
-    setShowRejectionInput(false);
-    setRejectionReason("");
-  };
+    if (response.success) {
+      alert('반려되었습니다.');
+      setShowRejectionInput(false);
+      setRejectionReason("");
+      // 페이지 새로고침 또는 데이터 다시 불러오기
+      window.location.reload();
+    }
+  } catch (error) {
+    console.error('거절 실패:', error);
+    alert('반려 처리에 실패했습니다.');
+  }
+};
   
   // 거절 취소
   const handleRejectCancel = () => {
@@ -98,6 +108,7 @@ const uploadedCommentTempFileIdsRef = useRef([]);
         
         if (response.success) {
           setPostData(response.response);
+          console.log('게시글 데이터:', response.response);
           await fetchComments();
         }
       } catch (err) {
@@ -216,7 +227,7 @@ const handleCommentFileChange = async (e) => {
                   fileName: uploadedFile.fileOriginalFileName,
                   fileSize: uploadedFile.fileSize,
                   fileUrl: uploadedFile.fileUrl,
-                  isUploading: false
+                  isUploading: falseㄹ
                 }
               : f
           )
@@ -246,6 +257,31 @@ const handleCommentFileChange = async (e) => {
     setCommentFiles(prev => prev.filter((_, i) => i !== index));
   };
 
+  
+  // 승인 처리
+const handleApprove = async () => {
+  const response = await api.get('/auth/session', {
+                  skipAuthRedirect: true, // 이 요청에서는 401 시 리다이렉트 안 함
+                  skipRolePath: true // 권한별 경로 변경 안 함
+              });
+
+  
+  if (window.confirm('승인하시겠습니까?')) {
+    try {
+      const response = await approvePost(postId);
+      
+      if (response.success) {
+        alert('승인되었습니다.');
+        // 페이지 새로고침 또는 데이터 다시 불러오기
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error('승인 실패:', error);
+      alert('승인에 실패했습니다.');
+    }
+  }
+};
+
   const handleCreateComment = async () => {
     if (!commentContent.trim()) {
       alert('댓글 내용을 입력해주세요.');
@@ -255,14 +291,14 @@ const handleCommentFileChange = async (e) => {
     try {
       setIsSubmittingComment(true);
       
-      const requestData = {
+      const request = {
         content: commentContent.trim(),
         parentId: null,
         fileIds: commentFiles.map(file => file.fileId),
         linkUrls: commentLinks.map(link => link.linkUrl)
       };
 
-      const response = await createComment(postId, requestData);
+      const response = await createComment(postId, request);
 
       if (response.success) {
         alert('댓글이 작성되었습니다.');
@@ -431,7 +467,7 @@ const handleCommentFileChange = async (e) => {
                     <div className="flex gap-3">
                       <button 
                         onClick={handleApprove}
-                        className="rounded-full bg-green-500 px-6 py-2 text-[14px] font-medium text-white hover:bg-green-600 transition-colors"
+                        className="rounded-full bg-blue-500 px-6 py-2 text-[14px] font-medium text-white hover:bg-green-600 transition-colors"
                       >
                         승인
                       </button>
@@ -598,7 +634,7 @@ const handleCommentFileChange = async (e) => {
                     </button>
                   </div>
                 )}
-                
+              
                 <input
                   ref={commentFileInputRef}
                   type="file"
@@ -709,9 +745,11 @@ const handleCommentFileChange = async (e) => {
           
           {/* 하단 완료 버튼 */}
           <div className="mt-8 flex justify-end border-t border-gray-100 pt-6">
-            <button className="rounded-lg bg-red-500 px-8 py-3 text-[14px] font-medium text-white transition-colors hover:bg-red-600">
-              완료
-            </button>
+            {userRole === 'DEVELOPER' || userRole === 'ADMIN' ? (
+              <button className="rounded-lg bg-red-500 px-8 py-3 text-[14px] font-medium text-white transition-colors hover:bg-red-600">
+                완료
+              </button>
+            ) : null}
           </div>
         </div>
       </div>

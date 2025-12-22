@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function ProjectSidebar({ projectDetail, members }) {
+export default function ProjectSidebar({ projectDetail, members=[] }) {
   const [memoType, setMemoType] = useState('common'); // 'common' 또는 'personal'
   const [memberType, setMemberType] = useState('developer'); // 'developer' 또는 'customer'
 
