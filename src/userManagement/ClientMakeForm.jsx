@@ -76,7 +76,7 @@ export default function ClientMakeForm({
   return (
     <div className="p-8">
       <h2 className="text-xl font-semibold text-gray-900 mb-2">
-        고객사 회원 정보
+        회원 정보
       </h2>
       <p className="text-sm text-gray-400 mb-6 leading-relaxed">
         회원의 기본 정보를 입력해주세요.

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getProjectChecklist } from '../utils/config/api/checklist/checklistApi';
 import { deletePost, getProjectPosts } from '../utils/config/api/post/postApi';
@@ -10,6 +10,7 @@ import PostSection from '../components/project/PostSection';
 import ProjectSidebar from '../components/project/ProjectSidebar';
 import { getProjectApprovalRequests } from '../utils/config/api/post/approvalApi';
 import ApprovalSection from '../components/post/ApprovalSection';
+import { useAuth } from '../context/AuthConext';
 
 
 export default function ProjectMainPage() {
@@ -26,6 +27,18 @@ export default function ProjectMainPage() {
   const [members, setMembers] = useState([]);
   const [approvalRequests, setApprovalRequests] = useState(null);  
   const [isApprovalLoading, setIsApprovalLoading] = useState(false); 
+
+  
+  const { user } = useAuth();
+  const userRole = user?.role; 
+  const userId = user?.userId; 
+
+
+  // 디버깅용 (나중에 제거 가능)
+  useEffect(() => {
+    console.log('🔍 Current user:', user);
+    console.log('🔍 User role:', userRole);
+  }, [user, userRole]);
 
   useEffect(() => {
     if (!projectId) {
@@ -59,7 +72,7 @@ export default function ProjectMainPage() {
       setIsApprovalLoading(false);
     }
   };
-  // ✅ 올바른 코드
+
   const handleDeletePost = async (postId) => {
     if (window.confirm('정말로 삭제하시겠습니까?')) {
       try {
@@ -67,7 +80,7 @@ export default function ProjectMainPage() {
         
         if (response.success) {
           alert('게시글이 삭제되었습니다.');
-          await fetchPosts(); // ✅ 목록 새로고침
+          await fetchPosts();
         }
       } catch (error) {
         console.error('게시글 삭제 실패:', error);
@@ -75,21 +88,20 @@ export default function ProjectMainPage() {
       }
     }
   };
+
   const fetchProjectMembers = async () => {
-    if (!projectId) return; // 추가 안전장치
+    if (!projectId) return;
     
     try {
       const response = await getProjectMembers(projectId);
       setMembers(response);
-      console.log('프로젝트 멤버:', response);
     } catch (error) {
-      console.error('프로젝트 멤버 조회 실패:', error);
       setError(error.message);
     }
   };
 
   const fetchChecklists = async () => {
-    if (!projectId) return; // 추가 안전장치
+    if (!projectId) return;
     
     setIsLoading(true);
     try {
@@ -104,7 +116,7 @@ export default function ProjectMainPage() {
   };
 
   const fetchPosts = async () => {
-    if (!projectId) return; // 추가 안전장치
+    if (!projectId) return;
     
     setIsPostsLoading(true);
     try {
@@ -120,7 +132,7 @@ export default function ProjectMainPage() {
   };
 
   const fetchProjectDetail = async () => {
-    if (!projectId) return; // 추가 안전장치
+    if (!projectId) return;
     
     try {
       const data = await getProjectDetail(projectId);
@@ -136,7 +148,6 @@ export default function ProjectMainPage() {
     setActiveTab(tabId);
   };
 
-  // ⭐ 로딩 중이거나 projectId가 없을 때 처리
   if (!projectId) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
@@ -145,7 +156,6 @@ export default function ProjectMainPage() {
     );
   }
 
-  // ⭐ 에러 처리
   if (error && !projectDetail) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
@@ -173,7 +183,9 @@ export default function ProjectMainPage() {
             <ProjectHeader projectDetail={projectDetail} />
             <ChecklistSection 
               checklists={checklists} 
-              setChecklists={setChecklists} 
+              setChecklists={setChecklists}
+              projectId={projectId}
+              userRole={userRole} // ✅ 올바른 role 값 전달
             />
 
             <ApprovalSection 
@@ -188,6 +200,8 @@ export default function ProjectMainPage() {
               onTabChange={handleTabChange}
               isPostsLoading={isPostsLoading}
               handleDeletePost={handleDeletePost}
+              currentUserId={userId} 
+
             />
           </main>
 

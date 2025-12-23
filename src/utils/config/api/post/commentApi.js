@@ -48,3 +48,13 @@ export const updateComment = async (commentId, request) => {
     throw error;
   }
 };
+
+export const deleteComment = async (commentId) => {
+  try {
+    const response = await api.delete(`/users/projects/posts/comment/${commentId}`);
+    return response.data;
+  } catch (error) {
+    console.error('댓글 삭제 실패:', error);
+    throw error;
+  }
+};

@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 export default function ProjectSidebar({ projectDetail, members=[] }) {
   const [memoType, setMemoType] = useState('common'); // 'common' 또는 'personal'
-  const [memberType, setMemberType] = useState('developer'); // 'developer' 또는 'customer'
+  const [memberType, setMemberType] = useState('DEVELOPER'); // 'DEVELOPER' 또는 'CUSTOMER'
 
   return (
     <aside className="w-80">
@@ -95,9 +95,9 @@ export default function ProjectSidebar({ projectDetail, members=[] }) {
           {/* 참여자 탭 버튼 */}
           <div className="flex gap-2 mb-3">
             <button 
-              onClick={() => setMemberType('developer')}
+              onClick={() => setMemberType('DEVELOPER')}
               className={`flex-1 px-3 py-1.5 border border-gray-300 rounded-md font-medium text-xs transition-colors ${
-                memberType === 'developer'
+                memberType === 'DEVELOPER'
                   ? 'bg-blue-500 text-white'
                   : 'bg-white text-gray-700 hover:bg-gray-50'
               }`}
@@ -105,9 +105,9 @@ export default function ProjectSidebar({ projectDetail, members=[] }) {
               개발사
             </button>
             <button 
-              onClick={() => setMemberType('customer')}
+              onClick={() => setMemberType('CUSTOMER')}
               className={`flex-1 px-3 py-1.5 border border-gray-300 rounded-md font-medium text-xs transition-colors ${
-                memberType === 'customer'
+                memberType === 'CUSTOMER'
                   ? 'bg-blue-500 text-white'
                   : 'bg-white text-gray-700 hover:bg-gray-50'
               }`}
@@ -120,8 +120,8 @@ export default function ProjectSidebar({ projectDetail, members=[] }) {
           <div className="space-y-2 max-h-[300px] overflow-y-auto">
             {members
               .filter(member => 
-                memberType === 'developer' 
-                  ? member.role === 'ADMIN' 
+                memberType === 'DEVELOPER' 
+                  ? member.role === 'DEVELOPER' 
                   : member.role === 'CUSTOMER'
               )
               .map((member) => (
@@ -142,7 +142,7 @@ export default function ProjectSidebar({ projectDetail, members=[] }) {
                       {member.userName}
                     </p>
                     <p className="text-xs text-gray-500">
-                      {member.role === 'ADMIN' ? '개발사' : '고객사'}
+                      {member.role === 'DEVELOPER' ? '개발사' : '고객사'}
                     </p>
                   </div>
                 </div>
@@ -150,12 +150,12 @@ export default function ProjectSidebar({ projectDetail, members=[] }) {
             
             {/* 참여자 없을 때 */}
             {members.filter(member => 
-              memberType === 'developer' 
-                ? member.role === 'ADMIN' 
+              memberType === 'DEVELOPER' 
+                ? member.role === 'DEVELOPER' 
                 : member.role === 'CUSTOMER'
             ).length === 0 && (
               <p className="text-sm text-gray-400 text-center py-6">
-                {memberType === 'developer' ? '개발사' : '고객사'} 멤버가 없습니다
+                {memberType === 'DEVELOPER' ? '개발사' : '고객사'} 멤버가 없습니다
               </p>
             )}
           </div>

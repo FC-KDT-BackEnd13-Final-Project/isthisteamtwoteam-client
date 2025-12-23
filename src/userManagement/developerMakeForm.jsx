@@ -156,7 +156,7 @@ export default function DeveloperMakeForm({
 
   return (
     <div className="p-8">
-      <h2 className="mb-2 text-xl font-semibold text-gray-900">개발사 회원 정보</h2>
+      <h2 className="mb-2 text-xl font-semibold text-gray-900">회원 정보</h2>
       <p className="mb-6 text-sm leading-relaxed text-gray-400">
         회원의 기본 정보를 입력해주세요.
       </p>

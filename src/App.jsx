@@ -83,7 +83,7 @@ function App() {
       <Route
         path="/developer"
         element={
-          <ProtectedRoute allowedRoles={["DEVELOPER"]}>
+          <ProtectedRoute allowedRoles={["DEVELOPER"]} >
             <DeveloperSidebarHeaderLayout />
           </ProtectedRoute>
         }

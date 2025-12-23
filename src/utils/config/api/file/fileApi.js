@@ -64,3 +64,20 @@ export const deleteTempFiles = async (projectId, fileIds) => {
     throw error;
   }
 };
+
+export const attachFilesToChecklist = async (projectId, checklistId, fileIds, linkUrls) => {
+  try {
+    console.log('체크리스트 파일 첨부 호출:', { projectId, checklistId, fileIds, linkUrls });
+    const response = await api.post(
+      `/customer/checklists/${projectId}/${checklistId}/file`,
+      {
+        fileIds: fileIds,
+        linkUrls: linkUrls
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('체크리스트 파일 첨부 실패:', error);
+    throw error;
+  }
+};
