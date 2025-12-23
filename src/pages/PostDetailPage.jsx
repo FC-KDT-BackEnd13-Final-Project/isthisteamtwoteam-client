@@ -565,7 +565,7 @@ const handleApprove = async () => {
             </div>
             <div className="flex gap-2">
               <button 
-                onClick={() => {navigate(`/post/edit/${postId}`)}}
+                onClick={() => {navigate(`/project/${projectId}/post/edit/${postId}`)}}
                 disabled={postData.isCompleted}
                 className={`rounded-md border border-gray-300 px-4 py-2 text-[13px] transition-colors ${
                   postData.isCompleted || postData.userId !== currentUserId 

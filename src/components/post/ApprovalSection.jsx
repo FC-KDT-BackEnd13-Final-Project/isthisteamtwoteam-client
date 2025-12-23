@@ -154,7 +154,7 @@ export default function ApprovalSection({ approvalRequests, isLoading, projectId
         {currentApprovals.map((post) => (
           <div
             key={post.postId}
-            onClick={() => handlePostClick(post.postId)}
+            onClick={() => navigate(`/project/${projectId}/post/${post.postId}`)}
             className="flex items-center justify-between rounded-lg border border-gray-200 p-4 hover:bg-gray-50 cursor-pointer transition-colors"
           >
             <div className="flex-1">

@@ -53,8 +53,8 @@ export default function CustomerDashboardPage() {
     navigate(`/project/${projectId}`);
   };
 
-  const handleViewBoard = (postId) => {
-    navigate(`/posts/${postId}`);
+  const handleViewBoard = (postId, projectId) => {
+    navigate(`/project/${projectId}/post/${postId}`);
   };
 
   const handleCreateProject = () => {
