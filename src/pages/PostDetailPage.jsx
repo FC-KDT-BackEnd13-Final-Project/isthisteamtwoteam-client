@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthConext";
 import CommentItem from "../components/post/CommentItem";
 import LoadingState from "../components/common/LoadingState/LoadingState";
 import { deleteTempFile,uploadTempFile } from "../utils/config/api/file/fileApi";
-import { createComment, getComments, updateComment } from "../utils/config/api/post/commentApi";
+import { createComment, getComments, updateComment,deleteComment } from "../utils/config/api/post/commentApi";
 import { approvePost } from "../utils/config/api/post/approvalApi";
 import api from "../utils/config/api/axios";
 
@@ -28,25 +28,25 @@ export default function PostDetailPage() {
   const [rejectionReason, setRejectionReason] = useState("");
   
   // 댓글 관련 상태
-const [commentContent, setCommentContent] = useState("");
-const [isSubmittingComment, setIsSubmittingComment] = useState(false);
-const [commentFiles, setCommentFiles] = useState([]);
-const [commentLinks, setCommentLinks] = useState([]);
-const [commentLinkInput, setCommentLinkInput] = useState("");
-const [isAddingCommentLink, setIsAddingCommentLink] = useState(false);
-const commentFileInputRef = useRef(null);
-const uploadedCommentTempFileIdsRef = useRef([]);
+  const [commentContent, setCommentContent] = useState("");
+  const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+  const [commentFiles, setCommentFiles] = useState([]);
+  const [commentLinks, setCommentLinks] = useState([]);
+  const [commentLinkInput, setCommentLinkInput] = useState("");
+  const [isAddingCommentLink, setIsAddingCommentLink] = useState(false);
+  const commentFileInputRef = useRef(null);
+  const uploadedCommentTempFileIdsRef = useRef([]);
 
-// 댓글 관련 상태 (기존 상태 아래에 추가)
-const [editingCommentId, setEditingCommentId] = useState(null);
-const [editCommentContent, setEditCommentContent] = useState("");
-const [editCommentFiles, setEditCommentFiles] = useState([]);
-const [editCommentLinks, setEditCommentLinks] = useState([]);
-const [editCommentLinkInput, setEditCommentLinkInput] = useState("");
-const [isAddingEditCommentLink, setIsAddingEditCommentLink] = useState(false);
-const editCommentFileInputRef = useRef(null);
-const uploadedEditCommentTempFileIdsRef = useRef([]);
-const [isUpdatingComment, setIsUpdatingComment] = useState(false);
+  // 댓글 관련 상태 (기존 상태 아래에 추가)
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editCommentContent, setEditCommentContent] = useState("");
+  const [editCommentFiles, setEditCommentFiles] = useState([]);
+  const [editCommentLinks, setEditCommentLinks] = useState([]);
+  const [editCommentLinkInput, setEditCommentLinkInput] = useState("");
+  const [isAddingEditCommentLink, setIsAddingEditCommentLink] = useState(false);
+  const editCommentFileInputRef = useRef(null);
+  const uploadedEditCommentTempFileIdsRef = useRef([]);
+  const [isUpdatingComment, setIsUpdatingComment] = useState(false);
 
 // 댓글 수정 시작
 const handleEditCommentStart = (comment) => {
@@ -64,6 +64,31 @@ const handleEditCommentStart = (comment) => {
   setEditCommentFiles(formattedFiles);
   setEditCommentLinks(comment.links || []);
   uploadedEditCommentTempFileIdsRef.current = (comment.files || []).map(f => f.fileId);
+};
+
+const handleDeleteComment = async (commentId) => {
+  if (!window.confirm('댓글을 삭제하시겠습니까?')) {
+    return;
+  }
+
+  try {
+    console.log('댓글 삭제 시작:', commentId);
+    
+    const response = await deleteComment(commentId);
+    
+    console.log('댓글 삭제 응답:', response);
+
+    if (response.success) {
+      alert('댓글이 삭제되었습니다.');
+      // 댓글 목록 새로고침
+      await fetchComments();
+    } else {
+      alert(response.message || '댓글 삭제에 실패했습니다.');
+    }
+  } catch (error) {
+    console.error('댓글 삭제 에러:', error);
+    alert('댓글 삭제에 실패했습니다.');
+  }
 };
 
 // 댓글 수정 취소
@@ -1006,11 +1031,7 @@ const handleApprove = async () => {
                                 수정
                               </button>
                               <button
-                                onClick={() => {
-                                  if (window.confirm('댓글을 삭제하시겠습니까?')) {
-                                    console.log('댓글 삭제:', comment.commentId);
-                                  }
-                                }}
+                                onClick={() => handleDeleteComment(comment.commentId)}  // ✅ 이렇게만 수정
                                 className="rounded-md border border-red-300 bg-white px-3 py-1 text-[12px] text-red-600 transition-colors hover:bg-red-50"
                               >
                                 삭제

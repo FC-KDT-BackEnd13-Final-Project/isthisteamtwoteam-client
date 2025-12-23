@@ -5,13 +5,15 @@ import { useNavigate, useParams } from 'react-router-dom';
 export default function PostSection({ 
   postsData, 
   activeTab, 
-  onTabChange,  // ✅ ongiTabChange -> onTabChange 오타 수정
+  onTabChange,  
   isPostsLoading,
-  handleDeletePost
+  handleDeletePost,
+  currentUserId 
+
   
 }) {
   const [currentPage, setCurrentPage] = useState(1);
-  const postsPerPage = 5;  // ✅ useState 제거하고 상수로 변경
+  const postsPerPage = 5;  
   const navigate = useNavigate();
   const {projectId} = useParams();
   
@@ -292,7 +294,9 @@ export default function PostSection({
                           >
                             수정
                           </button>
-                                                  <button 
+                          {/* ✅ 작성자만 삭제 버튼 표시 */}
+                          {currentUserId === post.userId && (
+                            <button 
                             className="px-4 py-1.5 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition-colors"
                             onClick={(e) => {          // ⭐ (e) 추가!
                               e.stopPropagation();     // ⭐ 먼저 호출
@@ -301,6 +305,7 @@ export default function PostSection({
                           >
                             삭제
                           </button>
+                          )}
                         </div>
                       </td>
                     ];
