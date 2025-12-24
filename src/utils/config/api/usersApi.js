@@ -170,3 +170,15 @@ export const logout = async () => {
     withCredentials: true, // 세션/쿠키 쓰는 경우 중요
   });
 };
+
+export const getLoginUserInfo = async () => {
+  try {
+    const response = await api.get('/users/profile/sidebar', {
+      withCredentials: true,
+    });
+    return response.data.response;
+  } catch (error) {
+    console.error('로그인 사용자 정보 조회 실패:', error);
+    throw error;
+  }
+}
