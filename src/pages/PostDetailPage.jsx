@@ -6,7 +6,7 @@ import CommentItem from "../components/post/CommentItem";
 import LoadingState from "../components/common/LoadingState/LoadingState";
 import { deleteTempFile,uploadTempFile } from "../utils/config/api/file/fileApi";
 import { createComment, getComments, updateComment,deleteComment } from "../utils/config/api/post/commentApi";
-import { approvePost } from "../utils/config/api/post/approvalApi";
+import { approvePost, rejectPost } from "../utils/config/api/post/approvalApi";
 import api from "../utils/config/api/axios";
 
 export default function PostDetailPage() {
@@ -26,6 +26,12 @@ export default function PostDetailPage() {
   // 승인/거절 관련 상태
   const [showRejectionInput, setShowRejectionInput] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
+  const [rejectionFiles, setRejectionFiles] = useState([]); // 추가
+  const [rejectionLinks, setRejectionLinks] = useState([]); // 추가
+  const [rejectionLinkInput, setRejectionLinkInput] = useState(""); // 추가
+  const [isAddingRejectionLink, setIsAddingRejectionLink] = useState(false); // 추가
+  const rejectionFileInputRef = useRef(null); // 추가
+  const uploadedRejectionTempFileIdsRef = useRef([]); // 추가
   
   // 댓글 관련 상태
   const [commentContent, setCommentContent] = useState("");
@@ -268,39 +274,22 @@ const handleUpdateComment = async () => {
     setShowRejectionInput(true);
   };
   
-  // 거절 확인
-// 거절 확인
-const handleRejectConfirm = async () => {
-  if (!rejectionReason.trim()) {
-    alert('반려 사유를 입력해주세요.');
-    return;
-  }
-  
-  try {
-    const response = await approvePost(postId, {
-      approverId: 1,  // TODO: 실제 사용자 ID로 변경
-      rejectReason: rejectionReason.trim()
-    });
-    
-    if (response.success) {
-      alert('반려되었습니다.');
-      setShowRejectionInput(false);
-      setRejectionReason("");
-      // 페이지 새로고침 또는 데이터 다시 불러오기
-      window.location.reload();
-    }
-  } catch (error) {
-    console.error('거절 실패:', error);
-    alert('반려 처리에 실패했습니다.');
-  }
-};
-  
+
   // 거절 취소
   const handleRejectCancel = () => {
-    setShowRejectionInput(false);
-    setRejectionReason("");
-  };
+  // 임시 파일 삭제
+  if (uploadedRejectionTempFileIdsRef.current.length > 0 && postData?.projectId) {
+    deleteTempFile(postData.projectId, uploadedRejectionTempFileIdsRef.current);
+  }
   
+  setShowRejectionInput(false);
+  setRejectionReason("");
+  setRejectionFiles([]);
+  setRejectionLinks([]);
+  setRejectionLinkInput("");
+  setIsAddingRejectionLink(false);
+  uploadedRejectionTempFileIdsRef.current = [];
+};
 // 데이터 가져오기
   useEffect(() => {
     const fetchPostDetail = async () => {
@@ -330,15 +319,23 @@ const handleRejectConfirm = async () => {
   }
 }, [postId]);
 
-    useEffect(()=>{
-    return () => {
-      if(uploadedCommentTempFileIdsRef.current.length > 0 && postData?.projectId){
-        deleteTempFile(postData.projectId, uploadedCommentTempFileIdsRef.current)
+useEffect(() => {
+  return () => {
+    // 댓글 임시 파일 삭제
+    if (uploadedCommentTempFileIdsRef.current.length > 0 && postData?.projectId) {
+      deleteTempFile(postData.projectId, uploadedCommentTempFileIdsRef.current)
         .then(() => console.log('페이지 이탈 시 댓글 임시 파일 삭제 완료'))
         .catch(error => console.error('페이지 이탈 시 댓글 임시 파일 삭제 실패:', error));
-      }
     }
-  },[postData?.projectId])
+    
+    // 반려 임시 파일 삭제 (추가)
+    if (uploadedRejectionTempFileIdsRef.current.length > 0 && postData?.projectId) {
+      deleteTempFile(postData.projectId, uploadedRejectionTempFileIdsRef.current)
+        .then(() => console.log('페이지 이탈 시 반려 임시 파일 삭제 완료'))
+        .catch(error => console.error('페이지 이탈 시 반려 임시 파일 삭제 실패:', error));
+    }
+  }
+}, [postData?.projectId]);
   
   // 로딩 중
   if (loading) {
@@ -377,6 +374,10 @@ const handleRejectConfirm = async () => {
       </div>
     );
   }
+  
+  const handleHistoryClick = () => {
+  navigate(`/project/${projectId}/post/${postId}/history`);
+};
   // 댓글 링크 추가 버튼 클릭
   const handleCommentLinkAddClick = () => {
     setIsAddingCommentLink(true);
@@ -526,6 +527,125 @@ const handleApprove = async () => {
     }
   };
   
+
+  // 거절 파일 선택 핸들러
+const handleRejectionFileChange = async (e) => {
+  const selectedFiles = Array.from(e.target.files);
+  
+  for (const file of selectedFiles) {
+    try {
+      const tempFile = {
+        fileName: file.name,
+        fileSize: `${(file.size / 1024 / 1024).toFixed(1)}MB`,
+        isUploading: true
+      };
+      
+      setRejectionFiles(prev => [...prev, tempFile]);
+      
+      const response = await uploadTempFile(file, postData.projectId);
+      
+      if (response.success) {
+        const uploadedFile = response.response[0];
+        console.log("반려 임시 저장된 파일의 id: ", uploadedFile.fileId);
+        
+        uploadedRejectionTempFileIdsRef.current.push(uploadedFile.fileId);
+        
+        setRejectionFiles(prev => 
+          prev.map(f => 
+            f.fileName === file.name && f.isUploading
+              ? { 
+                  fileId: uploadedFile.fileId,
+                  fileName: uploadedFile.fileOriginalFileName,
+                  fileSize: uploadedFile.fileSize,
+                  fileUrl: uploadedFile.fileUrl,
+                  isUploading: false
+                }
+              : f
+          )
+        );
+      } else {
+        throw new Error('파일 업로드 실패');
+      }
+      
+    } catch (error) {
+      console.error('파일 업로드 에러:', error);
+      alert(`파일 업로드 실패: ${file.name}`);
+      setRejectionFiles(prev => prev.filter(f => !(f.fileName === file.name && f.isUploading)));
+    }
+  }
+  
+  e.target.value = '';
+};
+
+// 거절 파일 삭제
+const handleRejectionFileDelete = (index) => {
+  const fileToDelete = rejectionFiles[index];
+  
+  uploadedRejectionTempFileIdsRef.current = uploadedRejectionTempFileIdsRef.current.filter(
+    id => id !== fileToDelete.fileId
+  );
+  
+  setRejectionFiles(prev => prev.filter((_, i) => i !== index));
+};
+
+// 거절 링크 추가 버튼 클릭
+const handleRejectionLinkAddClick = () => {
+  setIsAddingRejectionLink(true);
+  setRejectionLinkInput("");
+};
+
+// 거절 링크 추가 확인
+const handleRejectionLinkAdd = () => {
+  if (rejectionLinkInput.trim()) {
+    setRejectionLinks(prev => [...prev, rejectionLinkInput.trim()]);
+    setRejectionLinkInput("");
+    setIsAddingRejectionLink(false);
+  }
+};
+
+// 거절 링크 추가 취소
+const handleRejectionLinkCancel = () => {
+  setRejectionLinkInput("");
+  setIsAddingRejectionLink(false);
+};
+
+// 거절 링크 삭제
+const handleRejectionLinkDelete = (index) => {
+  setRejectionLinks(prev => prev.filter((_, i) => i !== index));
+};
+
+// 거절 확인
+const handleRejectConfirm = async () => {
+  if (!rejectionReason.trim()) {
+    alert('반려 사유를 입력해주세요.');
+    return;
+  }
+  
+  try {
+    const requestBody = {
+      fileIds: rejectionFiles.map(file => file.fileId),
+      linkUrls: rejectionLinks,
+      reject_reason: rejectionReason.trim()
+    };
+
+    const response = await rejectPost(postId, requestBody);
+    
+    if (response.success) {
+      alert('반려되었습니다.');
+      setShowRejectionInput(false);
+      setRejectionReason("");
+      setRejectionFiles([]);
+      setRejectionLinks([]);
+      uploadedRejectionTempFileIdsRef.current = [];
+      
+      // 페이지 새로고침
+      window.location.reload();
+    }
+  } catch (error) {
+    console.error('거절 실패:', error);
+    alert('반려 처리에 실패했습니다.');
+  }
+};
     
   return (
     <div className="min-h-screen bg-gray-100 p-20">
@@ -543,8 +663,9 @@ const handleApprove = async () => {
               <div className="flex items-center gap-4 text-[13px] text-gray-500">
                 <span>작성자: {postData.authorName}</span>
                 <span>작성일: {new Date(postData.createdAt).toLocaleDateString('ko-KR')}</span>
-                <span>조회수: -</span>
-                <button className="flex items-center gap-1 text-gray-600 transition-colors hover:text-blue-500">
+                <button 
+                  onClick={handleHistoryClick}
+                  className="flex items-center gap-1 text-gray-600 transition-colors hover:text-blue-500">
                   <svg className="h-[18px] w-[18px] fill-current" viewBox="0 0 24 24">
                     <path d="M13.5,8H12V13L16.28,15.54L17,14.33L13.5,12.25V8M13,3A9,9 0 0,0 4,12H1L4.96,16.03L9,12H6A7,7 0 0,1 13,5A7,7 0 0,1 20,12A7,7 0 0,1 13,19C11.07,19 9.32,18.21 8.06,16.94L6.64,18.36C8.27,20 10.5,21 13,21A9,9 0 0,0 22,12A9,9 0 0,0 13,3Z" />
                   </svg>
@@ -565,16 +686,16 @@ const handleApprove = async () => {
             </div>
             <div className="flex gap-2">
               <button 
-                onClick={() => {navigate(`/post/edit/${postId}`)}}
-                disabled={postData.isCompleted}
-                className={`rounded-md border border-gray-300 px-4 py-2 text-[13px] transition-colors ${
-                  postData.isCompleted || postData.userId !== currentUserId 
-                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                    : 'bg-white text-gray-600 hover:bg-gray-50'
-                }`}
-              >
-                수정하기
-              </button>
+  onClick={() => {navigate(`/project/${projectId}/post/edit/${postId}`)}}
+  disabled={postData.isCompleted || postData.userId !== currentUserId}
+  className={`rounded-md border border-gray-300 px-4 py-2 text-[13px] transition-colors ${
+    postData.isCompleted || postData.userId !== currentUserId 
+      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+      : 'bg-white text-gray-600 hover:bg-gray-50'
+  }`}
+>
+  수정하기
+</button>
             </div>
           </div>
 
@@ -691,19 +812,123 @@ const handleApprove = async () => {
                           placeholder="반려 사유를 입력해주세요..."
                           className="min-h-[120px] w-full resize-vertical rounded-lg border border-gray-300 px-4 py-3 text-[14px] focus:border-red-500 focus:outline-none"
                         />
-                        <div className="mt-3 flex justify-end gap-2">
-                          <button
-                            onClick={handleRejectCancel}
-                            className="rounded-md border border-gray-300 bg-white px-4 py-2 text-[13px] text-gray-600 transition-colors hover:bg-gray-50"
-                          >
-                            취소
-                          </button>
-                          <button
-                            onClick={handleRejectConfirm}
-                            className="rounded-md bg-red-500 px-4 py-2 text-[13px] font-medium text-white transition-colors hover:bg-red-600"
-                          >
-                            반려 확정
-                          </button>
+                        
+                        {/* 파일 첨부 영역 */}
+                        {rejectionFiles.length > 0 && (
+                          <div className="mt-2 flex flex-col gap-2">
+                            {rejectionFiles.map((file, index) => (
+                              <div key={index} className="flex items-center justify-between gap-3 rounded-md border border-gray-200 bg-gray-50 px-3 py-2">
+                                <div className="flex min-w-0 flex-1 items-center gap-2">
+                                  <svg className="h-4 w-4 flex-shrink-0 fill-gray-600" viewBox="0 0 24 24">
+                                    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                                  </svg>
+                                  <span className="truncate text-[12px] text-gray-900">
+                                    {file.fileName} {file.fileSize && <span className="text-gray-500">{file.fileSize}</span>}
+                                  </span>
+                                  {file.isUploading && (
+                                    <span className="flex-shrink-0 text-[11px] text-blue-600">업로드 중...</span>
+                                  )}
+                                </div>
+                                <button
+                                  onClick={() => handleRejectionFileDelete(index)}
+                                  disabled={file.isUploading}
+                                  className="flex-shrink-0 rounded border border-red-300 bg-white px-2 py-1 text-[11px] text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                  삭제
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* 링크 첨부 영역 */}
+                        {rejectionLinks.length > 0 && (
+                          <div className="mt-2 flex flex-col gap-2">
+                            {rejectionLinks.map((link, index) => (
+                              <div key={index} className="flex items-center justify-between gap-3 rounded-md border border-gray-200 bg-gray-50 px-3 py-2">
+                                <div className="flex min-w-0 flex-1 items-center gap-2">
+                                  <svg className="h-4 w-4 flex-shrink-0 fill-gray-600" viewBox="0 0 24 24">
+                                    <path d="M3.9,12C3.9,10.29 5.29,8.9 7,8.9H11V7H7A5,5 0 0,0 2,12A5,5 0 0,0 7,17H11V15.1H7C5.29,15.1 3.9,13.71 3.9,12M8,13H16V11H8V13M17,7H13V8.9H17C18.71,8.9 20.1,10.29 20.1,12C20.1,13.71 18.71,15.1 17,15.1H13V17H17A5,5 0 0,0 22,12A5,5 0 0,0 17,7Z" />
+                                  </svg>
+                                  <span className="truncate text-[12px] text-blue-600">{link}</span>
+                                </div>
+                                <button
+                                  onClick={() => handleRejectionLinkDelete(index)}
+                                  className="flex-shrink-0 rounded border border-red-300 bg-white px-2 py-1 text-[11px] text-red-600 transition-colors hover:bg-red-50"
+                                >
+                                  삭제
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* 링크 추가 입력란 */}
+                        {isAddingRejectionLink && (
+                          <div className="mt-2 flex gap-2">
+                            <input
+                              type="url"
+                              value={rejectionLinkInput}
+                              onChange={(e) => setRejectionLinkInput(e.target.value)}
+                              placeholder="링크 URL을 입력하세요 (https://...)"
+                              className="flex-1 rounded-md border border-gray-300 px-3 py-1.5 text-[12px] focus:border-red-500 focus:outline-none"
+                              onKeyPress={(e) => e.key === 'Enter' && handleRejectionLinkAdd()}
+                            />
+                            <button
+                              onClick={handleRejectionLinkAdd}
+                              className="rounded-md bg-red-500 px-3 py-1.5 text-[12px] text-white transition-colors hover:bg-red-600"
+                            >
+                              추가
+                            </button>
+                            <button
+                              onClick={handleRejectionLinkCancel}
+                              className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-[12px] text-gray-600 transition-colors hover:bg-gray-50"
+                            >
+                              취소
+                            </button>
+                          </div>
+                        )}
+
+                        {/* hidden 파일 input */}
+                        <input
+                          ref={rejectionFileInputRef}
+                          type="file"
+                          multiple
+                          onChange={handleRejectionFileChange}
+                          className="hidden"
+                        />
+
+                        {/* 버튼 영역 */}
+                        <div className="mt-3 flex justify-between items-center">
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => rejectionFileInputRef.current?.click()}
+                              className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-[12px] text-gray-600 transition-colors hover:bg-gray-50"
+                            >
+                              파일 추가
+                            </button>
+                            <button
+                              onClick={handleRejectionLinkAddClick}
+                              disabled={isAddingRejectionLink}
+                              className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-[12px] text-gray-600 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                              링크 추가
+                            </button>
+                          </div>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={handleRejectCancel}
+                              className="rounded-md border border-gray-300 bg-white px-4 py-2 text-[13px] text-gray-600 transition-colors hover:bg-gray-50"
+                            >
+                              취소
+                            </button>
+                            <button
+                              onClick={handleRejectConfirm}
+                              className="rounded-md bg-red-500 px-4 py-2 text-[13px] font-medium text-white transition-colors hover:bg-red-600"
+                            >
+                              반려 확정
+                            </button>
+                          </div>
                         </div>
                       </div>
                     )}
@@ -729,21 +954,88 @@ const handleApprove = async () => {
             )}
             
             {postData.approveStatus === '거절' && (
-              <div>
-                <button 
-                  disabled
-                  className="inline-block rounded-full bg-red-100 px-5 py-2 text-[14px] font-medium text-red-600 cursor-not-allowed"
-                >
-                  반려됨
-                </button>
-                {postData.rejectionReason && (
-                  <p className="mt-3 text-[13px] text-gray-600">
-                    <strong>반려 사유:</strong> {postData.rejectionReason}
-                  </p>
-                )}
-              </div>
+            <div className="flex flex-col items-center gap-4">
+              <button 
+                disabled
+                className="inline-block rounded-full bg-red-100 px-5 py-2 text-[14px] font-medium text-red-600 cursor-not-allowed"
+              >
+                반려됨
+              </button>
+              
+              {/* 반려 사유 */}
+              {postData.rejectionReason && (
+                <div className="w-full max-w-2xl">
+                  <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+                    <label className="block text-[13px] font-semibold text-red-900 mb-2">
+                      반려 사유
+                    </label>
+                    <p className="text-[14px] text-gray-900 whitespace-pre-wrap">
+                      {postData.rejectionReason}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* 반려 첨부 파일 */}
+              {postData.rejectionFiles && postData.rejectionFiles.length > 0 && (
+                <div className="w-full max-w-2xl">
+                  <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+                    <label className="block text-[13px] font-semibold text-red-900 mb-2">
+                      반려 첨부 파일
+                    </label>
+                    <div className="flex flex-col gap-2">
+                      {postData.rejectionFiles.map((file) => (
+                        <a
+                          key={file.fileId}
+                          href={file.fileUrl}
+                          download={file.fileOriginalFileName}
+                          className="flex items-center gap-2 rounded-md border border-red-300 bg-white px-3 py-2.5 cursor-pointer transition-colors hover:bg-red-50 hover:border-red-400"
+                        >
+                          <svg className="h-5 w-5 fill-red-600" viewBox="0 0 24 24">
+                            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                          </svg>
+                          <span className="text-[13px] text-gray-900 hover:text-red-600 transition-colors">
+                            {file.fileOriginalFileName}
+                          </span>
+                          <span className="text-[12px] text-gray-500">({file.fileSize})</span>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* 반려 첨부 링크 */}
+              {postData.rejectionLinks && postData.rejectionLinks.length > 0 && (
+                <div className="w-full max-w-2xl">
+                  <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+                    <label className="block text-[13px] font-semibold text-red-900 mb-2">
+                      반려 첨부 링크
+                    </label>
+                    <div className="flex flex-col gap-2">
+                      {postData.rejectionLinks.map((link, index) => (
+                        <div key={index} className="rounded-md border border-red-300 bg-white px-4 py-3">
+                          <a
+                            href={link.linkUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="break-all text-[14px] text-red-600 hover:underline"
+                          >
+                            {link.linkUrl}
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            
+            
+            </div>
             )}
           </div>
+              
+
 
           {/* 댓글 작성 */}
           <div className="mb-4">
