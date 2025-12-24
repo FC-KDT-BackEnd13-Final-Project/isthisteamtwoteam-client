@@ -60,7 +60,7 @@ export default function RequestPendingPage() {
   }
 
   const handleViewDetail = (id) => {
-    navigate(`/post/${id}`);
+    navigate(`/project/${projectId}/post/${id}`);
   };
 
   return (

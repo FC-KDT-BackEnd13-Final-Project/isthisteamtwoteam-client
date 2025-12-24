@@ -1,17 +1,18 @@
-import api from "../api/axios";
+// src/utils/config/developer/developerDashboardApi.js
 
-export const getCustomerDashboardData = async () => {
+import api from "../axios";
+
+export const getDeveloperDashboardData = async () => {
     try{
         const response = await api.get('/customer/dashboard');
         return response.data.response;
-
     }catch(error){
         console.error('대시보드 데이터 조회 실패:', error);
         throw error;    
     }
 };
 
-export const getCustomerDashboardAllProjects = async () => {
+export const getDeveloperDashboardAllProjects = async () => {
     try {
         const response = await api.get('/customer/dashboard/projects')
         return response.data.response
@@ -20,8 +21,3 @@ export const getCustomerDashboardAllProjects = async () => {
         throw error; 
     }
 }
-
-export const getCompanies = async () => {
-  const response = await api.get("/companies");
-  return response.data.response;
-};

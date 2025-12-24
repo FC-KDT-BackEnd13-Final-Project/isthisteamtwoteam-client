@@ -428,7 +428,7 @@ const handleUpdateComment = async () => {
 
 // 댓글 목록 가져오기
 // 댓글 목록 새로고침 (댓글 작성/수정/삭제 후 호출)
-const refreshComments = async () => {
+const fetchComments = async () => {
   try {
     const response = await getPostDetail(postId);
     if (response.success && response.response.comments) {
