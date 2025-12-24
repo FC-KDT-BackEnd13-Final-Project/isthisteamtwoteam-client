@@ -5,6 +5,7 @@ import DashboardStats from "../../components/dashboard/DashboardStats";
 import FilteredList from "../../components/dashboard/FilteredList";
 import ProjectList from "../../components/dashboard/ProjectList";
 import { getDashboardAllProjects,getDashboardData } from "../../utils/config/api/dashboardApi";
+import { getDeveloperDashboardData } from "../../utils/config/api/developer/developerDashboardApi";
 
 
 export default function DeveloperDashboardPage() {
@@ -18,7 +19,7 @@ export default function DeveloperDashboardPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getDashboardData();
+        const data = await getDeveloperDashboardData();
         const projectsData = await getDashboardAllProjects();
         setDashboardData(data);
         setLoading(false);

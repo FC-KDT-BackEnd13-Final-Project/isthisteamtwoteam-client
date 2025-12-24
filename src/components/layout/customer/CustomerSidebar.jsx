@@ -1,13 +1,15 @@
 import Icon from "../../common/icons/Icon";
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { logout } from "../../../utils/config/api/usersApi";
+import { getLoginUserInfo, logout } from "../../../utils/config/api/usersApi";
 
 export default function CustomerSidebar() {
   let navigate = useNavigate();
   let location = useLocation();
 
   const [activeMenu, setActiveMenu] = useState("대시보드");
+  const [loginUserInfo, setLoginUserInfo] = useState(null);
+
 
   const menuItems = [
     {
@@ -21,20 +23,11 @@ export default function CustomerSidebar() {
       path: "/customer/projects",
     },
     {
-      icon: "bell",
-      label: "알림",
-      path: "/customer/notification",
-    },
-    {
       icon: "clock",
       label: "승인 대기",
       path: "/customer/request-pending",
-    },
-    {
-      icon: "check-square",
-      label: "체크리스트",
-      path: "/customer/checklist",
-    },
+    }
+
   ];
 
   const settingItems = [
@@ -56,10 +49,17 @@ export default function CustomerSidebar() {
     }
   };
 
+  const handleLoginUserInfo = async () => {
+    const response = await getLoginUserInfo();
+    console.log("로그인 유저 응답:", response);
+    setLoginUserInfo(response);
+
+  }
+
   // URL 경로가 변경될 때마다 활성 메뉴 업데이트
   useEffect(() => {
     const currentPath = location.pathname;
-
+    handleLoginUserInfo();
     // 모든 메뉴 아이템을 확인하여 현재 경로와 일치하는 메뉴 찾기
     const allItems = [...menuItems, ...settingItems];
     const currentItem = allItems.find((item) => item.path === currentPath);
@@ -73,14 +73,24 @@ export default function CustomerSidebar() {
     <aside className="fixed inset-y-0 flex w-[260px] flex-col overflow-y-auto border-r border-slate-200 bg-white">
       <div className="border-b border-slate-200 px-5 py-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white">
-            <Icon name="user" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white overflow-hidden">
+            {loginUserInfo?.profileImg ? (
+              <img 
+                src={loginUserInfo.profileImg} 
+                alt="프로필" 
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <Icon name="user" />
+            )}
           </div>
           <div>
             <h4 className="text-sm font-semibold text-slate-900">
-              kimdong3021
+              {loginUserInfo ? loginUserInfo.name : ""}
             </h4>
-            <p className="text-xs text-slate-500">관리자</p>
+            <p className="text-xs text-slate-500">
+              {}
+            </p>
           </div>
         </div>
       </div>
@@ -123,6 +133,7 @@ export default function CustomerSidebar() {
               <div
                 key={item.label}
                 onClick={() => {
+
                   if (item.label === "로그아웃") {
                     handleLogout();
                     return;

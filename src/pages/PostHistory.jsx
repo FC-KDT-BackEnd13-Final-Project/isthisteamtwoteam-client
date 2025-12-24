@@ -7,7 +7,7 @@ const PostHistory = () => {
   const [historyData, setHistoryData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [openIndex, setOpenIndex] = useState(0); // 첫 번째 항목을 기본으로 열기
+  const [openIndexes, setOpenIndexes] = useState([0]); // 배열로 변경하여 여러 항목 열기 가능
 
   useEffect(() => {
     fetchHistoryData();
@@ -31,81 +31,43 @@ const PostHistory = () => {
     }
   };
 
-  // 아코디언 토글 함수
+  // 아코디언 토글 함수 - 여러 개 열기 가능
   const toggleAccordion = (index) => {
-    setOpenIndex(openIndex === index ? null : index);
+    setOpenIndexes(prev => {
+      if (prev.includes(index)) {
+        // 이미 열려있으면 닫기
+        return prev.filter(i => i !== index);
+      } else {
+        // 닫혀있으면 열기
+        return [...prev, index];
+      }
+    });
   };
 
   // 텍스트 Diff 비교 함수
-  const diffText = (prevText, currentText) => {
-    if (prevText === currentText) {
-      return <div className="whitespace-pre-wrap">{currentText}</div>;
+  const diffText = (beforeText, afterText) => {
+    // 둘 다 없는 경우
+    if (!beforeText && !afterText) {
+      return <div className="text-sm text-gray-400">내용 없음</div>;
+    }
+
+    // 변경사항이 없는 경우
+    if (beforeText === afterText) {
+      return <div className="whitespace-pre-wrap text-sm">{afterText}</div>;
     }
 
     return (
       <div className="py-1">
-        {prevText && (
+        {beforeText && (
           <pre className="m-0 mb-1 px-3 py-2 text-sm rounded border-l-[3px] border-[#dc3545] bg-[#fff5f5] text-[#dc3545] leading-6 whitespace-pre-wrap font-[inherit]">
-            - {prevText}
+            - {beforeText}
           </pre>
         )}
-        {currentText && (
+        {afterText && (
           <pre className="m-0 mb-1 px-3 py-2 text-sm rounded border-l-[3px] border-[#28a745] bg-[#f0fff4] text-[#28a745] leading-6 whitespace-pre-wrap font-[inherit]">
-            + {currentText}
+            + {afterText}
           </pre>
         )}
-      </div>
-    );
-  };
-
-  // 배열 Diff 비교 함수 (첨부파일, 링크용)
-  const diffArray = (prevArray = [], currentArray = []) => {
-    const prevSet = new Set(prevArray);
-    const currentSet = new Set(currentArray);
-
-    return (
-      <div className="py-2">
-        {/* 제거된 항목 */}
-        {prevArray.map((item, idx) => {
-          if (!currentSet.has(item)) {
-            return (
-              <div
-                key={`removed-${idx}`}
-                className="mb-1 px-2.5 py-1 rounded flex items-center leading-[1.4] border-l-[3px] border-[#dc3545] bg-[#fff5f5]"
-              >
-                <span className="mr-1 font-bold text-sm text-[#dc3545]">-</span>
-                <span className="text-sm text-[#dc3545]">{item}</span>
-              </div>
-            );
-          }
-          return null;
-        })}
-
-        {/* 추가된 항목과 변경 없는 항목 */}
-        {currentArray.map((item, idx) => {
-          if (!prevSet.has(item)) {
-            // 추가된 항목
-            return (
-              <div
-                key={`added-${idx}`}
-                className="mb-1 px-2.5 py-1 rounded flex items-center leading-[1.4] border-l-[3px] border-[#28a745] bg-[#f0fff4]"
-              >
-                <span className="mr-1 font-bold text-sm text-[#28a745]">+</span>
-                <span className="text-sm text-[#28a745]">{item}</span>
-              </div>
-            );
-          } else {
-            // 변경 없는 항목
-            return (
-              <div
-                key={`unchanged-${idx}`}
-                className="mb-1 px-2.5 py-1 rounded flex items-center leading-[1.4]"
-              >
-                <span className="text-sm">{item}</span>
-              </div>
-            );
-          }
-        })}
       </div>
     );
   };
@@ -123,96 +85,300 @@ const PostHistory = () => {
     }).replace(/\. /g, '-').replace('.', '');
   };
 
+  // 게시글 정보 찾기 (POST 타입이 아닌 경우, 가장 가까운 이전 POST 히스토리에서 가져오기)
+  const getPostInfo = (currentIndex) => {
+    // 현재 또는 이전 POST 타입 히스토리 찾기
+    for (let i = currentIndex; i < historyData.histories.length; i++) {
+      const history = historyData.histories[i];
+      if (history.targetType === 'POST') {
+        return history.details;
+      }
+    }
+    return null;
+  };
+
   // 스냅샷 렌더링 함수
   const renderSnapshot = (history, index) => {
-    const details = history.details;
-    const prevHistory = historyData.histories[index + 1]; // 이전 히스토리 (다음 인덱스)
-    const prevDetails = prevHistory?.details || {};
+    const { targetType, changeType, details, changedByUserName, changedAt, changeIp } = history;
 
+    // 메타 정보 (공통)
+    const metaInfo = (
+      <div className="text-xs text-[#999] mb-5 pb-4 border-b border-dashed border-[#e0e0e0]">
+        <span>작성자: {changedByUserName}</span>
+        <span className="ml-4">변경일시: {formatDateTime(changedAt)}</span>
+        <span className="ml-4">IP: {changeIp}</span>
+      </div>
+    );
+
+    // POST 타입 - 게시글 변경
+    if (targetType === 'POST') {
+      return (
+        <div className="p-5 border-2 border-[#007bff] rounded-lg bg-[#fcfdff]">
+          {/* 제목 */}
+          <div className="mb-4">
+            <label className="block text-xs font-semibold text-[#666] mb-1 mt-0">
+              제목
+            </label>
+            <div className="text-[22px] font-semibold text-[#1a1a1a]">
+              {diffText(details.beTitle, details.afTitle)}
+            </div>
+          </div>
+
+          {metaInfo}
+
+          {/* 진행단계 */}
+          <div className="mb-4">
+            <label className="block text-xs font-semibold text-[#666] mb-1 mt-4">
+              진행단계
+            </label>
+            {details.beStageName !== details.afStageName ? (
+              <div className="py-1">
+                {details.beStageName && (
+                  <span className="inline-block px-3 py-1.5 bg-[#fff5f5] rounded-md text-[#dc3545] text-xs font-medium mr-2">
+                    - {details.beStageName}
+                  </span>
+                )}
+                {details.afStageName && (
+                  <span className="inline-block px-3 py-1.5 bg-[#f0fff4] rounded-md text-[#28a745] text-xs font-medium">
+                    + {details.afStageName}
+                  </span>
+                )}
+              </div>
+            ) : (
+              <span className="inline-block px-3 py-1.5 bg-[#f0f6ff] rounded-md text-[#5a9aeb] text-xs font-medium">
+                {details.afStageName || '없음'}
+              </span>
+            )}
+          </div>
+
+          {/* 완료 여부 */}
+          <div className="mb-4">
+            <label className="block text-xs font-semibold text-[#666] mb-1 mt-4">
+              완료 여부
+            </label>
+            {details.beIsCompleted !== details.afIsCompleted ? (
+              <div className="py-1">
+                {details.beIsCompleted !== undefined && details.beIsCompleted !== null && (
+                  <span className="inline-block px-3 py-1.5 bg-[#fff5f5] rounded-md text-[#dc3545] text-xs font-medium mr-2">
+                    - {details.beIsCompleted ? '완료' : '진행중'}
+                  </span>
+                )}
+                <span className="inline-block px-3 py-1.5 bg-[#f0fff4] rounded-md text-[#28a745] text-xs font-medium">
+                  + {details.afIsCompleted ? '완료' : '진행중'}
+                </span>
+              </div>
+            ) : (
+              <span className="inline-block px-3 py-1.5 bg-[#f0f6ff] rounded-md text-[#5a9aeb] text-xs font-medium">
+                {details.afIsCompleted ? '완료' : '진행중'}
+              </span>
+            )}
+          </div>
+
+          {/* 글 내용 */}
+          <div className="mb-4">
+            <label className="block text-xs font-semibold text-[#666] mb-1 mt-4">
+              글 내용
+            </label>
+            <div className="p-3 border border-[#e0e0e0] rounded-md min-h-[100px] text-sm leading-6 bg-white">
+              {diffText(details.beContent, details.afContent)}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // LINK 타입 - 링크 추가/삭제
+    if (targetType === 'LINK') {
+      const isDelete = changeType === 'DELETE';
+      const isCreate = changeType === 'CREATE';
+      const postInfo = getPostInfo(index);
+
+      return (
+        <div className="p-5 border-2 border-[#007bff] rounded-lg bg-[#fcfdff]">
+          {/* 링크 변경 정보 */}
+          <div className="mb-4">
+            <label className="block text-xs font-semibold text-[#666] mb-1 mt-0">
+              링크 변경
+            </label>
+            {isDelete ? (
+              <div className="px-3 py-2 rounded-md border-l-[3px] border-[#dc3545] bg-[#fff5f5]">
+                <span className="text-xs font-bold text-[#dc3545] mr-2">삭제됨</span>
+                <a
+                  href={details.linkUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-[#dc3545] hover:underline break-all"
+                >
+                  {details.linkUrl}
+                </a>
+              </div>
+            ) : isCreate ? (
+              <div className="px-3 py-2 rounded-md border-l-[3px] border-[#28a745] bg-[#f0fff4]">
+                <span className="text-xs font-bold text-[#28a745] mr-2">추가됨</span>
+                <a
+                  href={details.linkUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-[#28a745] hover:underline break-all"
+                >
+                  {details.linkUrl}
+                </a>
+              </div>
+            ) : (
+              <div className="px-3 py-2 rounded-md bg-[#f0f6ff] border border-[#e0e0e0]">
+                <a
+                  href={details.linkUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-[#5a9aeb] hover:underline break-all"
+                >
+                  {details.linkUrl}
+                </a>
+              </div>
+            )}
+          </div>
+
+          {metaInfo}
+
+          {/* 게시글 정보 (당시 상태) */}
+          {postInfo && (
+            <>
+              <div className="mb-4">
+                <label className="block text-xs font-semibold text-[#666] mb-1 mt-4">
+                  제목
+                </label>
+                <div className="text-lg font-semibold text-[#1a1a1a]">
+                  {postInfo.afTitle || postInfo.beTitle}
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-xs font-semibold text-[#666] mb-1 mt-4">
+                  진행단계
+                </label>
+                <span className="inline-block px-3 py-1.5 bg-[#f0f6ff] rounded-md text-[#5a9aeb] text-xs font-medium">
+                  {postInfo.afStageName || postInfo.beStageName || '없음'}
+                </span>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-xs font-semibold text-[#666] mb-1 mt-4">
+                  완료 여부
+                </label>
+                <span className="inline-block px-3 py-1.5 bg-[#f0f6ff] rounded-md text-[#5a9aeb] text-xs font-medium">
+                  {(postInfo.afIsCompleted ?? postInfo.beIsCompleted) ? '완료' : '진행중'}
+                </span>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-xs font-semibold text-[#666] mb-1 mt-4">
+                  글 내용
+                </label>
+                <div className="p-3 border border-[#e0e0e0] rounded-md min-h-[100px] text-sm leading-6 bg-white whitespace-pre-wrap">
+                  {postInfo.afContent || postInfo.beContent}
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      );
+    }
+
+    // FILE 타입 - 파일 추가/삭제
+    if (targetType === 'FILE') {
+      const isDelete = changeType === 'DELETE';
+      const isCreate = changeType === 'CREATE';
+      const postInfo = getPostInfo(index);
+
+      return (
+        <div className="p-5 border-2 border-[#007bff] rounded-lg bg-[#fcfdff]">
+          {/* 파일 변경 정보 */}
+          <div className="mb-4">
+            <label className="block text-xs font-semibold text-[#666] mb-1 mt-0">
+              파일 변경
+            </label>
+            {isDelete ? (
+              <div className="px-3 py-2 rounded-md border-l-[3px] border-[#dc3545] bg-[#fff5f5]">
+                <span className="text-xs font-bold text-[#dc3545] mr-2">삭제됨</span>
+                <span className="text-xs text-[#dc3545]">
+                  {details.fileName || details.fileOriginalFileName}
+                </span>
+              </div>
+            ) : isCreate ? (
+              <div className="px-3 py-2 rounded-md border-l-[3px] border-[#28a745] bg-[#f0fff4]">
+                <span className="text-xs font-bold text-[#28a745] mr-2">추가됨</span>
+                <span className="text-xs text-[#28a745]">
+                  {details.fileName || details.fileOriginalFileName}
+                </span>
+              </div>
+            ) : (
+              <div className="px-3 py-2 rounded-md bg-[#f0f6ff] border border-[#e0e0e0]">
+                <span className="text-xs text-[#5a9aeb]">
+                  {details.fileName || details.fileOriginalFileName}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {metaInfo}
+
+          {/* 게시글 정보 (당시 상태) */}
+          {postInfo && (
+            <>
+              <div className="mb-4">
+                <label className="block text-xs font-semibold text-[#666] mb-1 mt-4">
+                  제목
+                </label>
+                <div className="text-lg font-semibold text-[#1a1a1a]">
+                  {postInfo.afTitle || postInfo.beTitle}
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-xs font-semibold text-[#666] mb-1 mt-4">
+                  진행단계
+                </label>
+                <span className="inline-block px-3 py-1.5 bg-[#f0f6ff] rounded-md text-[#5a9aeb] text-xs font-medium">
+                  {postInfo.afStageName || postInfo.beStageName || '없음'}
+                </span>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-xs font-semibold text-[#666] mb-1 mt-4">
+                  완료 여부
+                </label>
+                <span className="inline-block px-3 py-1.5 bg-[#f0f6ff] rounded-md text-[#5a9aeb] text-xs font-medium">
+                  {(postInfo.afIsCompleted ?? postInfo.beIsCompleted) ? '완료' : '진행중'}
+                </span>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-xs font-semibold text-[#666] mb-1 mt-4">
+                  글 내용
+                </label>
+                <div className="p-3 border border-[#e0e0e0] rounded-md min-h-[100px] text-sm leading-6 bg-white whitespace-pre-wrap">
+                  {postInfo.afContent || postInfo.beContent}
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      );
+    }
+
+    // 기타 타입
     return (
       <div className="p-5 border-2 border-[#007bff] rounded-lg bg-[#fcfdff]">
-        {/* 제목 */}
-        <div className="mb-4">
-          <label className="block text-xs font-semibold text-[#666] mb-1 mt-4 first:mt-0">
-            제목
-          </label>
-          <div className="text-[22px] font-semibold text-[#1a1a1a]">
-            {diffText(prevDetails.afTitle, details.afTitle)}
-          </div>
-        </div>
-
-        {/* 메타 정보 */}
-        <div className="text-xs text-[#999] mb-5 pb-4 border-b border-dashed border-[#e0e0e0]">
-          <span>작성자: {history.changedByUserName}</span>
-          <span className="ml-4">변경일시: {formatDateTime(history.changedAt)}</span>
-          <span className="ml-4">IP: {history.changeIp}</span>
-        </div>
-
-        {/* 진행단계 */}
-        <div className="mb-4">
-          <label className="block text-xs font-semibold text-[#666] mb-1 mt-4">
-            진행단계
-          </label>
-          {prevDetails.afStageName !== details.afStageName ? (
-            <div className="py-1">
-              {prevDetails.afStageName && (
-                <span className="inline-block px-3 py-1.5 bg-[#fff5f5] rounded-md text-[#dc3545] text-xs font-medium mr-2">
-                  - {prevDetails.afStageName}
-                </span>
-              )}
-              {details.afStageName && (
-                <span className="inline-block px-3 py-1.5 bg-[#f0fff4] rounded-md text-[#28a745] text-xs font-medium">
-                  + {details.afStageName}
-                </span>
-              )}
-            </div>
-          ) : (
-            <span className="inline-block px-3 py-1.5 bg-[#f0f6ff] rounded-md text-[#5a9aeb] text-xs font-medium">
-              {details.afStageName}
-            </span>
-          )}
-        </div>
-
-        {/* 완료 여부 */}
-        <div className="mb-4">
-          <label className="block text-xs font-semibold text-[#666] mb-1 mt-4">
-            완료 여부
-          </label>
-          {prevDetails.afIsCompleted !== details.afIsCompleted ? (
-            <div className="py-1">
-              {prevDetails.afIsCompleted !== undefined && (
-                <span className="inline-block px-3 py-1.5 bg-[#fff5f5] rounded-md text-[#dc3545] text-xs font-medium mr-2">
-                  - {prevDetails.afIsCompleted ? '완료' : '진행중'}
-                </span>
-              )}
-              <span className="inline-block px-3 py-1.5 bg-[#f0fff4] rounded-md text-[#28a745] text-xs font-medium">
-                + {details.afIsCompleted ? '완료' : '진행중'}
-              </span>
-            </div>
-          ) : (
-            <span className="inline-block px-3 py-1.5 bg-[#f0f6ff] rounded-md text-[#5a9aeb] text-xs font-medium">
-              {details.afIsCompleted ? '완료' : '진행중'}
-            </span>
-          )}
-        </div>
-
-        {/* 글 내용 */}
-        <div className="mb-4">
-          <label className="block text-xs font-semibold text-[#666] mb-1 mt-4">
-            글 내용
-          </label>
-          <div className="p-3 border border-[#e0e0e0] rounded-md min-h-[100px] text-sm leading-6 bg-white">
-            {diffText(prevDetails.afContent, details.afContent)}
-          </div>
-        </div>
+        {metaInfo}
+        <div className="text-sm text-gray-500">알 수 없는 변경 유형입니다.</div>
       </div>
     );
   };
 
   if (loading) {
     return (
-      <div className="bg-white py-10 px-5">
-        <div className="max-w-[900px] mx-auto bg-white rounded-xl p-8">
+      <div className="min-h-screen bg-gray-100 py-10 px-5">
+        <div className="max-w-[900px] mx-auto bg-white rounded-xl p-8 shadow-sm">
           <div className="text-center text-gray-600">로딩 중...</div>
         </div>
       </div>
@@ -221,8 +387,8 @@ const PostHistory = () => {
 
   if (error) {
     return (
-      <div className="bg-white py-10 px-5">
-        <div className="max-w-[900px] mx-auto bg-white rounded-xl p-8">
+      <div className="min-h-screen bg-gray-100 py-10 px-5">
+        <div className="max-w-[900px] mx-auto bg-white rounded-xl p-8 shadow-sm">
           <div className="text-center text-red-600">{error}</div>
         </div>
       </div>
@@ -230,8 +396,8 @@ const PostHistory = () => {
   }
 
   return (
-  <div className="min-h-screen bg-gray-100 py-10 px-5">
-    <div className="max-w-[900px] mx-auto bg-white rounded-xl p-8 shadow-sm">
+    <div className="min-h-screen bg-gray-100 py-10 px-5">
+      <div className="max-w-[900px] mx-auto bg-white rounded-xl p-8 shadow-sm">
         <h1 className="text-2xl font-semibold mb-2 text-[#1a1a1a]">
           게시글 히스토리
         </h1>
@@ -241,7 +407,7 @@ const PostHistory = () => {
 
         <div id="historyList">
           {historyData?.histories?.map((history, index) => {
-            const isOpen = openIndex === index;
+            const isOpen = openIndexes.includes(index);
             
             return (
               <div

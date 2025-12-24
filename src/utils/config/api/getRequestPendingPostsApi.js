@@ -2,7 +2,7 @@ import api from './axios'
 
 export const getRequestPendingPosts = async () =>{
     try {
-        const response = await api.get('/admin/dashboard/approval-requests')
+        const response = await api.get('/admin/projects/approval-requests')
         console.log(response.data.response)
         return response.data.response
     } catch (error) {

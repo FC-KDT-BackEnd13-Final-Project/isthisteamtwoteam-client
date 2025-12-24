@@ -5,8 +5,7 @@ import { useNavigate } from "react-router-dom";
 import DashboardStats from "../../components/dashboard/DashboardStats";
 import FilteredList from "../../components/dashboard/FilteredList";
 import ProjectList from "../../components/dashboard/ProjectList";
-import { getDashboardAllProjects,getDashboardData } from "../../utils/config/api/dashboardApi";
-import { getCustomerDashboardData } from "../../utils/config/customer/customerDashboardApi";
+import { getCustomerDashboardAllProjects, getCustomerDashboardData } from "../../utils/config/customer/customerDashboardApi";
 
 
 export default function CustomerDashboardPage() {
@@ -21,7 +20,7 @@ export default function CustomerDashboardPage() {
     const fetchData = async () => {
       try {
         const data = await getCustomerDashboardData();
-        const projectsData = await getDashboardAllProjects();
+        const projectsData = await getCustomerDashboardAllProjects();
         setDashboardData(data);
         setLoading(false);
         setAllProject(projectsData);
