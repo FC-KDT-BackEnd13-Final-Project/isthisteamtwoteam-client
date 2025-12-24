@@ -217,7 +217,6 @@ export default function PostSection({
                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">완료 여부</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">생성 시간</th>
                     <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">작성자</th>
-                    <th className="px-6 py-4"></th>
                   </>
                 )}
               </tr>
@@ -281,33 +280,7 @@ export default function PostSection({
                         </span>
                       </td>,
                       <td key="createdAt" className="px-6 py-4 text-sm text-gray-600">{post.createdAt}</td>,
-                      <td key="author" className="px-6 py-4 text-sm text-gray-600">{post.authorName || '-'}</td>,
-                      <td key="actions" className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex gap-2">
-                          
-                          <button 
-                            className="px-4 py-1.5 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition-colors"
-                            onClick={(e) => {          // ⭐ (e) 추가!
-                              e.stopPropagation();     // ⭐ 먼저 호출
-                              navigate(`/post/edit/${post.postId}`);
-                            }}
-                          >
-                            수정
-                          </button>
-                          {/* ✅ 작성자만 삭제 버튼 표시 */}
-                          {currentUserId === post.userId && (
-                            <button 
-                            className="px-4 py-1.5 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition-colors"
-                            onClick={(e) => {          // ⭐ (e) 추가!
-                              e.stopPropagation();     // ⭐ 먼저 호출
-                              handleDeletePost(post.postId);
-                            }}
-                          >
-                            삭제
-                          </button>
-                          )}
-                        </div>
-                      </td>
+                      <td key="author" className="px-6 py-4 text-sm text-gray-600">{post.authorName || '-'}</td>
                     ];
 
                     return (

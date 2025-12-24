@@ -86,3 +86,13 @@ export const createPost = async (projectId, postData) => {
     throw error;
   }
 };
+
+export const getPostHistory = async (postId) => {
+  try {
+    const response = await api.get(`/users/history/posts/${postId}`);
+    return response.data;
+  } catch (error) {
+    console.error('게시글 히스토리 조회 실패:', error);
+    throw error;
+  }
+}

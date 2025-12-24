@@ -37,6 +37,7 @@ import ProjectRequestPendingPage from "./pages/ProjectRequestPendingPage";
 import ChangePasswordPage from "./pages/ChangePasswordPage";
 import DeveloperSidebarHeaderLayout from "./components/layout/developer/DeveloperSidebarHeaderLayout";
 import CustomerSidebarHeaderLayout from "./components/layout/customer/CustomerSidebarHeaderLayout copy";
+import PostHistory from "./pages/PostHistory";
 
 function App() {
   return (
@@ -53,6 +54,7 @@ function App() {
         <Route path="project/:projectId/post/create" element={<CreatePostPage />} />
         <Route path="project/:projectId/post/edit/:postId" element={<EditPostDetailPage />} />
         <Route path="projects/:projectId/request-pending" element={<ProjectRequestPendingPage />} />
+        <Route path="project/:projectId/post/:postId/history" element={<PostHistory />} />
 
         <Route path="change-password" element={<ChangePasswordPage />} />
       </Route>
