@@ -52,6 +52,7 @@ function App() {
         <Route path="project/:projectId" element={<ProjectMainPage />} />
         <Route path="project/:projectId/post/:postId" element={<PostDetailPage />} />
         <Route path="project/:projectId/post/create" element={<CreatePostPage />} />
+        <Route path="project/:projectId/post/repost/:postId/create" element={<CreatePostPage />} />
         <Route path="project/:projectId/post/edit/:postId" element={<EditPostDetailPage />} />
         <Route path="projects/:projectId/request-pending" element={<ProjectRequestPendingPage />} />
         <Route path="project/:projectId/post/:postId/history" element={<PostHistory />} />

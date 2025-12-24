@@ -69,6 +69,10 @@ export default function Sidebar() {
   }
 };
 
+  const handleLoginUserInfo = () => {
+    const response = 
+  }
+
   // URL 경로가 변경될 때마다 활성 메뉴 업데이트
   useEffect(() => {
     const currentPath = location.pathname;

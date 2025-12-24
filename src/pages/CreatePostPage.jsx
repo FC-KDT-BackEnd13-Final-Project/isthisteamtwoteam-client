@@ -6,8 +6,10 @@ import { deleteTempFiles, uploadTempFile } from "../utils/config/api/file/fileAp
 export default function CreatePostPage() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
-  const { projectId } = useParams();
+  const { projectId, postId } = useParams();
   const uploadedTempFileIdsRef = useRef([]);
+
+  const isReplyPost = !!postId;
 
   // 폼 데이터 상태
   const [title, setTitle] = useState("");
@@ -53,49 +55,50 @@ export default function CreatePostPage() {
 
     // 게시글 작성 핸들러
     // 게시글 작성 핸들러
-    const handleCreatePost = async () => {
-    try {
-        if (!title.trim()) {
-        alert('제목을 입력해주세요.');
-        return;
-        }
-        
-        if (!content.trim()) {
-        alert('내용을 입력해주세요.');
-        return;
-        }
-
-        if (!stage) {
-        alert('진행단계를 선택해주세요.');
-        return;
-        }
-
-        const requestData = {
-        title: title.trim(),
-        content: content.trim(),
-        stageName: stage,
-        parentId: null,
-        requestApproval: requestApproval,
-        fileIds: files.map(file => file.fileId),
-        linkUrls: links.map(link => link.linkUrl)
-        };
-
-        console.log('작성 요청 데이터:', requestData);
-        
-        const response = await createPost(projectId, requestData);
-
-        if (response.success) {
-        uploadedTempFileIdsRef.current = [];
-        alert('게시글이 작성되었습니다.');
-        navigate(`/project/${projectId}`);
-        } else {
-        alert(response.response.message);
-        }
-    } catch (error) {
-        console.error('게시글 작성 에러:', error);
-        alert('게시글 작성에 실패했습니다.');
+    // 게시글 작성 핸들러
+const handleCreatePost = async () => {
+  try {
+    if (!title.trim()) {
+      alert('제목을 입력해주세요.');
+      return;
     }
+    
+    if (!content.trim()) {
+      alert('내용을 입력해주세요.');
+      return;
+    }
+
+    if (!stage) {
+      alert('진행단계를 선택해주세요.');
+      return;
+    }
+
+    const requestData = {
+      title: title.trim(),
+      content: content.trim(),
+      stageName: stage,
+      parentId: isReplyPost ? parseInt(postId) : null, // 답변 게시글이면 부모 postId 설정
+      requestApproval: requestApproval,
+      fileIds: files.map(file => file.fileId),
+      linkUrls: links.map(link => link.linkUrl)
     };
+
+    console.log('작성 요청 데이터:', requestData);
+    
+    const response = await createPost(projectId, requestData);
+
+    if (response.success) {
+      uploadedTempFileIdsRef.current = [];
+      alert(isReplyPost ? '답변 게시글이 작성되었습니다.' : '게시글이 작성되었습니다.');
+      navigate(`/project/${projectId}`);
+    } else {
+      alert(response.response?.message || '게시글 작성에 실패했습니다.');
+    }
+  } catch (error) {
+    console.error('게시글 작성 에러:', error);
+    alert('게시글 작성에 실패했습니다.');
+  }
+};
 
   // 취소 버튼 핸들러
     const handleCancel = async () => {
@@ -199,7 +202,9 @@ export default function CreatePostPage() {
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="mx-auto max-w-[1400px]">
-            <h1 className="mb-4 text-[24px] font-bold text-gray-900">게시글 작성</h1>
+          <h1 className="mb-4 text-[24px] font-bold text-gray-900">
+            {isReplyPost ? '답변 게시글 작성' : '게시글 작성'}
+          </h1>
         <div className="rounded-lg bg-white p-8 shadow-sm">
           
           {/* 제목 */}
@@ -241,29 +246,34 @@ export default function CreatePostPage() {
           <div className="mb-6">
 
         {/* 승인 요청 토글 */}
-        <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
-            <div>
-            <label className="block text-[14px] font-semibold text-gray-900">
-                승인 요청
-            </label>
-            <p className="mt-1 text-[12px] text-gray-500">
-                고객사의 승인을 요청합니다.
-            </p>
+        {/* 승인 요청 토글 - 답변 게시글이 아닐 때만 표시 */}
+          {!isReplyPost && (
+            <div className="mb-6">
+              <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
+                <div>
+                  <label className="block text-[14px] font-semibold text-gray-900">
+                    승인 요청
+                  </label>
+                  <p className="mt-1 text-[12px] text-gray-500">
+                    고객사의 승인을 요청합니다.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setRequestApproval(!requestApproval)}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                    requestApproval ? 'bg-blue-500' : 'bg-gray-300'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      requestApproval ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+              </div>
             </div>
-            <button
-            type="button"
-            onClick={() => setRequestApproval(!requestApproval)}
-            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                requestApproval ? 'bg-blue-500' : 'bg-gray-300'
-            }`}
-            >
-            <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                requestApproval ? 'translate-x-6' : 'translate-x-1'
-                }`}
-            />
-            </button>
-        </div>
+          )}
         </div>
 
           {/* 파일 첨부 - 드롭다운 */}
