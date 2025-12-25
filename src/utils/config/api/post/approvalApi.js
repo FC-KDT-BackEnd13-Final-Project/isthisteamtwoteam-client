@@ -2,9 +2,8 @@ import api from "../axios";
 
 export const getProjectApprovalRequests = async (projectId) => {
   try {
-    const response = await api.get(`/admin/dashboard/projects/${projectId}/approval-requests`,{
+    const response = await api.get(`/admin/projects/${projectId}/approval-requests`,{
            skipRolePath: true   
-
     });
     return response.data;
   } catch (error) {

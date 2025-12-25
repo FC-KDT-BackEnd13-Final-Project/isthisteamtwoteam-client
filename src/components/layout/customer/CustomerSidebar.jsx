@@ -89,7 +89,7 @@ export default function CustomerSidebar() {
               {loginUserInfo ? loginUserInfo.name : ""}
             </h4>
             <p className="text-xs text-slate-500">
-              {}
+              {/* {loginUserInfo.role} */}
             </p>
           </div>
         </div>

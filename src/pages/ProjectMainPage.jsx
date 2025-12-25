@@ -11,6 +11,7 @@ import ProjectSidebar from '../components/project/ProjectSidebar';
 import { getProjectApprovalRequests } from '../utils/config/api/post/approvalApi';
 import ApprovalSection from '../components/post/ApprovalSection';
 import { useAuth } from '../context/AuthConext';
+import ProjectApprovalSection from '../components/post/ProjectApprovalSection';
 
 
 export default function ProjectMainPage() {
@@ -188,13 +189,13 @@ export default function ProjectMainPage() {
               userRole={userRole} // ✅ 올바른 role 값 전달
             />
 
-            <ApprovalSection 
+            <ProjectApprovalSection 
               approvalRequests={approvalRequests}
               isLoading={isApprovalLoading}
               projectId={projectId}
             />
 
-            <PostSection 
+            <PostSection
               postsData={postsData}
               activeTab={activeTab}
               onTabChange={handleTabChange}

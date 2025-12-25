@@ -1,10 +1,9 @@
 import { useAuth } from "../../context/AuthConext";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 
 export default function ProtectedRoute({ children, allowedRoles }) {
   const { user, loading } = useAuth();
   const location = useLocation();
-  const navigate = useNavigate();
 
   if (loading) {
     return <div>로딩 중...</div>;
@@ -20,9 +19,15 @@ export default function ProtectedRoute({ children, allowedRoles }) {
     );
   }
 
+  // navigate() 대신 Navigate 컴포넌트 반환
   if (allowedRoles && !allowedRoles.includes(user.role)) {
-    navigate("/login");
-
+    return (
+      <Navigate
+        to="/login"
+        replace
+        state={{ from: location }}
+      />
+    );
   }
 
   console.log("권한 :", user.role);
