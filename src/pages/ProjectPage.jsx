@@ -6,6 +6,7 @@ import Pagination from "../components/common/Pagination/Pagination";
 import LoadingState from "../components/common/LoadingState/LoadingState";
 import EmptyState from "../components/common/EmptyState/EmptyState";
 import ProjectListItem from "../components/project/ProjectListItem";
+import { useAuth } from "../context/AuthConext";
 
 /**
  * ProjectsPage - 프로젝트 목록 페이지
@@ -13,7 +14,8 @@ import ProjectListItem from "../components/project/ProjectListItem";
  */
 export default function ProjectsPage() {
   const navigate = useNavigate();
-
+  const {user} = useAuth();
+  const userRole = user?.role;
   // ============================================
   // State 관리
   // ============================================
@@ -35,7 +37,16 @@ export default function ProjectsPage() {
   const loadProjects = async () => {
     try {
       setLoading(true);
-      const data = await getProjects();
+      if(userRole === 'ADMIN'){
+        const data = await getProjects();
+        setProjects(data.response);
+        
+      } else {
+        const data = await getCustomerProjects();
+        setProjects(data.response);
+      }
+
+      
       // API 응답이 { success, response, message } 형태인 경우
       if (data.success && data.response) {
         setProjects(data.content);
