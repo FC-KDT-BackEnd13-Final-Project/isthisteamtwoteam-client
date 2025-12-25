@@ -44,31 +44,111 @@ const PostHistory = () => {
     });
   };
 
-  // 텍스트 Diff 비교 함수
-  const diffText = (beforeText, afterText) => {
-    // 둘 다 없는 경우
-    if (!beforeText && !afterText) {
-      return <div className="text-sm text-gray-400">내용 없음</div>;
-    }
+  // 변경 타입에 따른 레이블 반환
+  const getChangeLabel = (type) => {
+    const labels = {
+      'title': '제목 변경',
+      'content': '본문 변경',
+      'stage': '진행단계 변경',
+      'completed': '완료 여부 변경'
+    };
+    return labels[type] || '변경';
+  };
 
-    // 변경사항이 없는 경우
-    if (beforeText === afterText) {
-      return <div className="whitespace-pre-wrap text-sm">{afterText}</div>;
+  // changeContents 기반으로 변경사항만 렌더링
+  const renderChangeContents = (changeContents) => {
+    if (!changeContents || changeContents.length === 0) {
+      return null;
     }
 
     return (
-      <div className="py-1">
-        {beforeText && (
-          <pre className="m-0 mb-1 px-3 py-2 text-sm rounded border-l-[3px] border-[#dc3545] bg-[#fff5f5] text-[#dc3545] leading-6 whitespace-pre-wrap font-[inherit]">
-            - {beforeText}
-          </pre>
-        )}
-        {afterText && (
-          <pre className="m-0 mb-1 px-3 py-2 text-sm rounded border-l-[3px] border-[#28a745] bg-[#f0fff4] text-[#28a745] leading-6 whitespace-pre-wrap font-[inherit]">
-            + {afterText}
-          </pre>
-        )}
-      </div>
+      <>
+        {/* 구분선 */}
+        <div className="my-6 border-t-2 border-dashed border-[#d0d0d0]"></div>
+
+        {/* 변경 내용 섹션 */}
+        <div className="mb-4">
+          <label className="block text-base font-bold text-[#333] mb-3">
+            변경 내용
+          </label>
+          <div className="space-y-4">
+            {changeContents.map((change, idx) => (
+              <div key={idx} className="pl-2">
+                {/* 변경 타입 레이블 */}
+                <div className="mb-2">
+                  <span className="inline-block text-sm font-semibold text-[#555] bg-[#f0f0f0] px-3 py-1 rounded-md">
+                    {getChangeLabel(change.type)}
+                  </span>
+                </div>
+
+                {/* content 타입 - 본문 변경 */}
+                {change.type === 'content' && (
+                  <div className="py-1">
+                    {change.before && (
+                      <pre className="m-0 mb-1 px-3 py-2 text-sm rounded border-l-[3px] border-[#dc3545] bg-[#fff5f5] text-[#dc3545] leading-6 whitespace-pre-wrap font-[inherit]">
+                        - {change.before}
+                      </pre>
+                    )}
+                    {change.after && (
+                      <pre className="m-0 mb-1 px-3 py-2 text-sm rounded border-l-[3px] border-[#28a745] bg-[#f0fff4] text-[#28a745] leading-6 whitespace-pre-wrap font-[inherit]">
+                        + {change.after}
+                      </pre>
+                    )}
+                  </div>
+                )}
+
+                {/* title 타입 - 제목 변경 */}
+                {change.type === 'title' && (
+                  <div className="py-1">
+                    {change.before && (
+                      <div className="mb-1 px-3 py-2 text-sm rounded border-l-[3px] border-[#dc3545] bg-[#fff5f5] text-[#dc3545]">
+                        - {change.before}
+                      </div>
+                    )}
+                    {change.after && (
+                      <div className="mb-1 px-3 py-2 text-sm rounded border-l-[3px] border-[#28a745] bg-[#f0fff4] text-[#28a745]">
+                        + {change.after}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* stage 타입 - 진행단계 변경 */}
+                {change.type === 'stage' && (
+                  <div className="py-1">
+                    {change.before && (
+                      <span className="inline-block px-3 py-1.5 bg-[#fff5f5] rounded-md text-[#dc3545] text-xs font-medium mr-2">
+                        - {change.before}
+                      </span>
+                    )}
+                    {change.after && (
+                      <span className="inline-block px-3 py-1.5 bg-[#f0fff4] rounded-md text-[#28a745] text-xs font-medium">
+                        + {change.after}
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                {/* completed 타입 - 완료 여부 변경 */}
+                {change.type === 'completed' && (
+                  <div className="py-1">
+                    {change.before !== undefined && change.before !== null && (
+                      <span className="inline-block px-3 py-1.5 bg-[#fff5f5] rounded-md text-[#dc3545] text-xs font-medium mr-2">
+                        - {change.before ? '완료' : '진행중'}
+                      </span>
+                    )}
+                    {change.after !== undefined && change.after !== null && (
+                      <span className="inline-block px-3 py-1.5 bg-[#f0fff4] rounded-md text-[#28a745] text-xs font-medium">
+                        + {change.after ? '완료' : '진행중'}
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </>
     );
   };
 
@@ -99,7 +179,7 @@ const PostHistory = () => {
 
   // 스냅샷 렌더링 함수
   const renderSnapshot = (history, index) => {
-    const { targetType, changeType, details, changedByUserName, changedAt, changeIp } = history;
+    const { targetType, changeType, details, changedByUserName, changedAt, changeIp, changeContents } = history;
 
     // 메타 정보 (공통)
     const metaInfo = (
@@ -112,77 +192,63 @@ const PostHistory = () => {
 
     // POST 타입 - 게시글 변경
     if (targetType === 'POST') {
+      const hasChanges = changeContents && changeContents.length > 0;
+
       return (
         <div className="p-5 border-2 border-[#007bff] rounded-lg bg-[#fcfdff]">
-          {/* 제목 */}
+          {/* 제목 - 변경 후 상태만 표시 */}
           <div className="mb-4">
             <label className="block text-xs font-semibold text-[#666] mb-1 mt-0">
               제목
             </label>
             <div className="text-[22px] font-semibold text-[#1a1a1a]">
-              {diffText(details.beTitle, details.afTitle)}
+              {details.afTitle || '제목 없음'}
             </div>
           </div>
 
           {metaInfo}
 
-          {/* 진행단계 */}
+          {/* 진행단계 - 변경 후 상태만 표시 */}
           <div className="mb-4">
             <label className="block text-xs font-semibold text-[#666] mb-1 mt-4">
               진행단계
             </label>
-            {details.beStageName !== details.afStageName ? (
-              <div className="py-1">
-                {details.beStageName && (
-                  <span className="inline-block px-3 py-1.5 bg-[#fff5f5] rounded-md text-[#dc3545] text-xs font-medium mr-2">
-                    - {details.beStageName}
-                  </span>
-                )}
-                {details.afStageName && (
-                  <span className="inline-block px-3 py-1.5 bg-[#f0fff4] rounded-md text-[#28a745] text-xs font-medium">
-                    + {details.afStageName}
-                  </span>
-                )}
-              </div>
-            ) : (
-              <span className="inline-block px-3 py-1.5 bg-[#f0f6ff] rounded-md text-[#5a9aeb] text-xs font-medium">
-                {details.afStageName || '없음'}
-              </span>
-            )}
+            <span className="inline-block px-3 py-1.5 bg-[#f0f6ff] rounded-md text-[#5a9aeb] text-xs font-medium">
+              {details.afStageName || '없음'}
+            </span>
           </div>
 
-          {/* 완료 여부 */}
+          {/* 완료 여부 - 변경 후 상태만 표시 */}
           <div className="mb-4">
             <label className="block text-xs font-semibold text-[#666] mb-1 mt-4">
               완료 여부
             </label>
-            {details.beIsCompleted !== details.afIsCompleted ? (
-              <div className="py-1">
-                {details.beIsCompleted !== undefined && details.beIsCompleted !== null && (
-                  <span className="inline-block px-3 py-1.5 bg-[#fff5f5] rounded-md text-[#dc3545] text-xs font-medium mr-2">
-                    - {details.beIsCompleted ? '완료' : '진행중'}
-                  </span>
-                )}
-                <span className="inline-block px-3 py-1.5 bg-[#f0fff4] rounded-md text-[#28a745] text-xs font-medium">
-                  + {details.afIsCompleted ? '완료' : '진행중'}
-                </span>
-              </div>
-            ) : (
-              <span className="inline-block px-3 py-1.5 bg-[#f0f6ff] rounded-md text-[#5a9aeb] text-xs font-medium">
-                {details.afIsCompleted ? '완료' : '진행중'}
-              </span>
-            )}
+            <span className="inline-block px-3 py-1.5 bg-[#f0f6ff] rounded-md text-[#5a9aeb] text-xs font-medium">
+              {details.afIsCompleted ? '완료' : '진행중'}
+            </span>
           </div>
 
-          {/* 글 내용 */}
+          {/* 글 내용 - 변경 후 상태 전체 표시 */}
           <div className="mb-4">
             <label className="block text-xs font-semibold text-[#666] mb-1 mt-4">
               글 내용
             </label>
-            <div className="p-3 border border-[#e0e0e0] rounded-md min-h-[100px] text-sm leading-6 bg-white">
-              {diffText(details.beContent, details.afContent)}
+            <div className="p-3 border border-[#e0e0e0] rounded-md min-h-[100px] text-sm leading-6 bg-white whitespace-pre-wrap">
+              {details.afContent || '내용 없음'}
             </div>
           </div>
+
+          {/* 구분선 + 변경 내용 (제일 아래) */}
+          {hasChanges ? (
+            renderChangeContents(changeContents)
+          ) : (
+            <>
+              <div className="my-6 border-t-2 border-dashed border-[#d0d0d0]"></div>
+              <div className="p-3 bg-[#f8f9fa] rounded-md text-sm text-[#666] text-center">
+                이 시점에는 변경된 내용이 없습니다.
+              </div>
+            </>
+          )}
         </div>
       );
     }

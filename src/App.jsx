@@ -91,6 +91,7 @@ function App() {
           </ProtectedRoute>
         }
       >
+        <Route path="projects" element={<ProjectPage />} />
         <Route path="dashboard" element={<DeveloperDashboardPage />} />
         <Route path="project/:projectId" element={<ProjectMainPage />} />
         <Route path="project/:projectId/post/:postId" element={<PostDetailPage />} />

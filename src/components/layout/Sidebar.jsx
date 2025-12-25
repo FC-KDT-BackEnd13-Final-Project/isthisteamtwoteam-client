@@ -87,6 +87,7 @@ export default function Sidebar() {
 
     if (currentItem) {
       setActiveMenu(currentItem.label);
+      console.log("유저 정보:", loginUserInfo);
     }
   }, [location.pathname]);
 
@@ -110,7 +111,7 @@ export default function Sidebar() {
               {loginUserInfo ? loginUserInfo.name : ""}
             </h4>
             <p className="text-xs text-slate-500">
-              {}
+              {/* {loginUserInfo ? loginUserInfo.role : ""} */}
             </p>
           </div>
         </div>

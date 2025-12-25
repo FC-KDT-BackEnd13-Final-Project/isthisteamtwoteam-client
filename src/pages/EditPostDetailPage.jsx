@@ -337,30 +337,6 @@ export default function EditPostDetailPage() {
             </select>
           </div>
 
-          <div className="mb-6 grid grid-cols-2 gap-4">
-            <div>
-              <label className="mb-2 block text-[14px] font-semibold text-gray-900">
-                시작일
-              </label>
-              <input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-[14px] focus:border-blue-500 focus:outline-none"
-              />
-            </div>
-            <div>
-              <label className="mb-2 block text-[14px] font-semibold text-gray-900">
-                종료일
-              </label>
-              <input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-[14px] focus:border-blue-500 focus:outline-none"
-              />
-            </div>
-          </div>
           {/* 파일 첨부 - 드롭다운 */}
           <div className="mb-6">
             <button
