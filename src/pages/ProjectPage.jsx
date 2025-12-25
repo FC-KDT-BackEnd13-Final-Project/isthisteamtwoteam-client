@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { deleteProject, getProjects } from "../utils/config/api/project/projectApi";
+import { deleteProject, getCustomerProjects, getProjects } from "../utils/config/api/project/projectApi";
 import SearchBar from "../components/common/SearchBar/SearchBar";
 import Pagination from "../components/common/Pagination/Pagination";
 import LoadingState from "../components/common/LoadingState/LoadingState";
 import EmptyState from "../components/common/EmptyState/EmptyState";
 import ProjectListItem from "../components/project/ProjectListItem";
 import { useAuth } from "../context/AuthConext";
-import { getUserRequestPendingPosts } from "../utils/config/api/getRequestPendingPostsApi";
 
 export default function ProjectsPage() {
   const navigate = useNavigate();
@@ -25,31 +24,19 @@ export default function ProjectsPage() {
   // 데이터 로딩 - user가 로드된 후에만 실행
   // ============================================
   useEffect(() => {
-    if (!user) {
-      console.log("📄 [ProjectsPage] user 없음, 대기 중...");
-      return;
-    }
-    
-    console.log("📄 [ProjectsPage] user 로드됨, loadProjects 실행");
     loadProjects();
-  }, [user]); // user를 의존성에 추가!
+  }, [user]); 
 
   const loadProjects = async () => {
-    console.log("📄 [ProjectsPage] User Role:", user?.role);
-    
     try {
       setLoading(true);
       
-      // data를 블록 밖에서 선언
       let data;
       
       if (user?.role === 'ADMIN') {
         data = await getProjects();
-        console.log("📄 [ProjectsPage] Admin Projects Data:", data);
       } else {
-        // CUSTOMER나 DEVELOPER도 getProjects 사용
-        data = await getUserRequestPendingPosts();
-        console.log("📄 [ProjectsPage] User Projects Data:", data);
+        data = await getCustomerProjects();
       }
 
       // API 응답 처리
@@ -62,7 +49,6 @@ export default function ProjectsPage() {
       }
       
     } catch (error) {
-      console.error("❌ [ProjectsPage] 프로젝트 목록 조회 실패:", error);
       setProjects([]);
     } finally {
       setLoading(false);
@@ -222,16 +208,19 @@ export default function ProjectsPage() {
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="프로젝트 검색..."
             rightContent={
-              <button
-                type="button"
-                onClick={handleCreateProject}
-                className="flex items-center gap-2 rounded-lg bg-blue-500 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-600"
-              >
-                <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24">
-                  <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
-                </svg>
-                프로젝트 생성
-              </button>
+              // ADMIN만 프로젝트 생성 버튼 표시
+              user?.role === 'ADMIN' && (
+                <button
+                  type="button"
+                  onClick={handleCreateProject}
+                  className="flex items-center gap-2 rounded-lg bg-blue-500 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-600"
+                >
+                  <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24">
+                    <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
+                  </svg>
+                  프로젝트 생성
+                </button>
+              )
             }
           />
 
@@ -260,6 +249,7 @@ export default function ProjectsPage() {
                   onEdit={handleEditProject}
                   onDelete={handleDeleteProject}
                   isLast={index === currentProjects.length - 1}
+                  userRole={user?.role} // userRole prop 추가
                 />
               ))
             )}

@@ -14,7 +14,7 @@ export const getProjects = async (page = 0, size = 10) =>{
 
 export const getCustomerProjects = async (page = 0, size = 10) =>{
     try {
-        const response = await api.get('/admin/projects')
+        const response = await api.get('/customers/projects/page')
         console.log("프로젝트 조회" , response.data.response.content)
         return response.data.response.content    
     } catch (error) {

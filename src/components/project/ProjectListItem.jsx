@@ -9,6 +9,7 @@ import ActionButton from "../common/ActionButton/ActionButton";
  * @param {function} onEdit - 수정 핸들러
  * @param {function} onDelete - 삭제 핸들러
  * @param {boolean} isLast - 마지막 아이템 여부
+ * @param {string} userRole - 사용자 권한 (ADMIN, CUSTOMER, DEVELOPER)
  */
 export default function ProjectListItem({
   project,
@@ -16,17 +17,19 @@ export default function ProjectListItem({
   onEdit,
   onDelete,
   isLast = false,
+  userRole, // userRole prop 추가
 }) {
-
   const navigate = useNavigate();
-  const handleProjectClick = () => {
-        navigate(`/project/${project.projectId}`);
+  const isAdmin = userRole === 'ADMIN'; // ADMIN 권한 체크
 
+  const handleProjectClick = () => {
+    navigate(`/project/${project.projectId}`);
   }
-    return (
+
+  return (
     <div
-      onClick={handleProjectClick}  // ✅ 클릭 이벤트 추가
-      className={`flex items-center px-5 py-4 transition-colors hover:bg-gray-50 cursor-pointer ${  // ✅ cursor-pointer 추가
+      onClick={handleProjectClick}
+      className={`flex items-center px-5 py-4 transition-colors hover:bg-gray-50 cursor-pointer ${
         !isLast ? "border-b border-gray-200" : ""
       }`}
     >
@@ -86,23 +89,24 @@ export default function ProjectListItem({
         </div>
       </div>
 
-      {/* 액션 버튼 */}
-      <div 
-        className="ml-4 flex gap-2"
-        onClick={(e) => e.stopPropagation()}  // ✅ 이벤트 전파 차단
-      >
-        <ActionButton
-          variant="edit"
-          label="수정"
-          onClick={() => onEdit(project.projectId)}
-        />
-        <ActionButton
-          variant="delete"
-          label="삭제"
-          onClick={() => onDelete(project.projectId, project.projectName)}
-        />
-      </div>
+      {/* 액션 버튼 - ADMIN만 표시 */}
+      {isAdmin && (
+        <div 
+          className="ml-4 flex gap-2"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <ActionButton
+            variant="edit"
+            label="수정"
+            onClick={() => onEdit(project.projectId)}
+          />
+          <ActionButton
+            variant="delete"
+            label="삭제"
+            onClick={() => onDelete(project.projectId, project.projectName)}
+          />
+        </div>
+      )}
     </div>
   );
 }
-
