@@ -219,3 +219,22 @@ export const permanentDeleteProjects = async (projectIds) => {
     throw error;
   }
 };
+
+// 프로젝트 단계 변경
+export const updateProjectStage = async (projectId, stageName) => {
+  try {
+    const response = await api.patch(
+      `/developer/project/${projectId}/dashboard/stage`,
+      { stageName },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('프로젝트 단계 변경 실패:', error);
+    throw error;
+  }
+};

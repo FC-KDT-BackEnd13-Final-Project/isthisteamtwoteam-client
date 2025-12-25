@@ -211,6 +211,8 @@ export default function ProjectMainPage() {
             <ProjectSidebar 
               projectDetail={projectDetail}
               members={members}
+              projectId={projectId} 
+
             />
           </aside>
         </div>
