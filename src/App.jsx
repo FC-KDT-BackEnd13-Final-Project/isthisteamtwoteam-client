@@ -92,6 +92,8 @@ function App() {
         }
       >
         <Route path="projects" element={<ProjectPage />} />
+        <Route path="request-pending" element={<RequestPendingPage />} />
+
         <Route path="dashboard" element={<DeveloperDashboardPage />} />
         <Route path="project/:projectId" element={<ProjectMainPage />} />
         <Route path="project/:projectId/post/:postId" element={<PostDetailPage />} />
@@ -101,6 +103,8 @@ function App() {
         <Route path="board/history/:boardId" element={<PostHistoryPage />} />
         <Route path="project-history/:projectId" element={<ProjectHistoryPage />} />
         <Route path="notification" element={<NotificationPage />} />
+        <Route path="change-password" element={<ChangePasswordPage />} />
+
       </Route>
 
       {/* ========== 고객사 전용 페이지 ========== */}
@@ -113,6 +117,9 @@ function App() {
         }
       >
         <Route path="dashboard" element={<CustomerDashboardPage />} />
+        <Route path="projects" element={<ProjectPage />} />
+        <Route path="request-pending" element={<RequestPendingPage />} />
+
         <Route path="project/:projectId" element={<ProjectMainPage />} />
         <Route path="project/:projectId/post/:postId" element={<PostDetailPage />} />
         <Route path="project/:projectId/post/create" element={<CreatePostPage />} />
@@ -120,6 +127,8 @@ function App() {
         <Route path="board" element={<BoardPage />} />
         <Route path="board/history/:boardId" element={<PostHistoryPage />} />
         <Route path="notification" element={<NotificationPage />} />
+        <Route path="change-password" element={<ChangePasswordPage />} />
+
       </Route>
     </Routes>
   );

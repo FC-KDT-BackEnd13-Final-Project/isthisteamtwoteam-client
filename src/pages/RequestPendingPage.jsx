@@ -7,19 +7,33 @@ import LoadingState from "../components/common/LoadingState/LoadingState";
 import StatCard from "../components/requestPending/RequestStatCard";
 import Section from "../components/requestPending/RequestSection";
 import { useEffect, useState } from "react";
-import { getRequestPendingPosts } from "../utils/config/api/getRequestPendingPostsApi";
+import { getRequestPendingPosts,getUserRequestPendingPosts } from "../utils/config/api/getRequestPendingPostsApi";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthConext";
 
 export default function RequestPendingPage() {
   const [requestPendingPosts, setRequestPendingPosts] = useState(null);
   const [error, setError] = useState(false);
+  const [userRole, setUserRole] = useState(null);
   const navigate = useNavigate();
+  const {user} = useAuth()
+  
+
 
   useEffect(() => {
+    setUserRole(user?.role);
     const fetchData = async () => {
       try {
-        const response = await getRequestPendingPosts();
-        setRequestPendingPosts(response);
+
+        if(userRole==='ADMIN'){
+          const response = await getRequestPendingPosts();
+          setRequestPendingPosts(response);
+        }else{
+          const response = await getUserRequestPendingPosts();
+          setRequestPendingPosts(response);
+        }
+
+
       } catch (err) {
         console.error("데이터 불러오기 실패:", err);
         setError(true);
