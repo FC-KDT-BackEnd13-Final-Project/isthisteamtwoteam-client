@@ -7,7 +7,7 @@ const PostHistory = () => {
   const [historyData, setHistoryData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [openIndexes, setOpenIndexes] = useState([0]); // 배열로 변경하여 여러 항목 열기 가능
+  const [openIndexes, setOpenIndexes] = useState([0]);
 
   useEffect(() => {
     fetchHistoryData();
@@ -31,14 +31,11 @@ const PostHistory = () => {
     }
   };
 
-  // 아코디언 토글 함수 - 여러 개 열기 가능
   const toggleAccordion = (index) => {
     setOpenIndexes(prev => {
       if (prev.includes(index)) {
-        // 이미 열려있으면 닫기
         return prev.filter(i => i !== index);
       } else {
-        // 닫혀있으면 열기
         return [...prev, index];
       }
     });
@@ -50,7 +47,9 @@ const PostHistory = () => {
       'title': '제목 변경',
       'content': '본문 변경',
       'stage': '진행단계 변경',
-      'completed': '완료 여부 변경'
+      'completed': '완료 여부 변경',
+      'file': '파일 변경',
+      'link': '링크 변경'
     };
     return labels[type] || '변경';
   };
@@ -81,7 +80,7 @@ const PostHistory = () => {
                   </span>
                 </div>
 
-                {/* content 타입 - 본문 변경 */}
+                {/* content 타입 - 본문/댓글 변경 */}
                 {change.type === 'content' && (
                   <div className="py-1">
                     {change.before && (
@@ -144,6 +143,54 @@ const PostHistory = () => {
                     )}
                   </div>
                 )}
+
+                {/* file 타입 - 파일 변경 */}
+                {change.type === 'file' && (
+                  <div className="py-1">
+                    {change.before && (
+                      <div className="mb-1 px-3 py-2 text-sm rounded border-l-[3px] border-[#dc3545] bg-[#fff5f5] text-[#dc3545]">
+                        - {change.before}
+                      </div>
+                    )}
+                    {change.after && (
+                      <div className="mb-1 px-3 py-2 text-sm rounded border-l-[3px] border-[#28a745] bg-[#f0fff4] text-[#28a745]">
+                        + {change.after}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* link 타입 - 링크 변경 */}
+                {change.type === 'link' && (
+                  <div className="py-1">
+                    {change.before && (
+                      <div className="mb-1 px-3 py-2 text-sm rounded border-l-[3px] border-[#dc3545] bg-[#fff5f5]">
+                        <span className="text-xs font-bold text-[#dc3545] mr-2">-</span>
+                        <a
+                          href={change.before}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-[#dc3545] hover:underline break-all"
+                        >
+                          {change.before}
+                        </a>
+                      </div>
+                    )}
+                    {change.after && (
+                      <div className="mb-1 px-3 py-2 text-sm rounded border-l-[3px] border-[#28a745] bg-[#f0fff4]">
+                        <span className="text-xs font-bold text-[#28a745] mr-2">+</span>
+                        <a
+                          href={change.after}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-[#28a745] hover:underline break-all"
+                        >
+                          {change.after}
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -152,7 +199,6 @@ const PostHistory = () => {
     );
   };
 
-  // 날짜/시간 포맷팅 함수
   const formatDateTime = (dateTimeString) => {
     const date = new Date(dateTimeString);
     return date.toLocaleString('ko-KR', {
@@ -165,9 +211,7 @@ const PostHistory = () => {
     }).replace(/\. /g, '-').replace('.', '');
   };
 
-  // 게시글 정보 찾기 (POST 타입이 아닌 경우, 가장 가까운 이전 POST 히스토리에서 가져오기)
   const getPostInfo = (currentIndex) => {
-    // 현재 또는 이전 POST 타입 히스토리 찾기
     for (let i = currentIndex; i < historyData.histories.length; i++) {
       const history = historyData.histories[i];
       if (history.targetType === 'POST') {
@@ -177,7 +221,6 @@ const PostHistory = () => {
     return null;
   };
 
-  // 스냅샷 렌더링 함수
   const renderSnapshot = (history, index) => {
     const { targetType, changeType, details, changedByUserName, changedAt, changeIp, changeContents } = history;
 
@@ -196,7 +239,6 @@ const PostHistory = () => {
 
       return (
         <div className="p-5 border-2 border-[#007bff] rounded-lg bg-[#fcfdff]">
-          {/* 제목 - 변경 후 상태만 표시 */}
           <div className="mb-4">
             <label className="block text-xs font-semibold text-[#666] mb-1 mt-0">
               제목
@@ -208,7 +250,6 @@ const PostHistory = () => {
 
           {metaInfo}
 
-          {/* 진행단계 - 변경 후 상태만 표시 */}
           <div className="mb-4">
             <label className="block text-xs font-semibold text-[#666] mb-1 mt-4">
               진행단계
@@ -218,7 +259,6 @@ const PostHistory = () => {
             </span>
           </div>
 
-          {/* 완료 여부 - 변경 후 상태만 표시 */}
           <div className="mb-4">
             <label className="block text-xs font-semibold text-[#666] mb-1 mt-4">
               완료 여부
@@ -228,7 +268,6 @@ const PostHistory = () => {
             </span>
           </div>
 
-          {/* 글 내용 - 변경 후 상태 전체 표시 */}
           <div className="mb-4">
             <label className="block text-xs font-semibold text-[#666] mb-1 mt-4">
               글 내용
@@ -238,7 +277,71 @@ const PostHistory = () => {
             </div>
           </div>
 
-          {/* 구분선 + 변경 내용 (제일 아래) */}
+          {hasChanges ? (
+            renderChangeContents(changeContents)
+          ) : (
+            <>
+              <div className="my-6 border-t-2 border-dashed border-[#d0d0d0]"></div>
+              <div className="p-3 bg-[#f8f9fa] rounded-md text-sm text-[#666] text-center">
+                이 시점에는 변경된 내용이 없습니다.
+              </div>
+            </>
+          )}
+        </div>
+      );
+    }
+
+    // COMMENT 타입 - 댓글 변경
+    if (targetType === 'COMMENT') {
+      const hasChanges = changeContents && changeContents.length > 0;
+      const postInfo = getPostInfo(index);
+
+      return (
+        <div className="p-5 border-2 border-[#007bff] rounded-lg bg-[#fcfdff]">
+          <div className="mb-4">
+            <label className="block text-xs font-semibold text-[#666] mb-1 mt-0">
+              댓글 내용
+            </label>
+            <div className="p-3 border border-[#e0e0e0] rounded-md min-h-[60px] text-sm leading-6 bg-white whitespace-pre-wrap">
+              {details.afContent || details.beContent || '내용 없음'}
+            </div>
+          </div>
+
+          {metaInfo}
+
+          {/* 게시글 정보 (당시 상태) */}
+          {postInfo && (
+            <>
+              <div className="mb-4">
+                <label className="block text-xs font-semibold text-[#666] mb-1 mt-4">
+                  게시글 제목
+                </label>
+                <div className="text-lg font-semibold text-[#1a1a1a]">
+                  {postInfo.afTitle || postInfo.beTitle}
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-xs font-semibold text-[#666] mb-1 mt-4">
+                  진행단계
+                </label>
+                <span className="inline-block px-3 py-1.5 bg-[#f0f6ff] rounded-md text-[#5a9aeb] text-xs font-medium">
+                  {postInfo.afStageName || postInfo.beStageName || '없음'}
+                </span>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-xs font-semibold text-[#666] mb-1 mt-4">
+                  완료 여부
+                </label>
+                <span className="inline-block px-3 py-1.5 bg-[#f0f6ff] rounded-md text-[#5a9aeb] text-xs font-medium">
+                  {(postInfo.afIsCompleted ?? postInfo.beIsCompleted) ? '완료' : '진행중'}
+                </span>
+              </div>
+            </>
+          )}
+
+          {/* 변경 내용 */}
           {hasChanges ? (
             renderChangeContents(changeContents)
           ) : (
@@ -261,7 +364,6 @@ const PostHistory = () => {
 
       return (
         <div className="p-5 border-2 border-[#007bff] rounded-lg bg-[#fcfdff]">
-          {/* 링크 변경 정보 */}
           <div className="mb-4">
             <label className="block text-xs font-semibold text-[#666] mb-1 mt-0">
               링크 변경
@@ -306,7 +408,6 @@ const PostHistory = () => {
 
           {metaInfo}
 
-          {/* 게시글 정보 (당시 상태) */}
           {postInfo && (
             <>
               <div className="mb-4">
@@ -358,7 +459,6 @@ const PostHistory = () => {
 
       return (
         <div className="p-5 border-2 border-[#007bff] rounded-lg bg-[#fcfdff]">
-          {/* 파일 변경 정보 */}
           <div className="mb-4">
             <label className="block text-xs font-semibold text-[#666] mb-1 mt-0">
               파일 변경
@@ -388,7 +488,6 @@ const PostHistory = () => {
 
           {metaInfo}
 
-          {/* 게시글 정보 (당시 상태) */}
           {postInfo && (
             <>
               <div className="mb-4">

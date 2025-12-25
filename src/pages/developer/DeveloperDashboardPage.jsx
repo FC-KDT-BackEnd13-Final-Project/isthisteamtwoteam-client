@@ -6,6 +6,7 @@ import FilteredList from "../../components/dashboard/FilteredList";
 import ProjectList from "../../components/dashboard/ProjectList";
 import { getDashboardAllProjects,getDashboardData } from "../../utils/config/api/dashboardApi";
 import { getDeveloperDashboardData } from "../../utils/config/api/developer/developerDashboardApi";
+import { getCustomerDashboardAllProjects } from "../../utils/config/customer/customerDashboardApi";
 
 
 export default function DeveloperDashboardPage() {
@@ -20,7 +21,7 @@ export default function DeveloperDashboardPage() {
     const fetchData = async () => {
       try {
         const data = await getDeveloperDashboardData();
-        const projectsData = await getDashboardAllProjects();
+        const projectsData = await getCustomerDashboardAllProjects();
         setDashboardData(data);
         setLoading(false);
         setAllProject(projectsData);
@@ -52,8 +53,8 @@ export default function DeveloperDashboardPage() {
     navigate(`/project/${projectId}`);
   };
 
-  const handleViewBoard = (postId) => {
-    navigate(`/posts/${postId}`);
+  const handleViewBoard = (projectId,postId) => {
+    navigate(`/project/${postId}/post/${postId}`);
   };
 
   const handleCreateProject = () => {
