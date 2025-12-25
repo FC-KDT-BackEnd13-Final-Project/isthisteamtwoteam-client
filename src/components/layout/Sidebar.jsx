@@ -22,11 +22,6 @@ export default function Sidebar() {
       path: "/projects",
     },
     {
-      icon: "bell",
-      label: "알림",
-      path: "/notification",
-    },
-    {
       icon: "clock",
       label: "승인 대기",
       path: "/request-pending",
