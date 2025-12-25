@@ -25,6 +25,11 @@ const ApprovalItem = ({ item, onViewDetail }) => {
   const statusKey = statusMap[item.requestStatus] || 'pending';
   const status = STATUS_CONFIG[statusKey];
 
+  const handleClick = () => {
+
+    onViewDetail(item.post_id, item.project_id);
+  };
+
   return (
     <div className="grid grid-cols-[1fr_auto_auto] gap-4 items-center p-4 border border-[#e5e7eb] rounded-[10px] transition-all duration-200 bg-white hover:border-[#007bff] hover:shadow-[0_2px_8px_rgba(0,123,255,0.08)] max-[768px]:grid-cols-1 max-[768px]:gap-3">
       <div className="flex flex-col gap-1.5 min-w-0">
@@ -44,7 +49,7 @@ const ApprovalItem = ({ item, onViewDetail }) => {
       </span>
 
       <button
-        onClick={() => onViewDetail(item.postId)}
+        onClick={handleClick}
         className="flex items-center gap-1.5 py-2 px-4 bg-white text-[#555] border border-[#e5e7eb] rounded-lg text-[13px] font-medium cursor-pointer transition-all duration-200 whitespace-nowrap hover:bg-[#007bff] hover:text-white hover:border-[#007bff] max-[768px]:w-full max-[768px]:justify-center"
       >
         게시글 이동

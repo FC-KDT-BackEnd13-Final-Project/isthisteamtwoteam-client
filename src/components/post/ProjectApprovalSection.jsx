@@ -83,7 +83,9 @@ export default function ProjectApprovalSection({ approvalRequests, isLoading, pr
     return (
       <div className="mb-6 rounded-lg bg-white p-6 shadow-sm">
         <h2 className="mb-4 text-lg font-semibold text-gray-900">승인 관리</h2>
-        <p className="text-sm text-gray-500">승인 데이터를 불러올 수 없습니다.</p>
+        <div className="py-10">
+        <p className="text-sm text-gray-500 text-center" >승인 사항이 없습니다.</p>
+        </div>
       </div>
     );
   }

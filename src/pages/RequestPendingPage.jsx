@@ -7,32 +7,30 @@ import LoadingState from "../components/common/LoadingState/LoadingState";
 import StatCard from "../components/requestPending/RequestStatCard";
 import Section from "../components/requestPending/RequestSection";
 import { useEffect, useState } from "react";
-import { getRequestPendingPosts,getUserRequestPendingPosts } from "../utils/config/api/getRequestPendingPostsApi";
+import { getRequestPendingPosts, getUserRequestPendingPosts } from "../utils/config/api/getRequestPendingPostsApi";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthConext";
 
 export default function RequestPendingPage() {
   const [requestPendingPosts, setRequestPendingPosts] = useState(null);
   const [error, setError] = useState(false);
-  const [userRole, setUserRole] = useState(null);
   const navigate = useNavigate();
-  const {user} = useAuth()
-  
-
+  const { user } = useAuth();
 
   useEffect(() => {
-    setUserRole(user?.role);
+    if (!user) return; // user가 없으면 실행하지 않음
+
     const fetchData = async () => {
       try {
-
-        if(userRole==='ADMIN'){
-          const response = await getRequestPendingPosts();
-          setRequestPendingPosts(response);
-        }else{
-          const response = await getUserRequestPendingPosts();
-          setRequestPendingPosts(response);
+        let response;
+        
+        if (user.role === 'ADMIN') {
+          response = await getRequestPendingPosts();
+        } else {
+          response = await getUserRequestPendingPosts();
         }
-
+        
+        setRequestPendingPosts(response);
 
       } catch (err) {
         console.error("데이터 불러오기 실패:", err);
@@ -63,7 +61,7 @@ export default function RequestPendingPage() {
     };
 
     fetchData();
-  }, []);
+  }, [user]); // user가 로드된 후 실행
 
   if (!requestPendingPosts) {
     return (
@@ -73,8 +71,10 @@ export default function RequestPendingPage() {
     );
   }
 
-  const handleViewDetail = (id) => {
-    navigate(`/project/${projectId}/post/${id}`);
+  // postId와 projectId를 명확하게 받음
+  const handleViewDetail = (postId, projectId) => {
+    console.log("📌 [RequestPendingPage] 게시글 이동:", { postId, projectId });
+    navigate(`/project/${projectId}/post/${postId}`);
   };
 
   return (
