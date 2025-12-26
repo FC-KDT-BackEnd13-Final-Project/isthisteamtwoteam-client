@@ -186,7 +186,7 @@ export default function ProjectMainPage() {
               checklists={checklists} 
               setChecklists={setChecklists}
               projectId={projectId}
-              userRole={userRole} // ✅ 올바른 role 값 전달
+              userRole={userRole} 
             />
 
             <ProjectApprovalSection 

@@ -61,3 +61,22 @@ export const getProjectChecklist = async (projectId)=>{
         throw error;
     }
 }
+
+// 체크리스트 체크 상태 변경
+export const updateChecklistStatus = async (projectId, checklistId, checked) => {
+  try {
+    const response = await api.patch(
+      `/customer/checklists/${projectId}/${checklistId}/checked`,
+      {}, // body 없음 (체크 토글)
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('체크리스트 상태 변경 실패:', error);
+    throw error;
+  }
+};

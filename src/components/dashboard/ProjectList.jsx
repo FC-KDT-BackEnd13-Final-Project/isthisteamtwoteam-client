@@ -23,7 +23,7 @@ export default function ProjectList({
         
         <div className="flex gap-2.5">
           <button
-            onClick={() =>navigate("/projects")}
+            onClick={() =>navigate("/developer/projects")}
             className="cursor-pointer rounded-[6px] border border-[#d0d0d0] bg-white px-[15px] py-2 text-[13px] font-semibold text-[#555] transition-all duration-200 hover:bg-[#f0f0f0]"
           >
             더보기
