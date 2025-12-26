@@ -17,13 +17,6 @@ export const deletePost = async (postId) => {
   return response.data;
 };
 
-/**
- * 게시글 완료 처리
- */
-export const completePost = async (postId) => {
-  const response = await api.patch(`/users/projects/posts/${postId}/complete`);
-  return response.data;
-};
 
 // postApi.js 파일에 추가
 
@@ -96,3 +89,22 @@ export const getPostHistory = async (postId) => {
     throw error;
   }
 }
+
+// 게시글 완료 처리
+export const completePost = async (projectId, postId) => {
+  try {
+    const response = await api.patch(
+      `/users/projects/${projectId}/posts/${postId}/completion`,
+      {}, // body 없음
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('게시글 완료 처리 실패:', error);
+    throw error;
+  }
+};

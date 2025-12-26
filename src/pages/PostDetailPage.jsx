@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getPostDetail } from "../utils/config/api/post/postApi";
+import { getPostDetail,completePost } from "../utils/config/api/post/postApi";
 import { useAuth } from "../context/AuthConext";
 import CommentItem from "../components/post/CommentItem";
 import LoadingState from "../components/common/LoadingState/LoadingState";
@@ -1193,6 +1193,27 @@ const handleRejectConfirm = async () => {
     );
   };
 
+    const handleCompletePost = async () => {
+    if (!window.confirm('게시글을 완료 처리하시겠습니까?\n완료 후에는 수정 및 댓글 작성이 불가능합니다.')) {
+      return;
+    }
+
+    try {
+      const response = await completePost(projectId, postId);
+      
+      if (response.success) {
+        alert('게시글이 완료 처리되었습니다.');
+        // 페이지 새로고침하여 완료 상태 반영
+        window.location.reload();
+      } else {
+        alert(response.message || '완료 처리에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('완료 처리 실패:', error);
+      alert('완료 처리에 실패했습니다.');
+    }
+  };
+  
   const topLevelComments = getTopLevelComments(comments);    
   return (
     <div className="min-h-screen bg-gray-100 p-20">
@@ -1739,10 +1760,19 @@ const handleRejectConfirm = async () => {
           </div>
           
           {/* 하단 완료 버튼 */}
+          {/* 하단 완료 버튼 */}
           <div className="mt-8 flex justify-end border-t border-gray-100 pt-6">
             {userRole === 'DEVELOPER' || userRole === 'ADMIN' ? (
-              <button className="rounded-lg bg-red-500 px-8 py-3 text-[14px] font-medium text-white transition-colors hover:bg-red-600">
-                완료
+              <button 
+                onClick={handleCompletePost}  
+                disabled={postData.isCompleted}  
+                className={`rounded-lg px-8 py-3 text-[14px] font-medium text-white transition-colors ${
+                  postData.isCompleted
+                    ? 'bg-gray-400 cursor-not-allowed'
+                    : 'bg-red-500 hover:bg-red-600'
+                }`}
+              >
+                {postData.isCompleted ? '완료됨' : '완료'}  {/* ✅ 상태에 따른 텍스트 변경 */}
               </button>
             ) : null}
           </div>
