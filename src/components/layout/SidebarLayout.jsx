@@ -21,7 +21,7 @@ export default function SidebarLayout() {
 
 
   if (!user) {
-    return null; 
+    return <Navigate to="/login" replace />;
   }
 
   console.log("현재 사용자 역할:", user.role);
