@@ -38,7 +38,6 @@ import ChangePasswordPage from "./pages/ChangePasswordPage";
 import DeveloperSidebarHeaderLayout from "./components/layout/developer/DeveloperSidebarHeaderLayout";
 import CustomerSidebarHeaderLayout from "./components/layout/customer/CustomerSidebarHeaderLayout copy";
 import PostHistory from "./pages/PostHistory";
-
 function App() {
   return (
     <Routes>
@@ -47,8 +46,15 @@ function App() {
       <Route path="/login/reset" element={<ForgotPasswordPage />} />
       <Route path="/find-password" element={<FindPasswordPage />} />
 
-      {/* ========== 공통 프로젝트/게시글 페이지 (권한별로 공유) ========== */}
-      <Route path="/" element={<SidebarLayout />}>
+      {/* ========== 공통 페이지 (모든 권한 접근 가능) ========== */}
+      <Route 
+        path="/" 
+        element={
+          <ProtectedRoute allowedRoles={['ADMIN', 'DEVELOPER', 'CUSTOMER']}>
+            <SidebarLayout />
+          </ProtectedRoute>
+        }
+      >
         <Route path="project/:projectId" element={<ProjectMainPage />} />
         <Route path="project/:projectId/post/:postId" element={<PostDetailPage />} />
         <Route path="project/:projectId/post/create" element={<CreatePostPage />} />
@@ -56,7 +62,6 @@ function App() {
         <Route path="project/:projectId/post/edit/:postId" element={<EditPostDetailPage />} />
         <Route path="projects/:projectId/request-pending" element={<ProjectRequestPendingPage />} />
         <Route path="project/:projectId/post/:postId/history" element={<PostHistory />} />
-
         <Route path="change-password" element={<ChangePasswordPage />} />
       </Route>
 
@@ -86,14 +91,13 @@ function App() {
       <Route
         path="/developer"
         element={
-          <ProtectedRoute allowedRoles={["DEVELOPER"]} >
+          <ProtectedRoute allowedRoles={["DEVELOPER"]}>
             <DeveloperSidebarHeaderLayout />
           </ProtectedRoute>
         }
       >
         <Route path="projects" element={<ProjectPage />} />
         <Route path="request-pending" element={<RequestPendingPage />} />
-
         <Route path="dashboard" element={<DeveloperDashboardPage />} />
         <Route path="project/:projectId" element={<ProjectMainPage />} />
         <Route path="project/:projectId/post/:postId" element={<PostDetailPage />} />
@@ -104,7 +108,6 @@ function App() {
         <Route path="project-history/:projectId" element={<ProjectHistoryPage />} />
         <Route path="notification" element={<NotificationPage />} />
         <Route path="change-password" element={<ChangePasswordPage />} />
-
       </Route>
 
       {/* ========== 고객사 전용 페이지 ========== */}
@@ -119,7 +122,6 @@ function App() {
         <Route path="dashboard" element={<CustomerDashboardPage />} />
         <Route path="projects" element={<ProjectPage />} />
         <Route path="request-pending" element={<RequestPendingPage />} />
-
         <Route path="project/:projectId" element={<ProjectMainPage />} />
         <Route path="project/:projectId/post/:postId" element={<PostDetailPage />} />
         <Route path="project/:projectId/post/create" element={<CreatePostPage />} />
@@ -128,7 +130,6 @@ function App() {
         <Route path="board/history/:boardId" element={<PostHistoryPage />} />
         <Route path="notification" element={<NotificationPage />} />
         <Route path="change-password" element={<ChangePasswordPage />} />
-
       </Route>
     </Routes>
   );
